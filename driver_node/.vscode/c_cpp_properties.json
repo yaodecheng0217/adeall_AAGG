@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/../common/udpinterface/",
+                "${workspaceFolder}/../common/",
+                "${workspaceFolder}/../",
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.17763.0",
+            "compilerPath": "\"C:/Program Files/mingw-w64/x86_64-8.1.0-posix-sjlj-rt_v6-rev0/mingw64/bin/g++.exe\"",
+            "cStandard": "c11",
+            "compilerArgs": [
+                "-m64"
+            ],
+            "cppStandard": "c++11",
+            "configurationProvider": "vector-of-bool.cmake-tools",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}
