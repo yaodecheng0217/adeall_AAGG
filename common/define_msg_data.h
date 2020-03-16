@@ -57,40 +57,43 @@ enum PORT_LIST
 //消息来源列表
 enum SOURCE_ID_LIST
 {
-    ID_DEBUG ,
-    ID_Sensor_uwb ,
-    ID_StateMachine ,
-    ID_Controller ,
-    ID_Simulation ,
-    ID_PathPlaner ,
+    ID_DEBUG,
+    ID_Sensor_uwb,
+    ID_StateMachine,
+    ID_Controller,
+    ID_Simulation,
+    ID_PathPlaner,
 
 };
 //消息类型
 enum INS_LIST
 {
-    INS_GET ,
-    INS_SET ,
-    INS_ACK ,
-    INS_HARBEAT ,
+    INS_GET,
+    INS_SET,
+    INS_ACK,
+    INS_HARBEAT,
 };
 //消息结构体列表
 enum CMD_TYPE_LIST
 {
-    CMD_UWB_HEARBEAT_DATA ,
-    CMD_ALL_ACK_DATA ,
-    CMD_HEARBEAT_ACK ,
-    CMD_ETV_DRIVER_HEARBEAT_DATA ,
-    CMD_SET_DOUBLE_DATA ,
-    CMD_SET_BOOL_DATA ,
-    CMD_SET_FLOAT_DATA ,
-    CMD_SET_ACK,
+    
+    CMD_HEARBEAT_ETV_DRIVER_DATA,
+    CMD_HEARBEAT_UWB_DATA,
+    CMD_HEARBEAT_ONE_DATA,
+    CMD_HEARBEAT_SICK_DATA,
+    CMD_SET_DOUBLE_DATA,
+    CMD_GET_DATA,
+    CMD_ACK_SET,
+    CMD_ACK_LOCATION_DATA,
+    CMD_ACK_ONE_DATA,
+    CMD_ACK_HEARBEAT,
 };
 //请求返回码
 enum STATE_CODE_LIST
 {
     OK,
-    ERR ,
-    TIMEOUT ,
+    ERR,
+    TIMEOUT,
     InManualState,
     DriverIsNull,
     ForkErr,
@@ -98,8 +101,8 @@ enum STATE_CODE_LIST
 //数据结构体枚举
 enum DATA_LIST
 {
-    LOCATION ,
-    ETV_DriverState ,
+    LOCATION,
+    ETV_DriverState,
 };
 //========================================消息子结构==========================================
 struct DRIVER_HANDLE
@@ -153,19 +156,22 @@ struct ETV_DRIVER_STATE_DATA
                 AUTO); //serialize things by passing them to the archive
     }
 };
-enum SET_DATA_TYPE_LIST
+enum DATA_TYPE_LIST
 {
     Type_AcceleratorValue,
-    Type_BrakeValue ,
+    Type_BrakeValue,
     Type_TurnAngleValue,
-    Type_LiftValue ,
-    Type_SideValue ,
-    Type_MoveForwardValue ,
-    Type_TiltValue ,
+    Type_LiftValue,
+    Type_SideValue,
+    Type_MoveForwardValue,
+    Type_TiltValue,
     Type_LED_Green,
-    Type_LED_Red ,
-    Type_Paking ,
-    Type_AUTO ,
+    Type_LED_Red,
+    Type_Paking,
+    Type_AUTO,
+
+    //====
+    Type_location
 };
 struct SET_DOUBLE_DATA
 {
@@ -276,6 +282,44 @@ struct TYPE_SET_BOOL_DATA
     void serialize(Archive &archive)
     {
         archive(handle, data, seq, timestamp); //serialize things by passing them to the archive
+    }
+};
+struct TYPE_GET_DATA
+{
+    DRIVER_HANDLE handle;
+    uint16_t type;
+    uint32_t seq;
+    time_t timestamp;
+    template <class Archive>
+    void serialize(Archive &archive)
+    {
+        archive(handle, type, seq, timestamp); //serialize things by passing them to the archive
+    }
+};
+struct TYPE_ACK_ONE_DATA
+{
+    DRIVER_HANDLE handle;
+    double data;
+    int code;
+    uint32_t seq;
+    time_t timestamp;
+    template <class Archive>
+    void serialize(Archive &archive)
+    {
+        archive(handle, data,code,seq, timestamp); //serialize things by passing them to the archive
+    }
+};
+struct TYPE_ACK_LOCATION_DATA
+{
+    DRIVER_HANDLE handle;
+    _data::LOCATION_DATA data;
+    int code;
+    uint32_t seq;
+    time_t timestamp;
+    template <class Archive>
+    void serialize(Archive &archive)
+    {
+        archive(handle, data,code,seq, timestamp); //serialize things by passing them to the archive
     }
 };
 } // namespace _Send

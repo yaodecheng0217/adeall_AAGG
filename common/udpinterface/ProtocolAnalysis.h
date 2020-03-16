@@ -4,7 +4,7 @@
  * @Author: Yaodecheng
  * @Date: 2019-10-19 10:18:47
  * @LastEditors: Yaodecheng
- * @LastEditTime: 2020-03-12 14:45:41
+ * @LastEditTime: 2020-03-16 16:24:44
  */
 
 #ifndef _PREOTOCOLANALYSIS_H_
@@ -29,7 +29,7 @@ struct FrameDataStruct
 struct ReturnFrameData
 {
     char *ip;
-    int prot;
+    int port;
     uint8_t source_id = 0;
     uint8_t cmd_id[2] = {0, 0};
     int8_t ins = -1;
@@ -84,10 +84,10 @@ public:
     ProtocolAnalysis(OutputDataFun);
     ~ProtocolAnalysis();
     int init(const int port);
-    void sendData(const char *ip, int prot, FrameDataStruct sdata);
+    int sendData(const char *ip, int prot, FrameDataStruct sdata);
 
     template <typename T>
-    void sendData(const char *tgr_ip,
+    int sendData(const char *tgr_ip,
     const int tgr_prot,
     uint8_t source_id,
     int8_t ins,
@@ -99,7 +99,7 @@ public:
         Xdata.cmd_type=cmd_type;
         Xdata.ins=ins;
         Add_StructSerialize_sendData(data,&Xdata);
-        sendData(tgr_ip,tgr_prot, Xdata);
+        return sendData(tgr_ip,tgr_prot, Xdata);
     }
 };
 } // namespace msgpa

@@ -51,7 +51,7 @@ void APP::hearbeat_loop()
                        PORT_LIST::StateMachine_port,
                        SOURCE_ID_LIST::ID_Sensor_uwb,
                        INS_LIST::INS_HARBEAT,
-                       CMD_TYPE_LIST::CMD_ETV_DRIVER_HEARBEAT_DATA,
+                       CMD_TYPE_LIST::CMD_HEARBEAT_ETV_DRIVER_DATA,
                        hearbeat);
         for (size_t i = 0; i < 50; i++)
         {
@@ -88,7 +88,7 @@ void APP::_Callback(ReturnFrameData in)
 {
     switch (in.cmd_type)
     {
-    case CMD_TYPE_LIST::CMD_HEARBEAT_ACK:
+    case CMD_TYPE_LIST::CMD_ACK_HEARBEAT:
     {
         _Send::TYPE_HEARBEAT_ACK r;
         Decode_StructSerialize(&r, in._databuff);
@@ -101,16 +101,9 @@ void APP::_Callback(ReturnFrameData in)
         Decode_StructSerialize(&r, in._databuff);
         int code = setDoubleValue(r.data.type, r.data.value);
         printf("------#%d\n",code);
-        set_ACK_send(in.ip, in.prot, code, r.seq);
+        set_ACK_send(in.ip, in.port, code, r.seq);
     }
     break;
-    case CMD_TYPE_LIST::CMD_SET_BOOL_DATA:
-    {
-        _Send::TYPE_SET_BOOL_DATA r;
-        Decode_StructSerialize(&r, in._databuff);
-        int code = setBoolValue(r.data.type, r.data.value);
-        set_ACK_send(in.ip, in.prot, code, r.seq);
-    }
     break;
     default:
         break;
@@ -142,7 +135,7 @@ void APP::set_ACK_send(const char *ip, int prot, int code, uint32_t seq)
                    prot,
                    ID_StateMachine,
                    INS_ACK,
-                   CMD_TYPE_LIST::CMD_SET_ACK,
+                   CMD_TYPE_LIST::CMD_ACK_SET,
                    aa);
 }
 
@@ -150,37 +143,37 @@ int APP::setDoubleValue(uint8_t type, double value)
 {
     switch (type)
     {
-    case _data::SET_DATA_TYPE_LIST::Type_AcceleratorValue:
+    case _data::DATA_TYPE_LIST::Type_AcceleratorValue:
         _driver_state_data.AcceleratorValue = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_BrakeValue:
+    case _data::DATA_TYPE_LIST::Type_BrakeValue:
         _driver_state_data.BrakeValue = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_LiftValue:
+    case _data::DATA_TYPE_LIST::Type_LiftValue:
         _driver_state_data.LiftValue = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_MoveForwardValue:
+    case _data::DATA_TYPE_LIST::Type_MoveForwardValue:
         _driver_state_data.MoveForwardValue = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_SideValue:
+    case _data::DATA_TYPE_LIST::Type_SideValue:
         _driver_state_data.SideValue = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_TiltValue:
+    case _data::DATA_TYPE_LIST::Type_TiltValue:
         _driver_state_data.TiltValue = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_TurnAngleValue:
+    case _data::DATA_TYPE_LIST::Type_TurnAngleValue:
         _driver_state_data.TurnAngleValue = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_AUTO:
+    case _data::DATA_TYPE_LIST::Type_AUTO:
         _driver_state_data.AUTO = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_LED_Green:
+    case _data::DATA_TYPE_LIST::Type_LED_Green:
         _driver_state_data.LED_Green = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_LED_Red:
+    case _data::DATA_TYPE_LIST::Type_LED_Red:
         _driver_state_data.LED_Red = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_Paking:
+    case _data::DATA_TYPE_LIST::Type_Paking:
         _driver_state_data.Paking = value;
         break;
     default:
@@ -193,16 +186,16 @@ int APP::setBoolValue(uint8_t type, bool value)
 {
     switch (type)
     {
-    case _data::SET_DATA_TYPE_LIST::Type_AUTO:
+    case _data::DATA_TYPE_LIST::Type_AUTO:
         _driver_state_data.AUTO = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_LED_Green:
+    case _data::DATA_TYPE_LIST::Type_LED_Green:
         _driver_state_data.LED_Green = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_LED_Red:
+    case _data::DATA_TYPE_LIST::Type_LED_Red:
         _driver_state_data.LED_Red = value;
         break;
-    case _data::SET_DATA_TYPE_LIST::Type_Paking:
+    case _data::DATA_TYPE_LIST::Type_Paking:
         _driver_state_data.Paking = value;
         break;
     default:

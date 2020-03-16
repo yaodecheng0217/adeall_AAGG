@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-15 22:45:42
+ * @LastEditTime: 2020-03-16 12:06:12
  * @LastEditors: Yaodecheng
  */
 /*
@@ -29,6 +29,7 @@ struct Node_INFO
     char *ip;
     int port;
     void *data;
+    time_t timestamp;
     int onlinecnt;
 };
 struct UWB_D
@@ -52,7 +53,7 @@ private:
     std::vector<Node_INFO> _NodeList;
     std::list<UWB_D> _uwbdata;
     std::list<DRIVER_D> _driverdata;
-     struct RES
+    struct RES
     {
         uint32_t seq;
         int *code;
@@ -60,16 +61,16 @@ private:
     std::vector<RES> _respondlist;
     void clear_sqe(uint32_t seq);
     void setCode(uint32_t ack, uint32_t seq);
+
 public:
     APP(ProtocolAnalysis *msg) : _msg(msg){};
     void run();
     void _Callback(ReturnFrameData in);
-
     void print_Node_List();
-    void print_Node_INOF(Node_INFO info);
-    void SensorRsp(const char *ip, int prot, uint32_t seq);
 
 private:
+    void print_Node_INOF(Node_INFO info);
+    void SensorRsp(const char *ip, int prot, uint32_t seq);
     void AddNodeList(DRIVER_HANDLE handle, char *ip, int port);
     void *GetNodeData(DRIVER_HANDLE handle);
     void update(DRIVER_HANDLE handle, void *data);
@@ -77,8 +78,9 @@ private:
     static void *loop10ms(void *);
     void ClearDriverData(uint8_t id);
     void ClearUWBData(uint8_t id);
-    void * ETV_DriverOnlineChack();
-    int sendToDriver(uint8_t type,double value);
+    void *ETV_DriverOnlineChack();
+    int sendToDriver(uint8_t type, double value);
+
 public:
     //设置油门值,取值范围(1，-1)
     int SetAcceleratorValue(double value);
@@ -102,5 +104,16 @@ public:
     int SetPacking(bool value);
     //设置自动
     int SetAuto(bool value);
+
+private:
+//=========================api==============
+void Get_Information(const char * ip,int port,uint16_t type,uint32_t seq);
+int set_ControlValue( uint16_t type, double value);
+void Set_ACK(const char * ip,int port,int code,uint32_t seq);
+void ACK_One_data(const char *ip, int port, uint16_t type, uint32_t seq);
+void _Callback_Get(ReturnFrameData in);
+void _Callback_Set(ReturnFrameData in);
+void _Callback_ACK(ReturnFrameData in);
+void _Callback_HEARBEAT(ReturnFrameData in);
 };
 #endif

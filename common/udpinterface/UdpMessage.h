@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: Yaodecheng
  * @Date: 2019-10-13 14:02:01
- * @LastEditTime: 2020-03-12 23:36:15
+ * @LastEditTime: 2020-03-16 14:06:01
  * @LastEditors: Yaodecheng
  */
 /*
@@ -52,8 +52,8 @@ public:
 	UdpMessage();
 	int init(int cliceport, void *);
 	~UdpMessage();
-	void messagsend(const char *ip, int port, const char *data, int L);
-	void messagsend(const char *ip, int port, const std::string data);
+	int messagsend(const char *ip, int port, const char *data, int L);
+	int messagsend(const char *ip, int port, const std::string data);
 
 private:
 

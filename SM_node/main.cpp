@@ -2,7 +2,7 @@
  * @Description: 状态机节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-15 22:52:40
+ * @LastEditTime: 2020-03-16 16:32:11
  * @LastEditors: Yaodecheng
  **/
 #include "SM_App/app.h"
@@ -19,31 +19,6 @@ int main()
     while (1)
     {
         _sleep_ms(1000);
-
-        //设置油门值,取值范围(1，-1)
-        app.SetAuto(1);
-      int rs = app.SetAcceleratorValue( value);
-      printf("rscode=%d",rs);
-    //设置刹车值,取值范围(1,0)
-     app.SetBrake( value);
-    //设置转向角,取值范围(pi,-pi)
-     app.SetTurnAngle( value);
-    //设置举升值，取值范围(1,-1)
-     app.SetLift( 0);
-    //设置举侧移，取值范围(1,-1)
-     app.SetSide( value);
-    //设置前移  ，取值范围(1,-1)
-     app.SetMoveForward( value);
-    //设置倾斜值，取值范围(1,-1)
-     app.SetTilt( value);
-    //设置绿色Led
-     app.SetLedGreen( value);
-    //设置红色Led
-     app.SetLedRed( value);
-    //设置手
-     app.SetPacking( value);
-    //设置自动
-     app.SetAuto( value);
        app.print_Node_List();
 
         value=value+0.1;

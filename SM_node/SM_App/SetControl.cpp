@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-15 17:54:06
- * @LastEditTime: 2020-03-15 22:51:04
+ * @LastEditTime: 2020-03-16 18:56:42
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -38,7 +38,7 @@ int APP::sendToDriver(uint8_t type, double value)
     w.code = &code;
     w.seq = setdata.seq;
     _respondlist.push_back(w);
-    printf("%d\n", w.seq);
+    //printf("%d\n", w.seq);
 
     for (size_t j = 0; j < 3; j++)
     {
@@ -53,13 +53,12 @@ int APP::sendToDriver(uint8_t type, double value)
             if (code != -1)
             {
                 clear_sqe(w.seq);
-                return OK;
+                return code;
             }
-            Sleep(10);
+            Sleep(1);
         }
         //printf("%d retry %d times,\n", w.seq, j + 1);
     }
-
     printf("time out ------------------------%d\n", w.seq);
     clear_sqe(w.seq);
     return TIMEOUT;

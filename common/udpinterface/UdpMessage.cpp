@@ -3,7 +3,7 @@
  * @Description: In User Settings Edit
  * @Author: Yaodecheng
  * @Date: 2019-10-13 14:35:32
- * @LastEditTime: 2020-03-13 00:17:15
+ * @LastEditTime: 2020-03-16 14:05:43
  * @LastEditors: Yaodecheng
  */
 
@@ -123,7 +123,7 @@ int UdpMessage::init(int cliceport, void *prt)
     return 0;
 }
 
-void UdpMessage::messagsend(const char *ip, int port, const char *data, int L)
+int UdpMessage::messagsend(const char *ip, int port, const char *data, int L)
 {
     //ScopeLocker lock(&sendcs);
     struct sockaddr_in addr_server;
@@ -137,7 +137,8 @@ void UdpMessage::messagsend(const char *ip, int port, const char *data, int L)
 #endif
 
     int len = sizeof(addr_server);
-    if (sendto(sock_fd, data, L, 0, (struct sockaddr *)&addr_server, len) < 0)
+    int rc=sendto(sock_fd, data, L, 0, (struct sockaddr *)&addr_server, len);
+    if ( rc< 0)
     {
         logi("udp ip=%s port=%d send error!%d\n", ip, port, sock_fd);
     }
@@ -145,8 +146,9 @@ void UdpMessage::messagsend(const char *ip, int port, const char *data, int L)
     {
         //logi("udp ip=%s port=%d send ok ! %d\n", ip, port,sock_fd);
     }
+    return rc;
 }
-void UdpMessage::messagsend(const char *ip, int port, const std::string data)
+int UdpMessage::messagsend(const char *ip, int port, const std::string data)
 {
-    messagsend(ip, port, data.c_str(), data.length());
+    return messagsend(ip, port, data.c_str(), data.length());
 }

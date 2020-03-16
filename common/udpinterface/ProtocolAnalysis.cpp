@@ -4,7 +4,7 @@
  * @Author: Yaodecheng
  * @Date: 2019-10-19 10:26:48
  * @LastEditors: Yaodecheng
- * @LastEditTime: 2020-03-13 00:17:05
+ * @LastEditTime: 2020-03-16 14:07:10
  */
 
 #include "ProtocolAnalysis.h"
@@ -29,7 +29,7 @@ struct MyStruct
     float y;
 };
 
-void ProtocolAnalysis::sendData(const char *ip, int prot, FrameDataStruct sdata)
+int ProtocolAnalysis::sendData(const char *ip, int prot, FrameDataStruct sdata)
 {
     uint16_t Version = 1;
     uint32_t dataLength = sdata._databuff.size();
@@ -80,7 +80,7 @@ void ProtocolAnalysis::sendData(const char *ip, int prot, FrameDataStruct sdata)
     sendbuff[19 + dataLength] = 0xf7;
     sendbuff[20 + dataLength] = 0x7f;
 
-    messagsend(ip, prot, (char *)&sendbuff[0], dataLength + 21);
+    return messagsend(ip, prot, (char *)&sendbuff[0], dataLength + 21);
 }
 
 void ProtocolAnalysis::CallBackFuntion(std::vector<uint8_t> databuffer, void *ptr)
@@ -131,7 +131,7 @@ void ProtocolAnalysis::CallBackFuntion(std::vector<uint8_t> databuffer, void *pt
             out._databuff.resize(datalength);
             if (datalength > 0)
                 memcpy(&out._databuff[0], &databuffer[15], datalength);
-            out.prot = ntohs(addr_client.sin_port);
+            out.port = ntohs(addr_client.sin_port);
             out.ip = inet_ntoa(addr_client.sin_addr);
             _outputfun(out);
         }
