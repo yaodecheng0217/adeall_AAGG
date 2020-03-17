@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-16 12:06:12
+ * @LastEditTime: 2020-03-17 10:07:12
  * @LastEditors: Yaodecheng
  */
 /*
@@ -79,6 +79,7 @@ private:
     void ClearDriverData(uint8_t id);
     void ClearUWBData(uint8_t id);
     void *ETV_DriverOnlineChack();
+    void *UWB_DriverOnlineChack();
     int sendToDriver(uint8_t type, double value);
 
 public:

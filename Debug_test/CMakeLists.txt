@@ -18,6 +18,7 @@ SET(CMAKE_C_FLAGS "-m64")
 SET(CMAKE_CXX_FLAGS "-m64")
 ENDIF () 
 
+aux_source_directory(./pathcontrol SRC_FILES)
 aux_source_directory(./APP SRC_FILES)
 aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)

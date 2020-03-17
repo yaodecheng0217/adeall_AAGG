@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-16 18:41:06
+ * @LastEditTime: 2020-03-17 11:49:58
  * @LastEditors: Yaodecheng
  */
 /*
@@ -22,7 +22,7 @@ sudo  apt-get  install   gcc-7-multilib g++-7-multilib
 
 using namespace msgpa;
 using namespace adeall;
-
+std::string printf_status(int code);
 struct Node_INFO
 {
     DRIVER_HANDLE handle;
@@ -69,7 +69,7 @@ private:
     std::vector<RES> _respondlist;
     void clear_sqe(uint32_t seq);
     void setCode(int ack_code, uint32_t seq);
-
+    MutexLock RecallLock;
     std::vector<ReCall> _Recall;
     void clearReCallSeq(uint32_t seq);
     int Send_CMD_toStateMachine(uint32_t seq, int CMD);
@@ -87,32 +87,30 @@ private:
     void _Callback_Set(ReturnFrameData in);
     void _Callback_ACK(ReturnFrameData in);
     void _Callback_HEARBEAT(ReturnFrameData in);
-    void reaction_ACK(void *,uint16_t seq);
+    void reaction_ACK(void *, uint16_t seq);
 
 public:
     //==========================GetData==API================================
     //读取数据
     int GetData(_data::LOCATION_DATA *returnvalue, UINT timeout);
     int GetData(int type, double *returnvalue, UINT timeout);
-    int Forward_motor(UINT8 mode, double volue,uint16_t timeout);
+    int Set_Forward_motor(UINT8 mode, double volue, uint16_t timeout);
+    int Set_Acc_motor(UINT8 mode, double volue, uint16_t timeout);
+    int Set_Lift_motor(UINT8 mode, double volue, uint16_t timeout);
+    int Set_Side_motor(UINT8 mode, double volue, uint16_t timeout);
+    int Set_Turn_motor(UINT8 mode, double volue, uint16_t timeout);
+    int Set_Brake(UINT8 mode, double volue, uint16_t timeout);
+    int Set_AUTO(bool volue);
     enum MODE
     {
         mode_abs = 1,
         mode_inc = 0,
     };
-    private:
+
+private:
     //control
-    
-    
-    void Acc_motor(UINT8 mode, float volue);
-    void Lift_motor(UINT8 mode, float volue);
-    void Side_motor(UINT8 mode, float volue);
-    void Turn_motor(UINT8 mode, float volue);
-    void Driver_Callback(ReturnFrameData in);
-    void SetBrake(UINT8 mode, float volue);
-    void SetAUTO(bool volue);
 
-
+    int setControl(uint8_t mode, double value, uint16_t timeout, uint16_t type);
     int SendContrl(uint16_t type, double value, int timeout);
 };
 #endif

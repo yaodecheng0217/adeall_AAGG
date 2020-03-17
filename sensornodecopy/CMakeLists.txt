@@ -17,6 +17,7 @@ aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)
 aux_source_directory(./vrep/remoteApi SRC_FILES)
 aux_source_directory(./vrep SRC_FILES)
+aux_source_directory(./DriverApp SRC_FILES)
 
 add_definitions(-D WIN32)
 add_definitions(-D NDEBUG)

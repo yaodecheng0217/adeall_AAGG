@@ -13,7 +13,7 @@
             "preLaunchTask": "linux",
             },
             "windows": {
-                "program": "${workspaceFolder}/build/SM_node.exe",
+                "program": "${workspaceFolder}/build/Debug_node.exe",
                 //"miDebuggerPath": "C:/Program Files (x86)/mingw-w64/3H3mingw.32Bit/i686-8.1.0-release-posix-sjlj-rt_v6-rev0/mingw32/bin/gdb.exe", // 调试器路径，Windows下后缀不能省略，Linux下则去掉
                 "miDebuggerPath": "C:/Program Files/mingw-w64/x86_64-8.1.0-posix-sjlj-rt_v6-rev0/mingw64/bin/gdb.exe", // 调试器路径，Windows下后缀不能省略，Linux下则去掉
                 //"preLaunchTask": "echo",

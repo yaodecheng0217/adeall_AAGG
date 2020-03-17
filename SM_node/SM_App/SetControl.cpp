@@ -19,6 +19,18 @@ void *APP::ETV_DriverOnlineChack()
     }
     return NULL;
 }
+void *APP::UWB_DriverOnlineChack()
+{
+    size_t cnt = _NodeList.size();
+    for (size_t i = 0; i < cnt; i++)
+    {
+        if (_NodeList[i].handle.datatype == DATA_LIST::LOCATION)
+        {
+            return &_NodeList[i];
+        }
+    }
+    return NULL;
+}
 int APP::sendToDriver(uint8_t type, double value)
 {
     timeval tv;
