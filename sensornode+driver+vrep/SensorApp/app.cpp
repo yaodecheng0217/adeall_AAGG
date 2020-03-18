@@ -11,10 +11,6 @@ void APP::run()
 {
     //创建一个线程向指定节点发送数据
     thread_base t1(hearbeat_thread, this);
-    _data.x = 1.1;
-    _data.y = 1.2;
-    _data.z = 1.3;
-    _data.yaw = 1.2;
 }
 
 void APP::clear_sqe(uint32_t seq)
@@ -24,7 +20,8 @@ void APP::clear_sqe(uint32_t seq)
     {
         if (_respondlist[i].seq == seq)
         {
-            _respondlist.erase(_respondlist.begin() + i);
+            //printf("delet=seq=%d====%d\n",_respondlist[i].seq,seq);
+            _respondlist.erase(_respondlist.begin() + i);  
             break;
         }
     }
@@ -47,10 +44,9 @@ void APP::hearbeat_loop()
     w.seq = hearbeat.seq;
     _respondlist.push_back(w);
     //printf("%d\n", w.seq);
-
     for (size_t j = 0; j < 3; j++)
     {
-        _msg->sendData(SM_ip.c_str(),
+        _msg->sendData("127.0.0.1",
                        StateMachine_port,
                        ID_Sensor_uwb,
                        INS_LIST::INS_HARBEAT,
@@ -58,14 +54,14 @@ void APP::hearbeat_loop()
                        hearbeat);
         for (size_t i = 0; i < 50; i++)
         {
+            Sleep(1);
             if (code != -1)
             {
                 clear_sqe(w.seq);
-                Sleep(4);
+                Sleep(50);
                 cnt = 0;
                 return;
             }
-            Sleep(1);
         }
         //printf("%d retry %d times,\n", w.seq, j + 1);
     }

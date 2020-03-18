@@ -2,7 +2,7 @@
  * @Description: 状态机节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-17 12:01:26
+ * @LastEditTime: 2020-03-18 09:28:13
  * @LastEditors: Yaodecheng
  **/
 #include "APP/app.h"
@@ -48,7 +48,7 @@ int main()
   
 
     
-  while (1)
+  while (0)
   {
     L.lock();
     //double t;

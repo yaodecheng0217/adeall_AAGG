@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-17 11:49:58
+ * @LastEditTime: 2020-03-18 16:50:28
  * @LastEditors: Yaodecheng
  */
 /*
@@ -66,6 +66,7 @@ private:
         uint32_t seq;
         int *code;
     };
+    MutexLock reslistLock;
     std::vector<RES> _respondlist;
     void clear_sqe(uint32_t seq);
     void setCode(int ack_code, uint32_t seq);

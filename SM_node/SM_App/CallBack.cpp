@@ -59,8 +59,8 @@ void APP::_Callback_Set(ReturnFrameData in)
         _Send::TYPE_SET_DOUBLE_DATA r;
         Decode_StructSerialize(&r, in._databuff);
         int code = set_ControlValue(r.data.type, r.data.value);
-        //printf("ack code=%d\n",code);
-        Set_ACK(in.ip, in.port, code, r.seq);
+        printf("code%d   %d \n",code,r.seq);
+        //Set_ACK(in.ip, in.port, code, r.seq);
     }
     break;
     default:
@@ -90,9 +90,8 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
     {
         _Send::TYPE_UWB_HEARBEAT_DATA xx;
         Decode_StructSerialize(&xx, in._databuff);
-
-        AddNodeList(xx.handle, in.ip, in.port);
         SensorRsp(in.ip, in.port, xx.seq);
+        AddNodeList(xx.handle, in.ip, in.port);  
         update(xx.handle, &xx.data);
     }
     break;
@@ -100,9 +99,8 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
     {
         _Send::TYPE_ETV_DRIVER_HEARBEAT_DATA xx;
         Decode_StructSerialize(&xx, in._databuff);
-
-        AddNodeList(xx.handle, in.ip, in.port);
         SensorRsp(in.ip, in.port, xx.seq);
+        AddNodeList(xx.handle, in.ip, in.port);
         update(xx.handle, &xx.data);
     }
     break;

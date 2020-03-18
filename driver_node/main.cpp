@@ -2,17 +2,17 @@
  * @Description: 传感器节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-15 12:06:33
+ * @LastEditTime: 2020-03-18 15:24:36
  * @LastEditors: Yaodecheng
  **/
 #include "DriverApp/app.h"
 #include "sleep.h"
 void Callback_outdata(ReturnFrameData in);
 msgpa::ProtocolAnalysis msgtest(Callback_outdata);
-APP app(&msgtest, 1);
+APP app(&msgtest, 12);
 int main()
 {
-    msgtest.init(Driver_port);
+    msgtest.init(9999);
     app.run();
     while (1)
     {

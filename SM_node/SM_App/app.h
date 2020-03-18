@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-17 10:07:12
+ * @LastEditTime: 2020-03-18 17:36:05
  * @LastEditors: Yaodecheng
  */
 /*
@@ -26,7 +26,7 @@ using namespace adeall;
 struct Node_INFO
 {
     DRIVER_HANDLE handle;
-    char *ip;
+    std::string ip;
     int port;
     void *data;
     time_t timestamp;
@@ -49,15 +49,18 @@ private:
     DRIVER_HANDLE StateMachine = {"StateMachine", 1};
     uint32_t _seq = 0;
     uint8_t timeout = 100;
-
+    MutexLock info_lock;
     std::vector<Node_INFO> _NodeList;
+    MutexLock uwb_lock;
     std::list<UWB_D> _uwbdata;
+    MutexLock dri_lock;
     std::list<DRIVER_D> _driverdata;
     struct RES
     {
         uint32_t seq;
         int *code;
     };
+     MutexLock rslist_lock;
     std::vector<RES> _respondlist;
     void clear_sqe(uint32_t seq);
     void setCode(uint32_t ack, uint32_t seq);
@@ -80,7 +83,7 @@ private:
     void ClearUWBData(uint8_t id);
     void *ETV_DriverOnlineChack();
     void *UWB_DriverOnlineChack();
-    int sendToDriver(uint8_t type, double value);
+    int sendToDriver(const char * ip,int port,uint8_t type, double value);
 
 public:
     //设置油门值,取值范围(1，-1)

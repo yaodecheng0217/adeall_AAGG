@@ -40,38 +40,36 @@ void APP::update(DRIVER_HANDLE handle, void *data)
 }
 void APP::TimeUpdate()
 {
+    ScopeLocker lock(&info_lock);
     size_t size = _NodeList.size();
-    size_t j = 0;
     for (size_t i = 0; i < size; i++)
     {
-        //printf("*--------------------------------------------------------------------------------------------%d\n",_SensorList[i - j].onlinecnt);
-        if (_NodeList[i - j].onlinecnt++ > 10)
+        //printf("*--------------------------------------------------------------------------------------------%d\n",_NodeList[i].onlinecnt);
+        if (_NodeList[i].onlinecnt++ > 10)
         {
-            size_t cnt = i - j;
-            printf("%s %d sensor die!\n", _NodeList[cnt].handle.driver_name.c_str(), _NodeList[cnt].handle.driver_id);
-            switch (_NodeList[cnt].handle.datatype)
+            printf("%s %d sensor die!\n", _NodeList[i].handle.driver_name.c_str(), _NodeList[i].handle.driver_id);
+            switch (_NodeList[i].handle.datatype)
             {
             case DATA_LIST::LOCATION:
-            ClearUWBData(_NodeList[cnt].handle.driver_id);
+            ClearUWBData(_NodeList[i].handle.driver_id);
             break;
             case DATA_LIST::ETV_DriverState:
-            ClearDriverData(_NodeList[cnt].handle.driver_id);
+            ClearDriverData(_NodeList[i].handle.driver_id);
             break;
 
             default:
                 break;
             }
-            _NodeList.erase(_NodeList.begin() + cnt);
-            j++;
+            _NodeList.erase(_NodeList.begin() + i);
         }
     }
 }
 void APP::AddNodeList(DRIVER_HANDLE handle,char * ip,int port)
 {
-    static MutexLock LLL;
+    ScopeLocker lock(&info_lock);
     if (GetNodeData(handle) == NULL)
     {
-        ScopeLocker lock(&LLL);
+        
         Node_INFO x;
         x.handle = handle;
         x.ip=ip;
@@ -103,7 +101,7 @@ void APP::AddNodeList(DRIVER_HANDLE handle,char * ip,int port)
 }
 void APP::print_Node_INOF(Node_INFO info)
 {
-    printf("name=%s driver_id=%d type=%d  %s  %d\n", info.handle.driver_name.c_str(), info.handle.driver_id, info.handle.datatype,info.ip,info.port);
+    printf("name=%s driver_id=%d type=%d  %s  %d\n", info.handle.driver_name.c_str(), info.handle.driver_id, info.handle.datatype,info.ip.c_str(),info.port);
     switch (info.handle.datatype)
     {
     case DATA_LIST::LOCATION:

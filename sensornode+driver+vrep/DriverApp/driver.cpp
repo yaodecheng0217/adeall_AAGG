@@ -58,11 +58,11 @@ void DRIVER::hearbeat_loop()
             if (code != -1)
             {
                 clear_sqe(w.seq);
-                Sleep(4);
+                Sleep(50);
                 cnt = 0;
                 return;
             }
-            Sleep(10);
+            Sleep(1);
         }
         //printf("%d retry %d times,\n", w.seq, j + 1);
     }
@@ -100,7 +100,6 @@ void DRIVER::_Callback(ReturnFrameData in)
         _Send::TYPE_SET_DOUBLE_DATA r;
         Decode_StructSerialize(&r, in._databuff);
         int code = setDoubleValue(r.data.type, r.data.value);
-        printf("------#%d\n",code);
         set_ACK_send(in.ip, in.port, code, r.seq);
     }
     break;
@@ -145,7 +144,7 @@ int DRIVER::setDoubleValue(uint8_t type, double value)
     {
     case _data::DATA_TYPE_LIST::Type_AcceleratorValue:
         _driver_state_data.AcceleratorValue = value;
-        vr->Set_Acc_motor(value);
+        vr->Set_Acc_motor(-value);
         break;
     case _data::DATA_TYPE_LIST::Type_BrakeValue:
         _driver_state_data.BrakeValue = value;

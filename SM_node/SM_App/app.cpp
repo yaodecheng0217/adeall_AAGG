@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:25
- * @LastEditTime: 2020-03-16 16:28:00
+ * @LastEditTime: 2020-03-18 18:08:07
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -29,6 +29,7 @@ void APP::print_Node_List()
 }
 void APP::setCode(uint32_t ack, uint32_t seq)
 {
+    ScopeLocker K(&rslist_lock);
     size_t count = _respondlist.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -58,22 +59,19 @@ void APP::SensorRsp(const char *ip, int prot, uint32_t seq)
 void *APP::GetNodeData(DRIVER_HANDLE handle)
 {
     size_t cnt = _NodeList.size();
-
     for (size_t i = 0; i < cnt; i++)
     {
         if (_NodeList[i].handle.driver_name == handle.driver_name && _NodeList[i].handle.driver_id == handle.driver_id)
         {
-            //printf("finded is %s\n", handle.driver_name.c_str());
-            //print_Sensor_INOF(x);
             return &_NodeList[i];
         }
     }
-
     return NULL;
 }
 
 void APP::ClearUWBData(uint8_t id)
 {
+    ScopeLocker K(&uwb_lock);
     std::list<UWB_D>::iterator iter;
     for (iter = _uwbdata.begin(); iter != _uwbdata.end(); iter++)
     {
@@ -85,6 +83,7 @@ void APP::ClearUWBData(uint8_t id)
 }
 void APP::ClearDriverData(uint8_t id)
 {
+    ScopeLocker K(&dri_lock);
     std::list<DRIVER_D>::iterator iter;
     for (iter = _driverdata.begin(); iter != _driverdata.end(); iter++)
     {
@@ -97,6 +96,7 @@ void APP::ClearDriverData(uint8_t id)
 
 void APP::clear_sqe(uint32_t seq)
 {
+    ScopeLocker K(&rslist_lock);
     size_t c = _respondlist.size();
     for (size_t i = 0; i < c; i++)
     {

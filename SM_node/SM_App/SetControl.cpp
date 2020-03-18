@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-15 17:54:06
- * @LastEditTime: 2020-03-16 18:56:42
+ * @LastEditTime: 2020-03-18 14:45:09
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -9,6 +9,7 @@
 using namespace _data;
 void *APP::ETV_DriverOnlineChack()
 {
+    ScopeLocker K(&info_lock);
     size_t cnt = _NodeList.size();
     for (size_t i = 0; i < cnt; i++)
     {
@@ -21,6 +22,7 @@ void *APP::ETV_DriverOnlineChack()
 }
 void *APP::UWB_DriverOnlineChack()
 {
+    ScopeLocker K(&info_lock);
     size_t cnt = _NodeList.size();
     for (size_t i = 0; i < cnt; i++)
     {
@@ -31,7 +33,7 @@ void *APP::UWB_DriverOnlineChack()
     }
     return NULL;
 }
-int APP::sendToDriver(uint8_t type, double value)
+int APP::sendToDriver(const char * ip,int port,uint8_t type, double value)
 {
     timeval tv;
     gettimeofday(&tv, NULL);
@@ -54,8 +56,8 @@ int APP::sendToDriver(uint8_t type, double value)
 
     for (size_t j = 0; j < 3; j++)
     {
-        _msg->sendData("127.0.0.1",
-                       PORT_LIST::Driver_port,
+        _msg->sendData(ip,
+                       port,
                        SOURCE_ID_LIST::ID_StateMachine,
                        INS_LIST::INS_SET,
                        CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA,
@@ -85,12 +87,13 @@ int APP::SetAcceleratorValue(double value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
+        Node_INFO *handle=(Node_INFO *)driver;  
+        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
         if (info.AUTO == 0)
         {
             return InManualState;
         }
-        return sendToDriver(Type_AcceleratorValue, value);
+        return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_AcceleratorValue, value);
     }
 }
 
@@ -104,12 +107,13 @@ int APP::SetBrake(double value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
+         Node_INFO *handle=(Node_INFO *)driver;  
+        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
         if (info.AUTO == 0)
         {
             return InManualState;
         }
-        return sendToDriver(Type_BrakeValue, value);
+        return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_BrakeValue, value);
     }
 }
 
@@ -123,12 +127,13 @@ int APP::SetTurnAngle(double value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
+        Node_INFO *handle=(Node_INFO *)driver;  
+        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
         if (info.AUTO == 0)
         {
             return InManualState;
         }
-        return sendToDriver(Type_TurnAngleValue, value);
+         return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_TurnAngleValue, value);
     }
 }
 
@@ -142,7 +147,8 @@ int APP::SetLift(double value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
+        Node_INFO *handle=(Node_INFO *)driver;  
+        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
         if (info.AUTO == 0)
         {
             return InManualState;
@@ -151,7 +157,7 @@ int APP::SetLift(double value)
         {
             return ForkErr;
         }
-        return sendToDriver(Type_LiftValue, value);
+        return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_LiftValue, value);
     }
 }
 int APP::SetSide(double value)
@@ -164,7 +170,8 @@ int APP::SetSide(double value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
+        Node_INFO *handle=(Node_INFO *)driver;  
+        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
         if (info.AUTO == 0)
         {
             return InManualState;
@@ -173,7 +180,7 @@ int APP::SetSide(double value)
         {
             return ForkErr;
         }
-        return sendToDriver(Type_SideValue, value);
+         return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_SideValue, value);
     }
 }
 int APP::SetMoveForward(double value)
@@ -186,7 +193,8 @@ int APP::SetMoveForward(double value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
+         Node_INFO *handle=(Node_INFO *)driver;  
+        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
         if (info.AUTO == 0)
         {
             return InManualState;
@@ -195,7 +203,7 @@ int APP::SetMoveForward(double value)
         {
             return ForkErr;
         }
-        return sendToDriver(Type_MoveForwardValue, value);
+        return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_MoveForwardValue, value);
     }
 }
 int APP::SetTilt(double value)
@@ -208,7 +216,8 @@ int APP::SetTilt(double value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
+         Node_INFO *handle=(Node_INFO *)driver;  
+        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
         if (info.AUTO == 0)
         {
             return InManualState;
@@ -216,8 +225,8 @@ int APP::SetTilt(double value)
         if (info.MoveForwardValue != 0 || info.TiltValue != 0 || info.LiftValue != 0)
         {
             return ForkErr;
-        }
-        return sendToDriver(Type_TiltValue, value);
+        }           
+        return sendToDriver(handle->ip.c_str(),handle->port,Type_TiltValue, value);
     }
 }
 int APP::SetLedGreen(bool value)
@@ -230,8 +239,8 @@ int APP::SetLedGreen(bool value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
-        return sendToDriver(Type_LED_Green, value);
+         Node_INFO *handle=(Node_INFO *)driver;      
+        return sendToDriver(handle->ip.c_str(),handle->port,Type_LED_Green, value);
     }
 }
 int APP::SetLedRed(bool value)
@@ -244,8 +253,8 @@ int APP::SetLedRed(bool value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
-        return sendToDriver(Type_LED_Red, value);
+       Node_INFO *handle=(Node_INFO *)driver;      
+        return sendToDriver(handle->ip.c_str(),handle->port,Type_LED_Red, value);
     }
 }
 int APP::SetPacking(bool value)
@@ -258,8 +267,8 @@ int APP::SetPacking(bool value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
-        return sendToDriver(Type_Paking, value);
+       Node_INFO *handle=(Node_INFO *)driver;      
+        return sendToDriver(handle->ip.c_str(),handle->port,Type_Paking, value);
     }
 }
 int APP::SetAuto(bool value)
@@ -272,7 +281,7 @@ int APP::SetAuto(bool value)
     }
     else
     {
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
-        return sendToDriver(Type_AUTO, value);
+        Node_INFO *handle=(Node_INFO *)driver;      
+        return sendToDriver(handle->ip.c_str(),handle->port,Type_AUTO, value);
     }
 }

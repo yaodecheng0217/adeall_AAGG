@@ -40,23 +40,24 @@ int APP::GetLocationDataFunction(void *indata, void *returnvalue)
 int APP::GetData(_data::LOCATION_DATA *returnvalue, UINT timeout)
 {
     uint32_t seq = _seq++;
-    if (Send_CMD_toStateMachine(seq, _data::Type_location) == -1)
-    {
-        return ERR;
-    }
-    //加入待处理队列
     int code = -1;
     AddToRecv(seq, &code, GetLocationDataFunction, returnvalue);
+    if (Send_CMD_toStateMachine(seq, _data::Type_location) == -1)
+    {
+        clearReCallSeq(seq);
+        return ERR;      
+    }
     //超时等待
     while (timeout--)
     {
+         Sleep(1);
         if (code != -1)
         {
             return code;
-        }
-        Sleep(1);
+        } 
     }
     clearReCallSeq(seq);
+    printf("get data timeout\n");
     return TIMEOUT;
 }
 int APP::GetData(int type, double *returnvalue, UINT timeout)
@@ -71,19 +72,19 @@ int APP::GetData(int type, double *returnvalue, UINT timeout)
     AddToRecv(seq, &code, GetDoubleDataFunction, returnvalue);
     //超时等待
     while (timeout--)
-    {
+    {Sleep(1);
         if (code != -1)
         {
             return code;
         }
-        Sleep(1);
+        
     }
     clearReCallSeq(seq);
     return TIMEOUT;
 }
 void APP::clearReCallSeq(uint32_t seq)
 {
-    RecallLock.lock();
+    ScopeLocker K(&RecallLock);
     size_t s = _Recall.size();
     for (size_t i = 0; i < s; i++)
     {
@@ -93,13 +94,11 @@ void APP::clearReCallSeq(uint32_t seq)
             break;
         }
     }
-    //printf("delet\n");
-    RecallLock.unlock();
 }
 
 void APP::reaction_ACK(void *r, uint16_t seq)
 {
-    RecallLock.lock();
+     ScopeLocker K(&RecallLock);
     size_t l = _Recall.size();
     for (size_t i = 0; i < l; i++)
     {
@@ -108,11 +107,10 @@ void APP::reaction_ACK(void *r, uint16_t seq)
         {
             *_Recall[i].flag = _Recall[i].fun(r, _Recall[i].out);
             _Recall.erase(_Recall.begin() + i);
-            RecallLock.unlock();
             return;
         }
     }
-    RecallLock.unlock();
+
 }
 
 int APP::SendContrl(uint16_t type, double value, int timeout)
@@ -125,6 +123,13 @@ int APP::SendContrl(uint16_t type, double value, int timeout)
     setdata.data.value = value;
     setdata.seq = _seq++;
     setdata.timestamp = (time_t)tv.tv_sec * (time_t)1000000 + (time_t)tv.tv_usec;
+     
+    _msg->sendData("127.0.0.1", PORT_LIST::StateMachine_port,
+                       SOURCE_ID_LIST::ID_Controller, INS_LIST::INS_SET,
+                       CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA, setdata);
+
+                       return OK;//==========================todo
+
 
     // wait for ack
     int code = -1;
@@ -148,7 +153,6 @@ int APP::SendContrl(uint16_t type, double value, int timeout)
         }
         // printf("%d retry %d times,\n", w.seq, j + 1);
     }
-
     printf("time out ------------------------%d\n", w.seq);
     clear_sqe(w.seq);
     return TIMEOUT;
@@ -164,7 +168,7 @@ int APP::setControl(uint8_t mode, double value, uint16_t timeout,
     else
     {
         double v;
-        int code = GetData(type, &v, 10);
+        int code = GetData(type, &v, 15);
         if (code == OK)
         {
             code = SendContrl(type, v + value, timeout);
