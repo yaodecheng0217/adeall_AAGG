@@ -13,8 +13,8 @@
             "preLaunchTask": "linux",
             },
             "windows": {
-                "program": "${workspaceFolder}/build/sensor_node.exe",
-                "miDebuggerPath": "C:/Program Files (x86)/mingw-w64/3H3mingw.32Bit/i686-8.1.0-release-posix-sjlj-rt_v6-rev0/mingw32/bin/gdb.exe", // 调试器路径，Windows下后缀不能省略，Linux下则去掉
+                "program": "${workspaceFolder}/build/sensor_nodesensor_node.exe",
+                "miDebuggerPath": "C:/Program Files (x86)/mingw-w64/i686-8.1.0-release-posix-sjlj-rt_v6-rev0/mingw32/bin/gdb.exe", // 调试器路径，Windows下后缀不能省略，Linux下则去掉
                 //"preLaunchTask": "echo",
             },
             "args": [], // 程序调试时传递给程序的命令行参数，一般设为空即可
