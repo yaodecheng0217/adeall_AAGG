@@ -5,7 +5,8 @@
  */
 #include "app.h"
 void APP::_Callback(ReturnFrameData in)
-{
+{static int x=0;
+    //printf("*");
     switch (in.ins)
     {
     case INS_ACK:
@@ -56,6 +57,7 @@ void APP::_Callback_ACK(ReturnFrameData in)
     {
     case CMD_ACK_LOCATION_DATA:
     {
+       // printf("ack loc ");
         _Send::TYPE_ACK_LOCATION_DATA r;
         Decode_StructSerialize(&r, in._databuff);
         reaction_ACK(&r,r.seq);
@@ -63,6 +65,7 @@ void APP::_Callback_ACK(ReturnFrameData in)
     break;
     case CMD_ACK_ONE_DATA:
     {
+        //printf("ack double ");
          _Send::TYPE_ACK_ONE_DATA r;
         Decode_StructSerialize(&r, in._databuff);
         reaction_ACK(&r,r.seq);
@@ -70,6 +73,7 @@ void APP::_Callback_ACK(ReturnFrameData in)
     break;
     case CMD_ACK_SET:
     {
+        //printf("ack set ");
        _Send::TYPE_SET_ACK r;
         Decode_StructSerialize(&r, in._databuff);
         setCode(r.code,r.seq);

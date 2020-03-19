@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-18 17:36:05
+ * @LastEditTime: 2020-03-19 17:07:30
  * @LastEditors: Yaodecheng
  */
 /*
@@ -34,12 +34,12 @@ struct Node_INFO
 };
 struct UWB_D
 {
-    uint8_t id;
+    uint32_t id;
     _data::LOCATION_DATA data;
 };
 struct DRIVER_D
 {
-    uint8_t id;
+    uint32_t id;
     _data::ETV_DRIVER_STATE_DATA data;
 };
 class APP
@@ -52,15 +52,15 @@ private:
     MutexLock info_lock;
     std::vector<Node_INFO> _NodeList;
     MutexLock uwb_lock;
-    std::list<UWB_D> _uwbdata;
+    std::vector<UWB_D> _uwbdata;
     MutexLock dri_lock;
-    std::list<DRIVER_D> _driverdata;
+    std::vector<DRIVER_D> _driverdata;
     struct RES
     {
         uint32_t seq;
         int *code;
     };
-     MutexLock rslist_lock;
+    MutexLock rslist_lock;
     std::vector<RES> _respondlist;
     void clear_sqe(uint32_t seq);
     void setCode(uint32_t ack, uint32_t seq);
@@ -79,11 +79,15 @@ private:
     void update(DRIVER_HANDLE handle, void *data);
     void TimeUpdate();
     static void *loop10ms(void *);
-    void ClearDriverData(uint8_t id);
-    void ClearUWBData(uint8_t id);
+    void ClearDriverData(uint32_t id);
+    void ClearUWBData(uint32_t id);
+    bool GetDataDetail(uint32_t driver_id, _data::LOCATION_DATA *data);
+    bool GetDataDetail(uint32_t driver_id, _data::ETV_DRIVER_STATE_DATA *data);
+    bool UpdateDataDetail(uint32_t driver_id, _data::LOCATION_DATA data);
+    bool UpdateDataDetail(uint32_t driver_id, _data::ETV_DRIVER_STATE_DATA data);
     void *ETV_DriverOnlineChack();
     void *UWB_DriverOnlineChack();
-    int sendToDriver(const char * ip,int port,uint8_t type, double value);
+    int sendToDriver(const char *ip, int port, uint8_t type, double value);
 
 public:
     //设置油门值,取值范围(1，-1)
@@ -108,16 +112,17 @@ public:
     int SetPacking(bool value);
     //设置自动
     int SetAuto(bool value);
+    void printf__RecallList();
 
 private:
-//=========================api==============
-void Get_Information(const char * ip,int port,uint16_t type,uint32_t seq);
-int set_ControlValue( uint16_t type, double value);
-void Set_ACK(const char * ip,int port,int code,uint32_t seq);
-void ACK_One_data(const char *ip, int port, uint16_t type, uint32_t seq);
-void _Callback_Get(ReturnFrameData in);
-void _Callback_Set(ReturnFrameData in);
-void _Callback_ACK(ReturnFrameData in);
-void _Callback_HEARBEAT(ReturnFrameData in);
+    //=========================api==============
+    void Get_Information(const char *ip, int port, uint16_t type, uint32_t seq);
+    int set_ControlValue(uint16_t type, double value);
+    void Set_ACK(const char *ip, int port, int code, uint32_t seq);
+    void ACK_One_data(const char *ip, int port, uint16_t type, uint32_t seq);
+    void _Callback_Get(ReturnFrameData in);
+    void _Callback_Set(ReturnFrameData in);
+    void _Callback_ACK(ReturnFrameData in);
+    void _Callback_HEARBEAT(ReturnFrameData in);
 };
 #endif

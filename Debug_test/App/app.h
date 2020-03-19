@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-18 16:50:28
+ * @LastEditTime: 2020-03-19 18:17:52
  * @LastEditors: Yaodecheng
  */
 /*
@@ -88,9 +88,12 @@ private:
     void _Callback_Set(ReturnFrameData in);
     void _Callback_ACK(ReturnFrameData in);
     void _Callback_HEARBEAT(ReturnFrameData in);
-    void reaction_ACK(void *, uint16_t seq);
-
+    void reaction_ACK(void *, uint32_t seq);
+    
+    //
+   
 public:
+ void printf__RecallList();
     //==========================GetData==API================================
     //读取数据
     int GetData(_data::LOCATION_DATA *returnvalue, UINT timeout);

@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 10:55:58
- * @LastEditTime: 2020-03-18 11:14:17
+ * @LastEditTime: 2020-03-19 13:53:05
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence
@@ -19,15 +19,16 @@
 class pathControler
 {
 private:
-   APP *driver;
+  
 public:
-    pathControler( APP *dr);
+ APP *driver;
+    pathControler(APP *dr);
     ~pathControler();
 void control_loop();
 private:
     MutexLock time_50ms_Lock;
     static void *timer_50ms(void *);
-    
+    static void *timer_1000ms(void *);
     int angle_control_cycle(PostionData sdata);
 };
 

@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-18 11:01:49
- * @LastEditTime: 2020-03-18 18:55:59
+ * @LastEditTime: 2020-03-19 18:50:13
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -28,7 +28,7 @@ double Calculation_Angle(double Angie_Error, double Position_Error)
 }
 double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double speed, double L)
 {
-    double dis = 180;
+    double dis = 160;
     double kkk = 150;
 
     double dis2 = 100;
@@ -44,10 +44,11 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
             else
                 f = Calculation_Angle(Angle_Error - pi / 2, Position_Error);
         }
-        else if (abs(Angle_Error) > 60 / Radian_conversion)
+        else if (abs(Angle_Error) > 20 / Radian_conversion)
             f = Calculation_Angle(Angle_Error, Position_Error);
         else
-            f = Calculation_Angle(Angle_Error + atan(Position_Error/20) , Position_Error);
+            //f = Calculation_Angle(Angle_Error, Position_Error);
+            f = Calculation_Angle(Angle_Error + atan(Position_Error/100) , Position_Error);
     }
     else
     {

@@ -45,6 +45,7 @@ int APP::GetData(_data::LOCATION_DATA *returnvalue, UINT timeout)
     if (Send_CMD_toStateMachine(seq, _data::Type_location) == -1)
     {
         clearReCallSeq(seq);
+        printf(")");
         return ERR;      
     }
     //超时等待
@@ -57,7 +58,8 @@ int APP::GetData(_data::LOCATION_DATA *returnvalue, UINT timeout)
         } 
     }
     clearReCallSeq(seq);
-    printf("get data timeout\n");
+    //printf("get data timeout\n");
+    printf(".");
     return TIMEOUT;
 }
 int APP::GetData(int type, double *returnvalue, UINT timeout)
@@ -96,13 +98,13 @@ void APP::clearReCallSeq(uint32_t seq)
     }
 }
 
-void APP::reaction_ACK(void *r, uint16_t seq)
+void APP::reaction_ACK(void *r, uint32_t seq)
 {
-     ScopeLocker K(&RecallLock);
+   ScopeLocker K(&RecallLock);
     size_t l = _Recall.size();
     for (size_t i = 0; i < l; i++)
     {
-         //printf("=====%d===%d===\n",_Recall[i].seq,seq);
+        // printf("=====%d===%d===\n",_Recall[i].seq,seq);
         if (_Recall[i].seq == seq)
         {
             *_Recall[i].flag = _Recall[i].fun(r, _Recall[i].out);
@@ -112,7 +114,20 @@ void APP::reaction_ACK(void *r, uint16_t seq)
     }
 
 }
-
+void APP::printf__RecallList()
+{
+    ScopeLocker K(&RecallLock);
+    size_t l = _Recall.size();
+     printf("=========>>>\n");
+    for (size_t i = 0; i < l; i++)
+    {
+         printf("     =%d==%d===\n",i,_Recall[i].seq);
+    }
+    for (size_t i = 0; i < _respondlist.size(); i++)
+    {
+         printf("     -%d--%d--\n",i,_Recall[i].seq);
+    }
+}
 int APP::SendContrl(uint16_t type, double value, int timeout)
 {
     timeval tv;

@@ -40,15 +40,22 @@ void APP::ACK_One_data(const char *ip, int port, uint16_t type, uint32_t seq)
         _Send::TYPE_ACK_LOCATION_DATA aa;
         if (driver == NULL)
         {
-            printf("driver is not find!\n");
+            //printf("driver is not find!\n");
             code = DriverIsNull;
         }
         else
         {
-            _data::LOCATION_DATA info = *(_data::LOCATION_DATA *)(*(Node_INFO *)driver).data;
-            timestamp = (*(Node_INFO *)driver).timestamp;
-            aa.data = info;
-            code = OK;
+            _data::LOCATION_DATA info;
+            if (GetDataDetail(((Node_INFO *)driver)->handle.driver_id, &info))
+            {
+                timestamp = (*(Node_INFO *)driver).timestamp;
+                aa.data = info;
+                code = OK;
+            }
+            else
+            {
+                code = ERR;
+            }
         }
         aa.handle = StateMachine;
         aa.code = code;
@@ -64,56 +71,63 @@ void APP::ACK_One_data(const char *ip, int port, uint16_t type, uint32_t seq)
     }
     else
     {
-
         void *driver = ETV_DriverOnlineChack();
         if (driver == NULL)
         {
-            printf("driver is not find!\n");
+            //printf("driver is not find!\n");
             code = DriverIsNull;
         }
         else
         {
-            _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)(*(Node_INFO *)driver).data;
-            switch (type)
+
+           _data::ETV_DRIVER_STATE_DATA info;
+            if (GetDataDetail(((Node_INFO *)driver)->handle.driver_id, &info))
             {
-            case DATA_TYPE_LIST::Type_AcceleratorValue:
-                value = info.AcceleratorValue;
-                break;
-            case DATA_TYPE_LIST::Type_AUTO:
-                value = info.AUTO;
-                break;
-            case DATA_TYPE_LIST::Type_BrakeValue:
-                value = info.BrakeValue;
-                break;
-            case DATA_TYPE_LIST::Type_LED_Green:
-                value = info.LED_Green;
-                break;
-            case DATA_TYPE_LIST::Type_LED_Red:
-                value = info.LED_Red;
-                break;
-            case DATA_TYPE_LIST::Type_LiftValue:
-                value = info.LiftValue;
-                break;
-            case DATA_TYPE_LIST::Type_MoveForwardValue:
-                value = info.MoveForwardValue;
-                break;
-            case DATA_TYPE_LIST::Type_Paking:
-                value = info.Paking;
-                break;
-            case DATA_TYPE_LIST::Type_SideValue:
-                value = info.SideValue;
-                break;
-            case DATA_TYPE_LIST::Type_TiltValue:
-                value = info.TiltValue;
-                break;
-            case DATA_TYPE_LIST::Type_TurnAngleValue:
-                value = info.TurnAngleValue;
-                break;
-            default:
-                break;
+                switch (type)
+                    {
+                    case DATA_TYPE_LIST::Type_AcceleratorValue:
+                        value = info.AcceleratorValue;
+                        break;
+                    case DATA_TYPE_LIST::Type_AUTO:
+                        value = info.AUTO;
+                        break;
+                    case DATA_TYPE_LIST::Type_BrakeValue:
+                        value = info.BrakeValue;
+                        break;
+                    case DATA_TYPE_LIST::Type_LED_Green:
+                        value = info.LED_Green;
+                        break;
+                    case DATA_TYPE_LIST::Type_LED_Red:
+                        value = info.LED_Red;
+                        break;
+                    case DATA_TYPE_LIST::Type_LiftValue:
+                        value = info.LiftValue;
+                        break;
+                    case DATA_TYPE_LIST::Type_MoveForwardValue:
+                        value = info.MoveForwardValue;
+                        break;
+                    case DATA_TYPE_LIST::Type_Paking:
+                        value = info.Paking;
+                        break;
+                    case DATA_TYPE_LIST::Type_SideValue:
+                        value = info.SideValue;
+                        break;
+                    case DATA_TYPE_LIST::Type_TiltValue:
+                        value = info.TiltValue;
+                        break;
+                    case DATA_TYPE_LIST::Type_TurnAngleValue:
+                        value = info.TurnAngleValue;
+                        break;
+                    default:
+                        break;
+                    }
+                    code = OK;
+                    timestamp = (*(Node_INFO *)driver).timestamp;
             }
-            code = OK;
-            timestamp = (*(Node_INFO *)driver).timestamp;
+            else
+            {
+                code = ERR;
+            }       
         }
         //返回数据
         _Send::TYPE_ACK_ONE_DATA aa;
