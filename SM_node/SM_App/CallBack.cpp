@@ -59,8 +59,8 @@ void APP::_Callback_Set(ReturnFrameData in)
         _Send::TYPE_SET_DOUBLE_DATA r;
         Decode_StructSerialize(&r, in._databuff);
         int code = set_ControlValue(r.data.type, r.data.value);
-        printf("code%d   %d \n",code,r.seq);
-        //Set_ACK(in.ip, in.port, code, r.seq);
+        Set_ACK(in.ip, in.port, code, r.seq);
+        //printf("driver set ack to contrl %d   %d \n",code,r.seq);
     }
     break;
     default:
@@ -76,6 +76,7 @@ void APP::_Callback_ACK(ReturnFrameData in)
         _Send::TYPE_SET_ACK r;
         Decode_StructSerialize(&r, in._databuff);
         setCode(r.code, r.seq);
+        //printf("driver set ack to SM %d   %d \n",r.code,r.seq);
     }
     break;
     default:

@@ -23,9 +23,8 @@ int main()
     app.run();
     msgtest2.init(Driver_port);
     driver.run();
-    app._data.x = 1.11111;
     vr.Set_Turn_motor(90/57.3);
-    vr.Set_Acc_motor(1);
+    vr.Set_Acc_motor(0.1);
     while (1)
     {
         vrep_data d = vr.GetAllData();

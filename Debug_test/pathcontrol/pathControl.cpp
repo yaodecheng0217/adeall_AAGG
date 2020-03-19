@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-03-18 18:49:26
+ * @LastEditTime: 2020-03-19 18:41:15
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -19,10 +19,19 @@ void *pathControler::timer_50ms(void *t)
 		Sleep(50);
 	}
 }
+void *pathControler::timer_1000ms(void *t)
+{
+	pathControler *p = (pathControler *)t;
+	while (true)
+	{   //p->driver->printf__RecallList();
+		Sleep(1000);
+	}
+}
 
 pathControler::pathControler(APP *dr) : driver(dr)
 {
 	thread_base timer1(timer_50ms, this);
+	thread_base timer2(timer_1000ms, this);
 }
 
 pathControler::~pathControler()
@@ -88,8 +97,8 @@ int pathControler::angle_control_cycle(PostionData p)
 		s.y = uwb.y;
 		s.yaw = uwb.yaw;
 
-		double Front_x = uwb.x - 200 * cos(uwb.yaw);
-		double Front_y = uwb.y - 200 * sin(uwb.yaw);
+		double Front_x = uwb.x - 140 * cos(uwb.yaw);
+		double Front_y = uwb.y - 140 * sin(uwb.yaw);
 
 		s.x = Front_x;
 		s.y = Front_y;
@@ -101,7 +110,7 @@ int pathControler::angle_control_cycle(PostionData p)
 		double f = 0;
      
 		f = CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, 60, Position_Error_B);
-		printf("---->%d %f %f %f  %f\n", cnt++, Position_Error, Angle_Error * 57.3, f * 57.3, target_dis);
+		printf("---->%f %f %f %f  %f\n", Position_Error_B, Position_Error, Angle_Error * 57.3, f * 57.3, target_dis);
 		driver->Set_Turn_motor(driver->mode_abs, f, 15);
 		if (target_dis < 0)
 		{
@@ -110,7 +119,7 @@ int pathControler::angle_control_cycle(PostionData p)
 		}
 		else
 		{
-			driver->Set_Acc_motor(driver->mode_abs, 1, 15);
+			driver->Set_Acc_motor(driver->mode_abs, 1.5, 15);
 		}
 	}
 	else

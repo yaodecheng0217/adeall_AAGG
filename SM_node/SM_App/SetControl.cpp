@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-15 17:54:06
- * @LastEditTime: 2020-03-18 14:45:09
+ * @LastEditTime: 2020-03-19 16:03:04
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -33,15 +33,15 @@ void *APP::UWB_DriverOnlineChack()
     }
     return NULL;
 }
-int APP::sendToDriver(const char * ip,int port,uint8_t type, double value)
+int APP::sendToDriver(const char *ip, int port, uint8_t type, double value)
 {
     timeval tv;
     gettimeofday(&tv, NULL);
     _Send::TYPE_SET_DOUBLE_DATA setdata;
     setdata.handle = StateMachine;
     SET_DOUBLE_DATA data;
-    data.type=type;
-    data.value=value;
+    data.type = type;
+    data.value = value;
     setdata.data = data;
     setdata.seq = _seq++;
     setdata.timestamp = (time_t)tv.tv_sec * (time_t)1000000 + (time_t)tv.tv_usec;
@@ -51,7 +51,9 @@ int APP::sendToDriver(const char * ip,int port,uint8_t type, double value)
     RES w;
     w.code = &code;
     w.seq = setdata.seq;
+    rslist_lock.lock();
     _respondlist.push_back(w);
+    rslist_lock.unlock();
     //printf("%d\n", w.seq);
 
     for (size_t j = 0; j < 3; j++)
@@ -73,7 +75,7 @@ int APP::sendToDriver(const char * ip,int port,uint8_t type, double value)
         }
         //printf("%d retry %d times,\n", w.seq, j + 1);
     }
-    printf("time out ------------------------%d\n", w.seq);
+    //printf("time out ------------------------%d\n", w.seq);
     clear_sqe(w.seq);
     return TIMEOUT;
 }
@@ -87,13 +89,20 @@ int APP::SetAcceleratorValue(double value)
     }
     else
     {
-        Node_INFO *handle=(Node_INFO *)driver;  
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
-        if (info.AUTO == 0)
+        Node_INFO *handle = (Node_INFO *)driver;
+        for (size_t i = 0; i < _driverdata.size(); i++)
         {
-            return InManualState;
+            if (_driverdata[i].id == handle->handle.driver_id)
+            {
+                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                if (info.AUTO == 0)
+                {
+                    return InManualState;
+                }
+                return sendToDriver((*(Node_INFO *)driver).ip.c_str(), (*(Node_INFO *)driver).port, Type_AcceleratorValue, value);
+            }
         }
-        return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_AcceleratorValue, value);
+        return ERR;
     }
 }
 
@@ -107,13 +116,20 @@ int APP::SetBrake(double value)
     }
     else
     {
-         Node_INFO *handle=(Node_INFO *)driver;  
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
-        if (info.AUTO == 0)
+        Node_INFO *handle = (Node_INFO *)driver;
+        for (size_t i = 0; i < _driverdata.size(); i++)
         {
-            return InManualState;
+            if (_driverdata[i].id == handle->handle.driver_id)
+            {
+                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                if (info.AUTO == 0)
+                {
+                    return InManualState;
+                }
+                return sendToDriver((*(Node_INFO *)driver).ip.c_str(), (*(Node_INFO *)driver).port, Type_BrakeValue, value);
+            }
         }
-        return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_BrakeValue, value);
+        return ERR;
     }
 }
 
@@ -122,18 +138,24 @@ int APP::SetTurnAngle(double value)
     void *driver = ETV_DriverOnlineChack();
     if (driver == NULL)
     {
-        printf("etv_driver is not find!\n");
+        //printf("etv_driver is not find!\n");
         return DriverIsNull;
     }
     else
     {
-        Node_INFO *handle=(Node_INFO *)driver;  
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
-        if (info.AUTO == 0)
+        Node_INFO *handle = (Node_INFO *)driver;
+        for (size_t i = 0; i < _driverdata.size(); i++)
         {
-            return InManualState;
+            if (_driverdata[i].id == handle->handle.driver_id)
+            {
+                if (_driverdata[i].data.AUTO == 0)
+                {
+                    return InManualState;
+                }
+                return sendToDriver((*(Node_INFO *)driver).ip.c_str(), (*(Node_INFO *)driver).port, Type_TurnAngleValue, value);
+            }
         }
-         return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_TurnAngleValue, value);
+        return ERR;
     }
 }
 
@@ -142,22 +164,30 @@ int APP::SetLift(double value)
     void *driver = ETV_DriverOnlineChack();
     if (driver == NULL)
     {
-        printf("etv_driver is not find!\n");
+        //printf("etv_driver is not find!\n");
         return DriverIsNull;
     }
     else
     {
-        Node_INFO *handle=(Node_INFO *)driver;  
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
-        if (info.AUTO == 0)
+
+        Node_INFO *handle = (Node_INFO *)driver;
+        for (size_t i = 0; i < _driverdata.size(); i++)
         {
-            return InManualState;
+            if (_driverdata[i].id == handle->handle.driver_id)
+            {
+                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                if (info.AUTO == 0)
+                {
+                    return InManualState;
+                }
+                if (info.MoveForwardValue != 0 || info.TiltValue != 0 || info.SideValue != 0)
+                {
+                    return ForkErr;
+                }
+                return sendToDriver((*(Node_INFO *)driver).ip.c_str(), (*(Node_INFO *)driver).port, Type_LiftValue, value);
+            }
         }
-        if (info.MoveForwardValue != 0 || info.TiltValue != 0 || info.SideValue != 0)
-        {
-            return ForkErr;
-        }
-        return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_LiftValue, value);
+        return ERR;
     }
 }
 int APP::SetSide(double value)
@@ -165,22 +195,30 @@ int APP::SetSide(double value)
     void *driver = ETV_DriverOnlineChack();
     if (driver == NULL)
     {
-        printf("etv_driver is not find!\n");
+        //printf("etv_driver is not find!\n");
         return DriverIsNull;
     }
     else
     {
-        Node_INFO *handle=(Node_INFO *)driver;  
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
-        if (info.AUTO == 0)
+
+        Node_INFO *handle = (Node_INFO *)driver;
+        for (size_t i = 0; i < _driverdata.size(); i++)
         {
-            return InManualState;
+            if (_driverdata[i].id == handle->handle.driver_id)
+            {
+                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                if (info.AUTO == 0)
+                {
+                    return InManualState;
+                }
+                if (info.MoveForwardValue != 0 || info.TiltValue != 0 || info.LiftValue != 0)
+                {
+                    return ForkErr;
+                }
+                return sendToDriver((*(Node_INFO *)driver).ip.c_str(), (*(Node_INFO *)driver).port, Type_SideValue, value);
+            }
         }
-        if (info.MoveForwardValue != 0 || info.TiltValue != 0 || info.LiftValue != 0)
-        {
-            return ForkErr;
-        }
-         return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_SideValue, value);
+        return ERR;
     }
 }
 int APP::SetMoveForward(double value)
@@ -188,22 +226,30 @@ int APP::SetMoveForward(double value)
     void *driver = ETV_DriverOnlineChack();
     if (driver == NULL)
     {
-        printf("etv_driver is not find!\n");
+        //printf("etv_driver is not find!\n");
         return DriverIsNull;
     }
     else
     {
-         Node_INFO *handle=(Node_INFO *)driver;  
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
-        if (info.AUTO == 0)
+
+        Node_INFO *handle = (Node_INFO *)driver;
+        for (size_t i = 0; i < _driverdata.size(); i++)
         {
-            return InManualState;
+            if (_driverdata[i].id == handle->handle.driver_id)
+            {
+                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                if (info.AUTO == 0)
+                {
+                    return InManualState;
+                }
+                if (info.SideValue != 0 || info.TiltValue != 0 || info.LiftValue != 0)
+                {
+                    return ForkErr;
+                }
+                return sendToDriver((*(Node_INFO *)driver).ip.c_str(), (*(Node_INFO *)driver).port, Type_MoveForwardValue, value);
+            }
         }
-        if (info.SideValue != 0 || info.TiltValue != 0 || info.LiftValue != 0)
-        {
-            return ForkErr;
-        }
-        return sendToDriver((*(Node_INFO *)driver).ip.c_str(),(*(Node_INFO *)driver).port,Type_MoveForwardValue, value);
+        return ERR;
     }
 }
 int APP::SetTilt(double value)
@@ -211,22 +257,30 @@ int APP::SetTilt(double value)
     void *driver = ETV_DriverOnlineChack();
     if (driver == NULL)
     {
-        printf("etv_driver is not find!\n");
+        //printf("etv_driver is not find!\n");
         return DriverIsNull;
     }
     else
     {
-         Node_INFO *handle=(Node_INFO *)driver;  
-        _data::ETV_DRIVER_STATE_DATA info = *(_data::ETV_DRIVER_STATE_DATA *)handle->data;
-        if (info.AUTO == 0)
+
+        Node_INFO *handle = (Node_INFO *)driver;
+        for (size_t i = 0; i < _driverdata.size(); i++)
         {
-            return InManualState;
+            if (_driverdata[i].id == handle->handle.driver_id)
+            {
+                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                if (info.AUTO == 0)
+                {
+                    return InManualState;
+                }
+                if (info.MoveForwardValue != 0 || info.TiltValue != 0 || info.LiftValue != 0)
+                {
+                    return ForkErr;
+                }
+                return sendToDriver(handle->ip.c_str(), handle->port, Type_TiltValue, value);
+            }
         }
-        if (info.MoveForwardValue != 0 || info.TiltValue != 0 || info.LiftValue != 0)
-        {
-            return ForkErr;
-        }           
-        return sendToDriver(handle->ip.c_str(),handle->port,Type_TiltValue, value);
+        return ERR;
     }
 }
 int APP::SetLedGreen(bool value)
@@ -234,13 +288,13 @@ int APP::SetLedGreen(bool value)
     void *driver = ETV_DriverOnlineChack();
     if (driver == NULL)
     {
-        printf("etv_driver is not find!\n");
+        //printf("etv_driver is not find!\n");
         return DriverIsNull;
     }
     else
     {
-         Node_INFO *handle=(Node_INFO *)driver;      
-        return sendToDriver(handle->ip.c_str(),handle->port,Type_LED_Green, value);
+        Node_INFO *handle = (Node_INFO *)driver;
+        return sendToDriver(handle->ip.c_str(), handle->port, Type_LED_Green, value);
     }
 }
 int APP::SetLedRed(bool value)
@@ -248,13 +302,13 @@ int APP::SetLedRed(bool value)
     void *driver = ETV_DriverOnlineChack();
     if (driver == NULL)
     {
-        printf("etv_driver is not find!\n");
+        //printf("etv_driver is not find!\n");
         return DriverIsNull;
     }
     else
     {
-       Node_INFO *handle=(Node_INFO *)driver;      
-        return sendToDriver(handle->ip.c_str(),handle->port,Type_LED_Red, value);
+        Node_INFO *handle = (Node_INFO *)driver;
+        return sendToDriver(handle->ip.c_str(), handle->port, Type_LED_Red, value);
     }
 }
 int APP::SetPacking(bool value)
@@ -262,13 +316,13 @@ int APP::SetPacking(bool value)
     void *driver = ETV_DriverOnlineChack();
     if (driver == NULL)
     {
-        printf("etv_driver is not find!\n");
+        //printf("etv_driver is not find!\n");
         return DriverIsNull;
     }
     else
     {
-       Node_INFO *handle=(Node_INFO *)driver;      
-        return sendToDriver(handle->ip.c_str(),handle->port,Type_Paking, value);
+        Node_INFO *handle = (Node_INFO *)driver;
+        return sendToDriver(handle->ip.c_str(), handle->port, Type_Paking, value);
     }
 }
 int APP::SetAuto(bool value)
@@ -276,12 +330,12 @@ int APP::SetAuto(bool value)
     void *driver = ETV_DriverOnlineChack();
     if (driver == NULL)
     {
-        printf("etv_driver is not find!\n");
+        //printf("etv_driver is not find!\n");
         return DriverIsNull;
     }
     else
     {
-        Node_INFO *handle=(Node_INFO *)driver;      
-        return sendToDriver(handle->ip.c_str(),handle->port,Type_AUTO, value);
+        Node_INFO *handle = (Node_INFO *)driver;
+        return sendToDriver(handle->ip.c_str(), handle->port, Type_AUTO, value);
     }
 }

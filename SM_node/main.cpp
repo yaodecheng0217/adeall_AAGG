@@ -2,7 +2,7 @@
  * @Description: 状态机节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-18 18:08:26
+ * @LastEditTime: 2020-03-19 16:19:57
  * @LastEditors: Yaodecheng
  **/
 #include "SM_App/app.h"
@@ -19,9 +19,9 @@ int main()
     while (1)
     {
         _sleep_ms(1000);
-       //app.print_Node_List();
-
-        value=value+0.1;
+        system("cls");
+       app.print_Node_List();
+        app.printf__RecallList();
         //app.SensorRsp("127.0.0.1",9001,1);
     }
     return 0;
