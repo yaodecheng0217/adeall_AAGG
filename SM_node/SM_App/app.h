@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-19 17:07:30
+ * @LastEditTime: 2020-03-20 11:31:17
  * @LastEditors: Yaodecheng
  */
 /*
@@ -88,7 +88,8 @@ private:
     void *ETV_DriverOnlineChack();
     void *UWB_DriverOnlineChack();
     int sendToDriver(const char *ip, int port, uint8_t type, double value);
-
+    bool update(uint32_t driver_id, _data::LOCATION_DATA *data);
+    void clearonliecount(int type,uint32_t driver_id);
 public:
     //设置油门值,取值范围(1，-1)
     int SetAcceleratorValue(double value);

@@ -20,15 +20,17 @@ private:
     ProtocolAnalysis *_msg;
     std::string SM_ip = "127.0.0.1";
     int SM_prot = 9002;
-
+     
     struct RES
     {
         uint32_t seq;
         int *code;
     };
+    MutexLock rslist_lock;
     std::vector<RES> _respondlist;
     uint32_t _seq = 0;
     uint8_t timeout = 100;
+void setCode(uint32_t ack, uint32_t seq);
 
 public:
     DRIVER_HANDLE uwb_handle = {"uwb_sensor", 1, DATA_LIST::LOCATION};
@@ -39,7 +41,9 @@ public:
     _data::LOCATION_DATA _data;
 private:
     static void *hearbeat_thread(void *);
-    void hearbeat_loop();
+    void hearbeat_handle();
+    void data_up_to_SM();
     void clear_sqe(uint32_t seq);
+    int waitForACK(uint32_t seq,int * code,uint32_t timeout);
 };
 #endif

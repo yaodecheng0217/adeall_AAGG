@@ -2,7 +2,7 @@
  * @Description: 传感器节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-18 16:29:54
+ * @LastEditTime: 2020-03-20 11:48:23
  * @LastEditors: Yaodecheng
  **/
 
@@ -20,7 +20,7 @@ int main()
 {  
     vr.init();
     msgtest.init(Sensor_port);
-    app.run();
+    //app.run();
     msgtest2.init(Driver_port);
     driver.run();
     vr.Set_Turn_motor(90/57.3);

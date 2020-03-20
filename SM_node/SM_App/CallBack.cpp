@@ -25,7 +25,7 @@ void APP::_Callback(ReturnFrameData in)
     break;
     case INS_HARBEAT:
     {
-         _Callback_HEARBEAT(in);
+        _Callback_HEARBEAT(in);
     }
     break;
     default:
@@ -40,7 +40,7 @@ void APP::_Callback_Get(ReturnFrameData in)
     {
     case CMD_TYPE_LIST::CMD_GET_DATA:
     {
-        
+
         _Send::TYPE_GET_DATA r;
         Decode_StructSerialize(&r, in._databuff);
         ACK_One_data(in.ip, in.port, r.type, r.seq);
@@ -85,27 +85,66 @@ void APP::_Callback_ACK(ReturnFrameData in)
 }
 void APP::_Callback_HEARBEAT(ReturnFrameData in)
 {
+    static MutexLock L;
+    L.lock();
     switch (in.cmd_type)
     {
     case CMD_TYPE_LIST::CMD_HEARBEAT_UWB_DATA:
     {
+        printf("uwb handle\n");
         _Send::TYPE_UWB_HEARBEAT_DATA xx;
         Decode_StructSerialize(&xx, in._databuff);
         SensorRsp(in.ip, in.port, xx.seq);
-        AddNodeList(xx.handle, in.ip, in.port);  
+        //AddNodeList(xx.handle, in.ip, in.port);
         update(xx.handle, &xx.data);
+    }
+    break;
+    case CMD_TYPE_LIST::N_CMD_HEARBEAT_UWB_DATA:
+    {
+        printf("updata\n");
+        /*
+        _Send::N_TYPE_UWB_HEARBEAT_DATA xx;
+        Decode_Struct_No_Serialize(&xx, in._databuff);
+        if (update(xx.id, &xx.data))
+        {
+            SensorRsp(in.ip, in.port, xx.seq);
+        }*/
     }
     break;
     case CMD_TYPE_LIST::CMD_HEARBEAT_ETV_DRIVER_DATA:
     {
         _Send::TYPE_ETV_DRIVER_HEARBEAT_DATA xx;
-        Decode_StructSerialize(&xx, in._databuff);
-        SensorRsp(in.ip, in.port, xx.seq);
-        AddNodeList(xx.handle, in.ip, in.port);
-        update(xx.handle, &xx.data);
+        printf("decode\n");
+        try
+        {   
+            //    std::stringstream ss;
+            //     for (uint8_t x : in._databuff)
+            //        ss << x;
+            //  Decode_StructSerialize(&xx, in._databuff);
+
+            std::stringstream ss;
+            for (uint8_t x : in._databuff)
+            {
+                 printf("%X ", x);
+                 ss << x;
+            } 
+            
+                std::cout << std::endl;
+            cereal::BinaryInputArchive iarchive(ss);
+            iarchive(xx);
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        printf("decode end\n");
+        //SensorRsp(in.ip, in.port, xx.seq);
+        //AddNodeList(xx.handle, in.ip, in.port);
+        //update(xx.handle, &xx.data);
     }
     break;
     default:
         break;
     }
+    L.unlock();
 }

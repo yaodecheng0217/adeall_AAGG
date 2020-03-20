@@ -137,7 +137,18 @@ void APP::printf__RecallList()
         printf("     ***%d--\n", _driverdata[i].id);
     }
 }
-
+ void APP::clearonliecount(int type,uint32_t driver_id)
+ {
+    for (Node_INFO info:_NodeList)
+    {
+       if(info.handle.driver_id==driver_id&&info.handle.datatype==type)
+       {
+           info.onlinecnt=0;
+           return ;
+       }
+    }
+    
+ }
 //        梅花
 //     作者：王安石
 //墙角数枝梅，凌寒独自开。
