@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 13:45:32
- * @LastEditTime: 2020-03-19 09:37:29
+ * @LastEditTime: 2020-03-21 14:55:09
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -31,7 +31,7 @@ void vrep_interface::gethandle()
 }
 void vrep_interface::connect()
 {
-    clientID = simxStart("192.168.2.42", 19999, true, true, 1300, 5);
+    clientID = simxStart("127.0.0.1", 19999, true, true, 1300, 5);
     if (clientID != -1)
     {
         printf("V-rep is connected.");

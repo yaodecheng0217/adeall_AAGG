@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:25
- * @LastEditTime: 2020-03-19 15:54:29
+ * @LastEditTime: 2020-03-20 18:10:15
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -42,20 +42,18 @@ void APP::setCode(uint32_t ack, uint32_t seq)
 }
 void APP::SensorRsp(const char *ip, int prot, uint32_t seq)
 {
-    //回应
-    _Send::TYPE_HEARBEAT_ACK aa;
-    aa.handle = StateMachine;
+    //回应非序列化
+    _Send::N_TYPE_HEARBEAT_ACK aa;
     aa.code = OK;
     aa.seq = seq;
     //printf("%d\n", seq);
-    _msg->sendData(ip,
+    _msg->sendData_N(ip,
                    prot,
                    ID_StateMachine,
                    INS_ACK,
-                   CMD_TYPE_LIST::CMD_ACK_HEARBEAT,
+                   CMD_TYPE_LIST::N_CMD_ACK_HEARBEAT,
                    aa);
 }
-
 void *APP::GetNodeData(DRIVER_HANDLE handle)
 {
     size_t cnt = _NodeList.size();
@@ -78,7 +76,7 @@ void APP::ClearUWBData(uint32_t id)
         printf("%d  %d\n", iter->id, id);
         if (iter->id == id)
         {
-            
+
             printf("delet uwb id=%d\n", iter->id);
             _uwbdata.erase(iter);
             return;
@@ -115,7 +113,7 @@ void APP::clear_sqe(uint32_t seq)
             return;
         }
     }
-    printf("delet file=======%d==========33333333333333333333333333333333333333333333333333333333333333333333\n",seq);
+    printf("delet file=======%d==========33333333333333333333333333333333333333333333333333333333333333333333\n", seq);
 }
 //打印缓存数据
 void APP::printf__RecallList()
@@ -137,7 +135,20 @@ void APP::printf__RecallList()
         printf("     ***%d--\n", _driverdata[i].id);
     }
 }
+void APP::clearonliecount(int type, uint32_t driver_id)
+{
+    size_t size = _NodeList.size();
+    for (size_t i = 0; i < size; i++)
+    {
+        Node_INFO *info = &_NodeList[i];
+        if (info->handle.driver_id == driver_id && info->handle.datatype == type)
+        {
 
+            info->onlinecnt = 0;
+            return;
+        }
+    }
+}
 //        梅花
 //     作者：王安石
 //墙角数枝梅，凌寒独自开。

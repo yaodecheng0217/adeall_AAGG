@@ -10,6 +10,15 @@
 #include "ProtocolAnalysis.h"
 namespace msgpa
 {
+	void Add_string_sendData(std::string data, FrameDataStruct *out)
+{
+    int size = data.size();
+    out->_databuff.resize(size);
+    for (size_t i = 0; i < size; i++)
+    {
+        out->_databuff[i] = data[i];
+    }
+}
 ProtocolAnalysis::ProtocolAnalysis(OutputDataFun f)
     : _outputfun(f)
 {

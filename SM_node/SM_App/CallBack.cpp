@@ -60,7 +60,7 @@ void APP::_Callback_Set(ReturnFrameData in)
         Decode_StructSerialize(&r, in._databuff);
         int code = set_ControlValue(r.data.type, r.data.value);
         Set_ACK(in.ip, in.port, code, r.seq);
-        //printf("driver set ack to contrl %d   %d \n",code,r.seq);
+        
     }
     break;
     default:
@@ -93,7 +93,7 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
         Decode_StructSerialize(&xx, in._databuff);
         SensorRsp(in.ip, in.port, xx.seq);
         AddNodeList(xx.handle, in.ip, in.port);  
-        update(xx.handle, &xx.data);
+        //update(xx.handle, &xx.data);
     }
     break;
     case CMD_TYPE_LIST::CMD_HEARBEAT_ETV_DRIVER_DATA:
@@ -102,7 +102,28 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
         Decode_StructSerialize(&xx, in._databuff);
         SensorRsp(in.ip, in.port, xx.seq);
         AddNodeList(xx.handle, in.ip, in.port);
-        update(xx.handle, &xx.data);
+        //update(xx.handle, &xx.data);
+    }
+    break;
+    case CMD_TYPE_LIST::N_CMD_HEARBEAT_ETV_DRIVER_DATA:
+    {
+        _Send::N_TYPE_ETV_DRIVER_HEARBEAT_DATA xx;
+        Decode_Struct_No_Serialize(&xx, in._databuff);
+        if (update(xx.id, &xx.data))
+        {
+            SensorRsp(in.ip, in.port, xx.seq);
+        }
+    }
+    break;
+    case CMD_TYPE_LIST::N_CMD_HEARBEAT_UWB_DATA:
+    {
+        
+        _Send::N_TYPE_UWB_HEARBEAT_DATA xx;
+        Decode_Struct_No_Serialize(&xx, in._databuff);
+        if (update(xx.id, &xx.data))
+        {
+            SensorRsp(in.ip, in.port, xx.seq);
+        }
     }
     break;
     default:

@@ -76,7 +76,7 @@ enum INS_LIST
 //消息结构体列表
 enum CMD_TYPE_LIST
 {
-    
+
     CMD_HEARBEAT_ETV_DRIVER_DATA,
     CMD_HEARBEAT_UWB_DATA,
     CMD_HEARBEAT_ONE_DATA,
@@ -87,6 +87,10 @@ enum CMD_TYPE_LIST
     CMD_ACK_LOCATION_DATA,
     CMD_ACK_ONE_DATA,
     CMD_ACK_HEARBEAT,
+    N_CMD_ACK_HEARBEAT,
+    N_CMD_HEARBEAT_UWB_DATA,
+    N_CMD_HEARBEAT_ETV_DRIVER_DATA,
+
 };
 //请求返回码
 enum STATE_CODE_LIST
@@ -220,6 +224,11 @@ struct TYPE_HEARBEAT_ACK
         archive(handle, seq, code); //serialize things by passing them to the archive
     }
 };
+struct N_TYPE_HEARBEAT_ACK
+{
+    uint32_t seq;
+    int code;
+};
 struct TYPE_SET_ACK
 {
     DRIVER_HANDLE handle;
@@ -245,6 +254,14 @@ struct TYPE_UWB_HEARBEAT_DATA
         archive(handle, data, seq, state_ok, timestamp); //serialize things by passing them to the archive
     }
 };
+struct N_TYPE_UWB_HEARBEAT_DATA
+{
+    uint32_t id;
+    _data::LOCATION_DATA data;
+    uint32_t seq;
+    bool state_ok;
+    time_t timestamp;
+};
 struct TYPE_ETV_DRIVER_HEARBEAT_DATA
 {
     DRIVER_HANDLE handle;
@@ -258,6 +275,14 @@ struct TYPE_ETV_DRIVER_HEARBEAT_DATA
     {
         archive(handle, data, seq, state_ok, timestamp); //serialize things by passing them to the archive
     }
+};
+struct N_TYPE_ETV_DRIVER_HEARBEAT_DATA
+{
+    uint32_t id;
+    _data::ETV_DRIVER_STATE_DATA data;
+    uint32_t seq;
+    bool state_ok;
+    time_t timestamp;
 };
 struct TYPE_SET_DOUBLE_DATA
 {
@@ -306,7 +331,7 @@ struct TYPE_ACK_ONE_DATA
     template <class Archive>
     void serialize(Archive &archive)
     {
-        archive(handle, data,code,seq, timestamp); //serialize things by passing them to the archive
+        archive(handle, data, code, seq, timestamp); //serialize things by passing them to the archive
     }
 };
 struct TYPE_ACK_LOCATION_DATA
@@ -319,7 +344,7 @@ struct TYPE_ACK_LOCATION_DATA
     template <class Archive>
     void serialize(Archive &archive)
     {
-        archive(handle, data,code,seq, timestamp); //serialize things by passing them to the archive
+        archive(handle, data, code, seq, timestamp); //serialize things by passing them to the archive
     }
 };
 } // namespace _Send

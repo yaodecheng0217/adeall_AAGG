@@ -2,20 +2,20 @@
  * @Description: 传感器节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-18 16:29:54
+ * @LastEditTime: 2020-03-21 14:32:50
  * @LastEditors: Yaodecheng
  **/
 
-#include "SensorApp/app.h"
-#include "DriverApp/driver.h"
+#include "SensorApp/uwb_node.h"
+#include "DriverApp/ETV_driver.h"
 #include "vrep/vrep_interface.h"
 void Callback_outdata(ReturnFrameData in);
 void Callback_outdata2(ReturnFrameData in);
 msgpa::ProtocolAnalysis msgtest(Callback_outdata);
 msgpa::ProtocolAnalysis msgtest2(Callback_outdata2);
-APP app(&msgtest, 1);
+uwb_node app(&msgtest);
 vrep_interface vr;
-DRIVER driver(&msgtest2,1,&vr);
+ETV_driver driver(&msgtest2,1,&vr);
 int main()
 {  
     vr.init();
@@ -23,6 +23,8 @@ int main()
     app.run();
     msgtest2.init(Driver_port);
     driver.run();
+
+
     vr.Set_Turn_motor(90/57.3);
     vr.Set_Acc_motor(0.1);
     while (1)

@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-19 17:07:30
+ * @LastEditTime: 2020-03-21 14:49:41
  * @LastEditors: Yaodecheng
  */
 /*
@@ -64,7 +64,7 @@ private:
     std::vector<RES> _respondlist;
     void clear_sqe(uint32_t seq);
     void setCode(uint32_t ack, uint32_t seq);
-
+    void SensorRsp_N(const char *ip, int prot, uint32_t seq);
 public:
     APP(ProtocolAnalysis *msg) : _msg(msg){};
     void run();
@@ -88,7 +88,9 @@ private:
     void *ETV_DriverOnlineChack();
     void *UWB_DriverOnlineChack();
     int sendToDriver(const char *ip, int port, uint8_t type, double value);
-
+    bool update(uint32_t driver_id, _data::LOCATION_DATA *data);
+    bool update(uint32_t driver_id, _data::ETV_DRIVER_STATE_DATA *data);
+    void clearonliecount(int type,uint32_t driver_id);
 public:
     //设置油门值,取值范围(1，-1)
     int SetAcceleratorValue(double value);
