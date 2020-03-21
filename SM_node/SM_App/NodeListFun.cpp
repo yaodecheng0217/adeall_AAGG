@@ -32,6 +32,24 @@ void APP::update(DRIVER_HANDLE handle, void *data)
         printf("No mach\n");
     }
 }
+bool APP::update(uint32_t driver_id, _data::LOCATION_DATA *data)
+{
+    if (UpdateDataDetail(driver_id, *data))
+    {
+        clearonliecount(DATA_LIST::LOCATION,driver_id); //清零超时
+        return 1;
+    }
+       return 0;
+}
+bool APP::update(uint32_t driver_id, _data::ETV_DRIVER_STATE_DATA *data)
+{
+    if (UpdateDataDetail(driver_id, *data))
+    {
+        clearonliecount(DATA_LIST::ETV_DriverState,driver_id); //清零超时
+        return 1;
+    }
+       return 0;
+}
 void APP::TimeUpdate()
 {
     ScopeLocker lock(&info_lock);
