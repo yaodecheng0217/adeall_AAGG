@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-21 14:49:41
+ * @LastEditTime: 2020-03-22 17:48:12
  * @LastEditors: Yaodecheng
  */
 /*
@@ -35,12 +35,12 @@ struct Node_INFO
 struct UWB_D
 {
     uint32_t id;
-    _data::LOCATION_DATA data;
+    LOCATION_DATA data;
 };
 struct DRIVER_D
 {
     uint32_t id;
-    _data::ETV_DRIVER_STATE_DATA data;
+    ETV_DRIVER_STATE_DATA data;
 };
 class APP
 {
@@ -81,15 +81,15 @@ private:
     static void *loop10ms(void *);
     void ClearDriverData(uint32_t id);
     void ClearUWBData(uint32_t id);
-    bool GetDataDetail(uint32_t driver_id, _data::LOCATION_DATA *data);
-    bool GetDataDetail(uint32_t driver_id, _data::ETV_DRIVER_STATE_DATA *data);
-    bool UpdateDataDetail(uint32_t driver_id, _data::LOCATION_DATA data);
-    bool UpdateDataDetail(uint32_t driver_id, _data::ETV_DRIVER_STATE_DATA data);
+    bool GetDataDetail(uint32_t driver_id, LOCATION_DATA *data);
+    bool GetDataDetail(uint32_t driver_id, ETV_DRIVER_STATE_DATA *data);
+    bool UpdateDataDetail(uint32_t driver_id, LOCATION_DATA data);
+    bool UpdateDataDetail(uint32_t driver_id, ETV_DRIVER_STATE_DATA data);
     void *ETV_DriverOnlineChack();
     void *UWB_DriverOnlineChack();
     int sendToDriver(const char *ip, int port, uint8_t type, double value);
-    bool update(uint32_t driver_id, _data::LOCATION_DATA *data);
-    bool update(uint32_t driver_id, _data::ETV_DRIVER_STATE_DATA *data);
+    bool update(uint32_t driver_id, LOCATION_DATA *data);
+    bool update(uint32_t driver_id, ETV_DRIVER_STATE_DATA *data);
     void clearonliecount(int type,uint32_t driver_id);
 public:
     //设置油门值,取值范围(1，-1)

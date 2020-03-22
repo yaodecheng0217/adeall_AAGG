@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-19 18:17:52
+ * @LastEditTime: 2020-03-22 18:12:19
  * @LastEditors: Yaodecheng
  */
 /*
@@ -35,12 +35,12 @@ struct Node_INFO
 struct UWB_D
 {
     uint8_t id;
-    _data::LOCATION_DATA data;
+    LOCATION_DATA data;
 };
 struct DRIVER_D
 {
     uint8_t id;
-    _data::ETV_DRIVER_STATE_DATA data;
+    ETV_DRIVER_STATE_DATA data;
 };
 typedef int (*RecallFun)(void *in, void *out);
 struct ReCall
@@ -96,7 +96,7 @@ public:
  void printf__RecallList();
     //==========================GetData==API================================
     //读取数据
-    int GetData(_data::LOCATION_DATA *returnvalue, UINT timeout);
+    int GetData(LOCATION_DATA *returnvalue, UINT timeout);
     int GetData(int type, double *returnvalue, UINT timeout);
     int Set_Forward_motor(UINT8 mode, double volue, uint16_t timeout);
     int Set_Acc_motor(UINT8 mode, double volue, uint16_t timeout);

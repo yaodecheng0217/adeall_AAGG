@@ -4,6 +4,9 @@
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
+#include "CJson/cJSON.h"
+#include "CJson/CJsonObject.hpp"
+
 void APP::_Callback(ReturnFrameData in)
 {
     switch (in.ins)
@@ -41,8 +44,8 @@ void APP::_Callback_Get(ReturnFrameData in)
     case CMD_TYPE_LIST::CMD_GET_DATA:
     {
         
-        _Send::TYPE_GET_DATA r;
-        Decode_StructSerialize(&r, in._databuff);
+        TYPE_GET_DATA r;
+        Decode_Struct_No_Serialize(&r, in._databuff);
         ACK_One_data(in.ip, in.port, r.type, r.seq);
     }
     break;
@@ -56,9 +59,9 @@ void APP::_Callback_Set(ReturnFrameData in)
     {
     case CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA:
     {
-        _Send::TYPE_SET_DOUBLE_DATA r;
-        Decode_StructSerialize(&r, in._databuff);
-        int code = set_ControlValue(r.data.type, r.data.value);
+        TYPE_SET_DOUBLE_DATA r;
+        Decode_Struct_No_Serialize(&r, in._databuff);
+        int code = set_ControlValue(r.type, r.value);
         Set_ACK(in.ip, in.port, code, r.seq);
         
     }
@@ -73,8 +76,15 @@ void APP::_Callback_ACK(ReturnFrameData in)
     {
     case CMD_TYPE_LIST::CMD_ACK_SET:
     {
-        _Send::TYPE_SET_ACK r;
-        Decode_StructSerialize(&r, in._databuff);
+        TYPE_ACK_CODE r;
+        Decode_Struct_No_Serialize(&r, in._databuff);
+        setCode(r.code, r.seq);
+        //printf("driver set ack to SM %d   %d \n",r.code,r.seq);
+    }
+     case CMD_TYPE_LIST::CMD_ACK_CODE:
+    {
+        TYPE_ACK_CODE r;
+        Decode_Struct_No_Serialize(&r, in._databuff);
         setCode(r.code, r.seq);
         //printf("driver set ack to SM %d   %d \n",r.code,r.seq);
     }
@@ -87,27 +97,30 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
 {
     switch (in.cmd_type)
     {
-    case CMD_TYPE_LIST::CMD_HEARBEAT_UWB_DATA:
+    case CMD_TYPE_LIST::CMD_HEARBEAT_HANDLE:
     {
-        _Send::TYPE_UWB_HEARBEAT_DATA xx;
-        Decode_StructSerialize(&xx, in._databuff);
-        SensorRsp(in.ip, in.port, xx.seq);
-        AddNodeList(xx.handle, in.ip, in.port);  
-        //update(xx.handle, &xx.data);
+        std::stringstream ss;
+        for (uint8_t x:in._databuff)
+        {
+           ss<<x;
+        }
+        neb::CJsonObject oJson(ss.str().c_str());
+        printf("\n%s\n",oJson.ToString().c_str());
+        DRIVER_HANDLE handle;
+        TYPE_handle_string s;
+        oJson.Get("driver",handle.driver_name);
+        oJson.Get("driver_id",handle.driver_id);
+        oJson.Get("driver_type",handle.driver_type);
+        uint32_t seq;
+        oJson.Get("seq",seq);
+        //printf("%s  %d  %d  %d\n",handle.driver_name.c_str(),handle.datatype,handle.driver_id,seq); 
+        SensorRsp(in.ip, in.port,seq);
+        AddNodeList(handle, in.ip, in.port);
     }
     break;
     case CMD_TYPE_LIST::CMD_HEARBEAT_ETV_DRIVER_DATA:
     {
-        _Send::TYPE_ETV_DRIVER_HEARBEAT_DATA xx;
-        Decode_StructSerialize(&xx, in._databuff);
-        SensorRsp(in.ip, in.port, xx.seq);
-        AddNodeList(xx.handle, in.ip, in.port);
-        //update(xx.handle, &xx.data);
-    }
-    break;
-    case CMD_TYPE_LIST::N_CMD_HEARBEAT_ETV_DRIVER_DATA:
-    {
-        _Send::N_TYPE_ETV_DRIVER_HEARBEAT_DATA xx;
+        TYPE_ETV_DRIVER_UPDATE_DATA xx;
         Decode_Struct_No_Serialize(&xx, in._databuff);
         if (update(xx.id, &xx.data))
         {
@@ -115,10 +128,10 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
         }
     }
     break;
-    case CMD_TYPE_LIST::N_CMD_HEARBEAT_UWB_DATA:
+    case CMD_TYPE_LIST::CMD_HEARBEAT_UWB_DATA:
     {
         
-        _Send::N_TYPE_UWB_HEARBEAT_DATA xx;
+        TYPE_UWB_UPDATE_DATA xx;
         Decode_Struct_No_Serialize(&xx, in._databuff);
         if (update(xx.id, &xx.data))
         {

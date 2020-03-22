@@ -6,14 +6,13 @@
  */
 #include "app.h"
 
-using namespace _data;
 void *APP::ETV_DriverOnlineChack()
 {
     ScopeLocker K(&info_lock);
     size_t cnt = _NodeList.size();
     for (size_t i = 0; i < cnt; i++)
     {
-        if (_NodeList[i].handle.datatype == DATA_LIST::ETV_DriverState)
+        if (_NodeList[i].handle.driver_type == ETV_Driver)
         {
             return &_NodeList[i];
         }
@@ -26,7 +25,7 @@ void *APP::UWB_DriverOnlineChack()
     size_t cnt = _NodeList.size();
     for (size_t i = 0; i < cnt; i++)
     {
-        if (_NodeList[i].handle.datatype == DATA_LIST::LOCATION)
+        if (_NodeList[i].handle.driver_type == LOCATION)
         {
             return &_NodeList[i];
         }
@@ -37,12 +36,9 @@ int APP::sendToDriver(const char *ip, int port, uint8_t type, double value)
 {
     timeval tv;
     gettimeofday(&tv, NULL);
-    _Send::TYPE_SET_DOUBLE_DATA setdata;
-    setdata.handle = StateMachine;
-    SET_DOUBLE_DATA data;
-    data.type = type;
-    data.value = value;
-    setdata.data = data;
+    TYPE_SET_DOUBLE_DATA setdata;
+    setdata.type = type;
+    setdata.value = value;
     setdata.seq = _seq++;
     setdata.timestamp = (time_t)tv.tv_sec * (time_t)1000000 + (time_t)tv.tv_usec;
 
@@ -58,7 +54,7 @@ int APP::sendToDriver(const char *ip, int port, uint8_t type, double value)
 
     for (size_t j = 0; j < 3; j++)
     {
-        _msg->sendData(ip,
+        _msg->sendData_N(ip,
                        port,
                        SOURCE_ID_LIST::ID_StateMachine,
                        INS_LIST::INS_SET,
@@ -94,7 +90,7 @@ int APP::SetAcceleratorValue(double value)
         {
             if (_driverdata[i].id == handle->handle.driver_id)
             {
-                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
                 if (info.AUTO == 0)
                 {
                     return InManualState;
@@ -121,7 +117,7 @@ int APP::SetBrake(double value)
         {
             if (_driverdata[i].id == handle->handle.driver_id)
             {
-                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
                 if (info.AUTO == 0)
                 {
                     return InManualState;
@@ -175,7 +171,7 @@ int APP::SetLift(double value)
         {
             if (_driverdata[i].id == handle->handle.driver_id)
             {
-                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
                 if (info.AUTO == 0)
                 {
                     return InManualState;
@@ -206,7 +202,7 @@ int APP::SetSide(double value)
         {
             if (_driverdata[i].id == handle->handle.driver_id)
             {
-                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
                 if (info.AUTO == 0)
                 {
                     return InManualState;
@@ -237,7 +233,7 @@ int APP::SetMoveForward(double value)
         {
             if (_driverdata[i].id == handle->handle.driver_id)
             {
-                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
                 if (info.AUTO == 0)
                 {
                     return InManualState;
@@ -268,7 +264,7 @@ int APP::SetTilt(double value)
         {
             if (_driverdata[i].id == handle->handle.driver_id)
             {
-                _data::ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
+                ETV_DRIVER_STATE_DATA info = _driverdata[i].data;
                 if (info.AUTO == 0)
                 {
                     return InManualState;

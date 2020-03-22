@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-03-19 18:41:15
+ * @LastEditTime: 2020-03-22 18:12:54
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -77,7 +77,7 @@ void pathControler::control_loop()
 int pathControler::angle_control_cycle(PostionData p)
 {
 	static int cnt=0;
-	_data::LOCATION_DATA uwb;
+	LOCATION_DATA uwb;
 
 	PostionData s;
 

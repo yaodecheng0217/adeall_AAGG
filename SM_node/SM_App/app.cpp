@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:25
- * @LastEditTime: 2020-03-20 18:10:15
+ * @LastEditTime: 2020-03-22 18:02:59
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -43,15 +43,15 @@ void APP::setCode(uint32_t ack, uint32_t seq)
 void APP::SensorRsp(const char *ip, int prot, uint32_t seq)
 {
     //回应非序列化
-    _Send::N_TYPE_HEARBEAT_ACK aa;
+    TYPE_ACK_CODE aa;
     aa.code = OK;
     aa.seq = seq;
     //printf("%d\n", seq);
-    _msg->sendData_N(ip,
+    _msg->sendData(ip,
                    prot,
                    ID_StateMachine,
                    INS_ACK,
-                   CMD_TYPE_LIST::N_CMD_ACK_HEARBEAT,
+                   CMD_TYPE_LIST::CMD_ACK_CODE,
                    aa);
 }
 void *APP::GetNodeData(DRIVER_HANDLE handle)
@@ -141,7 +141,7 @@ void APP::clearonliecount(int type, uint32_t driver_id)
     for (size_t i = 0; i < size; i++)
     {
         Node_INFO *info = &_NodeList[i];
-        if (info->handle.driver_id == driver_id && info->handle.datatype == type)
+        if (info->handle.driver_id == driver_id && info->handle.driver_type == type)
         {
 
             info->onlinecnt = 0;

@@ -1,27 +1,27 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 12:17:27
- * @LastEditTime: 2020-03-21 14:15:31
+ * @LastEditTime: 2020-03-22 16:50:20
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
  */
 
-#include "sensornode.h"
+#include "../com/drivernode.h"
 #include<string.h>
-class uwb_node : public Sensor_node
+class uwb_node : public Driver_node
 {
 private:
-    DRIVER_HANDLE _handle;
     std::string server_ip;
     int server_port;
     uint16_t source_id;
     void initdata();
     void sendData(uint32_t seq, time_t timestamp);
     void sendHandle(uint32_t seq);
+    int setDoubleValue(uint16_t type, double value);
 
 public:
-    _data::LOCATION_DATA _data;
+    LOCATION_DATA _data;
     uwb_node(ProtocolAnalysis *msg);
     ~uwb_node();
 };

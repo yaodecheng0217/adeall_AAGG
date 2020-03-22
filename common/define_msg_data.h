@@ -76,21 +76,17 @@ enum INS_LIST
 //消息结构体列表
 enum CMD_TYPE_LIST
 {
-
     CMD_HEARBEAT_ETV_DRIVER_DATA,
     CMD_HEARBEAT_UWB_DATA,
     CMD_HEARBEAT_ONE_DATA,
     CMD_HEARBEAT_SICK_DATA,
+    CMD_HEARBEAT_HANDLE,
     CMD_SET_DOUBLE_DATA,
     CMD_GET_DATA,
     CMD_ACK_SET,
     CMD_ACK_LOCATION_DATA,
     CMD_ACK_ONE_DATA,
-    CMD_ACK_HEARBEAT,
-    N_CMD_ACK_HEARBEAT,
-    N_CMD_HEARBEAT_UWB_DATA,
-    N_CMD_HEARBEAT_ETV_DRIVER_DATA,
-
+    CMD_ACK_CODE,
 };
 //请求返回码
 enum STATE_CODE_LIST
@@ -102,34 +98,17 @@ enum STATE_CODE_LIST
     DriverIsNull,
     ForkErr,
 };
+
+//========================================消息子结构==========================================
 //数据结构体枚举
-enum DATA_LIST
+enum DIRVER_TYPE
 {
     LOCATION,
-    ETV_DriverState,
+    ETV_Driver,
 };
-//========================================消息子结构==========================================
-struct DRIVER_HANDLE
-{
-    std::string driver_name;
-    uint32_t driver_id;
-    int datatype;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(driver_name, driver_id, datatype); //serialize things by passing them to the archive
-    }
-};
-namespace _data
-{
 struct LOCATION_DATA
 {
     double x, y, z, yaw;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(x, y, z, yaw); //serialize things by passing them to the archive
-    }
 };
 struct ETV_DRIVER_STATE_DATA
 {
@@ -144,23 +123,9 @@ struct ETV_DRIVER_STATE_DATA
          LED_Red = 0,
          Paking = 0,
          AUTO = 0;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(AcceleratorValue,
-                BrakeValue,
-                TurnAngleValue,
-                LiftValue,
-                SideValue,
-                MoveForwardValue,
-                TiltValue,
-                LED_Green,
-                LED_Red,
-                Paking,
-                AUTO); //serialize things by passing them to the archive
-    }
 };
-enum DATA_TYPE_LIST
+//===============================================================================================
+enum DATA_SET_GET_TYPE_LIST
 {
     Type_AcceleratorValue,
     Type_BrakeValue,
@@ -177,178 +142,67 @@ enum DATA_TYPE_LIST
     //====
     Type_location
 };
-struct SET_DOUBLE_DATA
+struct DRIVER_HANDLE
 {
-    uint8_t type;
-    double value;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(type, value);
-    }
+     std::string driver_name;
+     uint32_t driver_id;
+     uint32_t driver_type;
 };
-struct SET_BOOL_DATA
+struct TYPE_handle_string
 {
-    uint8_t type;
-    bool value;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(type, value);
-    }
+     const std::string driver_name="driver";
+     const std::string driver_id="driver_id";
+     const std::string driver_type="driver_type";
+     const std::string seq="seq";
 };
-struct SET_FLOAT_DATA
-{
-    uint8_t type;
-    bool value;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(type, value);
-    }
-};
-} // namespace _data
-//============================================================================================
-
-//======================所有可发送消息结构========================================================
-namespace _Send
-{
-struct TYPE_HEARBEAT_ACK
-{
-    DRIVER_HANDLE handle;
-    uint32_t seq;
-    int code;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(handle, seq, code); //serialize things by passing them to the archive
-    }
-};
-struct N_TYPE_HEARBEAT_ACK
-{
-    uint32_t seq;
-    int code;
-};
-struct TYPE_SET_ACK
-{
-    DRIVER_HANDLE handle;
-    uint32_t seq;
-    int code;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(handle, seq, code); //serialize things by passing them to the archive
-    }
-};
-struct TYPE_UWB_HEARBEAT_DATA
-{
-    DRIVER_HANDLE handle;
-    _data::LOCATION_DATA data;
-    uint32_t seq;
-    bool state_ok;
-    time_t timestamp;
-
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(handle, data, seq, state_ok, timestamp); //serialize things by passing them to the archive
-    }
-};
-struct N_TYPE_UWB_HEARBEAT_DATA
+struct TYPE_UWB_UPDATE_DATA
 {
     uint32_t id;
-    _data::LOCATION_DATA data;
+    LOCATION_DATA data;
     uint32_t seq;
     bool state_ok;
     time_t timestamp;
 };
-struct TYPE_ETV_DRIVER_HEARBEAT_DATA
-{
-    DRIVER_HANDLE handle;
-    _data::ETV_DRIVER_STATE_DATA data;
-    uint32_t seq;
-    bool state_ok;
-    time_t timestamp;
-
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(handle, data, seq, state_ok, timestamp); //serialize things by passing them to the archive
-    }
-};
-struct N_TYPE_ETV_DRIVER_HEARBEAT_DATA
+struct TYPE_ETV_DRIVER_UPDATE_DATA
 {
     uint32_t id;
-    _data::ETV_DRIVER_STATE_DATA data;
+    ETV_DRIVER_STATE_DATA data;
     uint32_t seq;
     bool state_ok;
     time_t timestamp;
 };
 struct TYPE_SET_DOUBLE_DATA
 {
-    DRIVER_HANDLE handle;
-    _data::SET_DOUBLE_DATA data;
+    uint8_t type;
+    double value;
     uint32_t seq;
     time_t timestamp;
-
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(handle, data, seq, timestamp); //serialize things by passing them to the archive
-    }
-};
-struct TYPE_SET_BOOL_DATA
-{
-    DRIVER_HANDLE handle;
-    _data::SET_BOOL_DATA data;
-    uint32_t seq;
-    time_t timestamp;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(handle, data, seq, timestamp); //serialize things by passing them to the archive
-    }
 };
 struct TYPE_GET_DATA
 {
-    DRIVER_HANDLE handle;
     uint16_t type;
     uint32_t seq;
     time_t timestamp;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(handle, type, seq, timestamp); //serialize things by passing them to the archive
-    }
+};
+struct TYPE_ACK_CODE
+{
+    uint32_t seq;
+    int code;
 };
 struct TYPE_ACK_ONE_DATA
 {
-    DRIVER_HANDLE handle;
     double data;
     int code;
     uint32_t seq;
     time_t timestamp;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(handle, data, code, seq, timestamp); //serialize things by passing them to the archive
-    }
 };
 struct TYPE_ACK_LOCATION_DATA
 {
-    DRIVER_HANDLE handle;
-    _data::LOCATION_DATA data;
+    LOCATION_DATA data;
     int code;
     uint32_t seq;
     time_t timestamp;
-    template <class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(handle, data, code, seq, timestamp); //serialize things by passing them to the archive
-    }
 };
-} // namespace _Send
-//=====================================================================================================
 } // namespace adeall
 
 #endif
