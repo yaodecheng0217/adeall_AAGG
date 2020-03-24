@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 13:45:32
- * @LastEditTime: 2020-03-23 12:00:40
+ * @LastEditTime: 2020-03-24 15:46:49
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -97,13 +97,18 @@ vrep_data vrep_interface::GetAllData()
     simxReadProximitySensor(clientID, _handle.LaserHandle2, NULL, temp, NULL, NULL, simx_opmode_buffer); //激光测距数据4
     d.TrayL_lasser = temp[2];
     simxGetObjectPosition(clientID, _handle.Turnangle, _handle.grap_handle, temp, simx_opmode_buffer); //uwb定位数据
-    d.Uwb_x = temp[0]*100;
-    d.Uwb_y = temp[1]*100;
+    d.Uwb_x = temp[0] * 100;
+    d.Uwb_y = temp[1] * 100;
     simxGetJointPosition(clientID, _handle.Turnangle, &d.TurnWheel_angle, simx_opmode_buffer); //转角反馈
 
     simxGetObjectOrientation(clientID, _handle.Turnangle, _handle.grap_handle, temp, simx_opmode_buffer); //四元数
-    if (temp[2]<0)
-    temp[2]=360/57.3+temp[2];
+
+    if (temp[2] < 0)
+        temp[2] = 360 / 57.3 + temp[2];
+    temp[2] = temp[2] + 180 / 57.3;
+    if (temp[2] > 360 / 57.3)
+        temp[2] = temp[2] - 360 / 57.3;
+
     d.Uwb_yaw = temp[2];
     //simxGetJointForce(clientID, _handle.Accelerator, NULL, simx_opmode_buffer);                           //驱动轮力矩
     simxGetObjectVelocity(clientID, _handle.Accelerator, NULL, &d.Accelerator_speed, simx_opmode_buffer); //驱动轮速度
