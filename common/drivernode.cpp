@@ -16,6 +16,7 @@ void Driver_node::_Callback(ReturnFrameData in)
     break;
     case INS_GET:
     {
+
         _Callback_Get(in);
     }
     break;
@@ -29,6 +30,14 @@ void Driver_node::_Callback(ReturnFrameData in)
         _Callback_HEARBEAT(in);
     }
     break;
+    default:
+        break;
+    }
+}
+void Driver_node::_Callback_HEARBEAT(ReturnFrameData in)
+{
+    switch (in.cmd_type)
+    {
     default:
         break;
     }
@@ -47,10 +56,11 @@ void Driver_node::_Callback_Set(ReturnFrameData in)
     {
     case CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA:
     {
-        _Send::TYPE_SET_DOUBLE_DATA r;
-        Decode_StructSerialize(&r, in._databuff);
-        int code = setDoubleValue(r.data.type, r.data.value);
-        set_ACK_send(in.ip, in.port, code, r.seq);
+        TYPE_SET_DOUBLE_DATA r;
+        Decode_Struct_No_Serialize(&r, in._databuff);
+        set_ACK_send(in.ip, in.port, OK, r.seq);//设置函数用时过长===========先响应
+        int code = setDoubleValue(r.type, r.value);
+        
     }
     break;
     default:
@@ -61,26 +71,18 @@ void Driver_node::_Callback_ACK(ReturnFrameData in)
 {
     switch (in.cmd_type)
     {
-    case CMD_TYPE_LIST::CMD_ACK_HEARBEAT:
+    case CMD_TYPE_LIST::CMD_ACK_CODE:
     {
-        _Send::TYPE_HEARBEAT_ACK r;
-        Decode_StructSerialize(&r, in._databuff);
-        recvAckCode(r.code, r.seq);
-    }
-    break;
-    case CMD_TYPE_LIST::N_CMD_ACK_HEARBEAT:
-    {
-        _Send::N_TYPE_HEARBEAT_ACK r;
+        TYPE_ACK_CODE r;
         Decode_Struct_No_Serialize(&r, in._databuff);
         recvAckCode(r.code, r.seq);
     }
     break;
-
     default:
         break;
     }
 }
-void Driver_node::recvAckCode(uint32_t ack, uint32_t seq)
+void Driver_node::recvAckCode(int ack, uint32_t seq)
 {
     ScopeLocker K(&_rslist_lock);
     size_t count = _respondlist.size();
@@ -120,7 +122,7 @@ void Driver_node::clearSqe(uint32_t seq)
 }
 void Driver_node::sendDataLoop()
 {
-    static int cnt = 10;
+
     struct timeval tv;
     gettimeofday(&tv, NULL);
     uint32_t seq = _seq++;
@@ -134,18 +136,22 @@ void Driver_node::sendDataLoop()
     _respondlist.push_back(w);
     _rslist_lock.unlock();
     //printf("%d\n", w.seq);
-    for (size_t j = 0; j < 3; j++)
+     for (size_t j = 0; j < 3; j++)
     {
-        sendData(seq, timestamp);
-        if (waitForACK(w.seq, w.code, _timeout))
+    sendData(seq, timestamp);
+    if (waitForACK(w.seq, w.code, 20))
+    {
+        if(*w.code==ERR)
         {
-            cnt = 0;
-            clearSqe(w.seq);
-            return;
+            sendHandleAction();
         }
-        //printf("%d retry %d times,\n", w.seq, j + 1);
+        cnt = 0;
+        clearSqe(w.seq);
+        return;
     }
-    printf("update time out %d\n", w.seq);
+     //printf("%d retry %d times,\n", w.seq, j + 1);
+     }
+    printf("%s update time out %d\n", _handle.driver_name.c_str(), w.seq);
     clearSqe(w.seq);
     cnt++;
     if (cnt > 10)
@@ -166,18 +172,18 @@ void Driver_node::sendHandleAction()
     _respondlist.push_back(w);
     _rslist_lock.unlock();
     //printf("%d\n", w.seq);
-    printf("Send handle !!\n");
+    //printf("Send handle !!\n");
     for (size_t j = 0; j < 3; j++)
     {
         sendHandle(w.seq);
-        if (waitForACK(w.seq, w.code, _timeout))
+        if (waitForACK(w.seq, w.code, 20))
         {
             clearSqe(w.seq);
-            printf("handle  ACK is ok ready to update!!\n");
+            printf("%s handle  ACK is ok ready to update!!\n", _handle.driver_name.c_str());
             return;
         }
     }
-    printf("time out ------------------------%d\n", w.seq);
+    printf("%s Send handle time out %d\n", _handle.driver_name.c_str(), w.seq);
     clearSqe(w.seq);
 }
 void Driver_node::run()
@@ -193,7 +199,8 @@ void *Driver_node::timer(void *is)
     while (true)
     {
         p->time_lock.unlock();
-        Sleep(1000 / p->Frequency);
+        Sleep(40);
+        //Sleep(1000 / p->Frequency);
     }
     return 0;
 }
@@ -220,14 +227,13 @@ void Driver_node::SetFrequency(uint16_t hz)
 void Driver_node::set_ACK_send(const char *ip, int prot, int code, uint32_t seq)
 {
     //回应
-    _Send::TYPE_SET_ACK aa;
-    aa.handle = _handle;
+    TYPE_ACK_CODE aa;
     aa.code = code;
     aa.seq = seq;
-    //printf("%d\n", seq);
+    //printf("set -->%d\n", seq);
     _msg->sendData(ip,
                    prot,
-                   source_id,
+                   0,
                    INS_ACK,
                    CMD_TYPE_LIST::CMD_ACK_SET,
                    aa);

@@ -3,7 +3,7 @@
  * @Description: In User Settings Edit
  * @Author: Yaodecheng
  * @Date: 2019-10-13 14:35:32
- * @LastEditTime: 2020-03-16 14:05:43
+ * @LastEditTime: 2020-03-24 10:44:38
  * @LastEditors: Yaodecheng
  */
 
@@ -59,6 +59,7 @@ void *UdpMessage::UDPrevthreadfun(void *ptr)
         {
             //printf(">>>>%d,%s\n",ntohs(P->addr_client.sin_port),inet_ntoa(P->addr_client.sin_addr));
             thread_base t(P->tRecv_thread,P);
+            //tRecv_thread(P);
         }
     }
     return 0;

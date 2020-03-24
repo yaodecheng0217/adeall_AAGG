@@ -9,6 +9,7 @@
 
 void APP::_Callback(ReturnFrameData in)
 {
+    //return ;
     switch (in.ins)
     {
     case INS_ACK:
@@ -63,7 +64,6 @@ void APP::_Callback_Set(ReturnFrameData in)
         Decode_Struct_No_Serialize(&r, in._databuff);
         int code = set_ControlValue(r.type, r.value);
         Set_ACK(in.ip, in.port, code, r.seq);
-        
     }
     break;
     default:
@@ -78,14 +78,16 @@ void APP::_Callback_ACK(ReturnFrameData in)
     {
         TYPE_ACK_CODE r;
         Decode_Struct_No_Serialize(&r, in._databuff);
-        setCode(r.code, r.seq);
         //printf("driver set ack to SM %d   %d \n",r.code,r.seq);
+        recvAckCode(r.code, r.seq);
+        
     }
+    break;
      case CMD_TYPE_LIST::CMD_ACK_CODE:
     {
         TYPE_ACK_CODE r;
         Decode_Struct_No_Serialize(&r, in._databuff);
-        setCode(r.code, r.seq);
+        recvAckCode(r.code, r.seq);
         //printf("driver set ack to SM %d   %d \n",r.code,r.seq);
     }
     break;
@@ -105,7 +107,7 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
            ss<<x;
         }
         neb::CJsonObject oJson(ss.str().c_str());
-        printf("\n%s\n",oJson.ToString().c_str());
+        //printf("\n%s\n",oJson.ToString().c_str());
         DRIVER_HANDLE handle;
         TYPE_handle_string s;
         oJson.Get("driver",handle.driver_name);
@@ -114,8 +116,9 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
         uint32_t seq;
         oJson.Get("seq",seq);
         //printf("%s  %d  %d  %d\n",handle.driver_name.c_str(),handle.datatype,handle.driver_id,seq); 
-        SensorRsp(in.ip, in.port,seq);
+        SensorRsp(in.ip, in.port,seq,OK);
         AddNodeList(handle, in.ip, in.port);
+        //printf(".");
     }
     break;
     case CMD_TYPE_LIST::CMD_HEARBEAT_ETV_DRIVER_DATA:
@@ -124,8 +127,13 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
         Decode_Struct_No_Serialize(&xx, in._databuff);
         if (update(xx.id, &xx.data))
         {
-            SensorRsp(in.ip, in.port, xx.seq);
+            SensorRsp(in.ip, in.port, xx.seq,OK);
         }
+        else
+        {
+            SensorRsp(in.ip, in.port, xx.seq,ERR);
+        }
+        
     }
     break;
     case CMD_TYPE_LIST::CMD_HEARBEAT_UWB_DATA:
@@ -135,8 +143,13 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
         Decode_Struct_No_Serialize(&xx, in._databuff);
         if (update(xx.id, &xx.data))
         {
-            SensorRsp(in.ip, in.port, xx.seq);
+            SensorRsp(in.ip, in.port, xx.seq,OK);
         }
+        else
+        {
+            SensorRsp(in.ip, in.port, xx.seq,ERR);
+        }
+        
     }
     break;
     default:

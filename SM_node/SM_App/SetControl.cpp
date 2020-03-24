@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-15 17:54:06
- * @LastEditTime: 2020-03-21 15:18:02
+ * @LastEditTime: 2020-03-24 11:35:06
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -34,6 +34,8 @@ void *APP::UWB_DriverOnlineChack()
 }
 int APP::sendToDriver(const char *ip, int port, uint8_t type, double value)
 {
+   
+   
     timeval tv;
     gettimeofday(&tv, NULL);
     TYPE_SET_DOUBLE_DATA setdata;
@@ -47,31 +49,24 @@ int APP::sendToDriver(const char *ip, int port, uint8_t type, double value)
     RES w;
     w.code = &code;
     w.seq = setdata.seq;
-    rslist_lock.lock();
+    _rslist_lock.lock();
     _respondlist.push_back(w);
-    rslist_lock.unlock();
-    //printf("%d\n", w.seq);
+    _rslist_lock.unlock();
+    
 
-    for (size_t j = 0; j < 3; j++)
+    _msg->sendData(ip,
+                   port,
+                   SOURCE_ID_LIST::ID_StateMachine,
+                   INS_LIST::INS_SET,
+                   CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA,
+                   setdata);
+                      
+    if (waitForACK(w.seq, w.code, 20))
     {
-        _msg->sendData_N(ip,
-                       port,
-                       SOURCE_ID_LIST::ID_StateMachine,
-                       INS_LIST::INS_SET,
-                       CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA,
-                       setdata);
-        for (size_t i = 0; i < 50; i++)
-        {
-            if (code != -1)
-            {
-                clear_sqe(w.seq);
-                return code;
-            }
-            Sleep(1);
-        }
-        //printf("%d retry %d times,\n", w.seq, j + 1);
+        clear_sqe(w.seq);
+        return *w.code;
     }
-    //printf("time out ------------------------%d\n", w.seq);
+    printf("time out ------------------------%d\n", w.seq);
     clear_sqe(w.seq);
     return TIMEOUT;
 }

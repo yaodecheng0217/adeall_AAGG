@@ -30,10 +30,10 @@ private:
     MutexLock _rslist_lock;
     std::vector<RES> _respondlist;
     uint32_t _seq = 0;
-    uint16_t _timeout = 50;
-    uint16_t Frequency = 50;
+    uint16_t _timeout = 3;
+    uint16_t Frequency = 100;
     MutexLock time_lock;
-   
+    int cnt = 10;
 public:
     Driver_node(ProtocolAnalysis *msg) : _msg(msg){};
     ~Driver_node(){};
@@ -56,7 +56,7 @@ private:
     void sendDataLoop();
     void clearSqe(uint32_t seq);
     int waitForACK(uint32_t seq, int *code, uint32_t timeout);
-    void recvAckCode(uint32_t ack, uint32_t seq);
+    void recvAckCode(int ack, uint32_t seq);
     void _Callback_Get(ReturnFrameData in);
     void _Callback_Set(ReturnFrameData in);
     void _Callback_ACK(ReturnFrameData in);

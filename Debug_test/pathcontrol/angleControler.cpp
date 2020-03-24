@@ -1,14 +1,14 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-18 11:01:49
- * @LastEditTime: 2020-03-19 18:50:13
+ * @LastEditTime: 2020-03-24 14:52:12
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
  */
 
 #include "angleControler.h"
-
+#include"stdio.h"
 //@计算纯角度导航输出量
 //@输入角度误差
 double Calculation_Angle(double Angie_Error, double Position_Error)
@@ -28,39 +28,44 @@ double Calculation_Angle(double Angie_Error, double Position_Error)
 }
 double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double speed, double L)
 {
+    //接近轨道阈值，超过此阈值将直接将车垂直九十度先接近轨道
     double dis = 160;
-    double kkk = 150;
-
     double dis2 = 100;
-    double kkk2 = 150;
+    //
     double f = 0;
 
     if (speed > 0)
     {
-        if (abs(L) > dis)
+
+        //换算前叉误差
+        double Ferr= (Position_Error/sin(Angle_Error)+200)*sin(Angle_Error);
+        printf("%f   %f===\n",Position_Error,Ferr);
+        if (abs(Position_Error) > dis)
         {
-            if (Position_Error > 0)
-                f = Calculation_Angle(Angle_Error + pi / 2, Position_Error);
+            if (Ferr > 0)
+                f = Calculation_Angle(Angle_Error + pi / 2, Ferr);
             else
-                f = Calculation_Angle(Angle_Error - pi / 2, Position_Error);
+                f = Calculation_Angle(Angle_Error - pi / 2, Ferr);
         }
-        else if (abs(Angle_Error) > 20 / Radian_conversion)
-            f = Calculation_Angle(Angle_Error, Position_Error);
+        else if (abs(Angle_Error) > 60 / Radian_conversion)
+            f = Calculation_Angle(Angle_Error, Ferr);
         else
             //f = Calculation_Angle(Angle_Error, Position_Error);
-            f = Calculation_Angle(Angle_Error + atan(Position_Error/100) , Position_Error);
+            f = Calculation_Angle(Angle_Error + atan(Ferr/(20+abs(speed/2))) , Ferr);
     }
     else
     {
+        //换算前叉误差
+        double Berr= (Position_Error/sin(Angle_Error)+90)*sin(Angle_Error);
         if (abs(Position_Error) > dis2)
         {
-            if (Position_Error > 0)
+            if (Berr > 0)
                 f = Calculation_Angle(Angle_Error - pi / 2, 0);
             else
                 f = Calculation_Angle(Angle_Error + pi / 2, 0);
         }
         else
-            f = Calculation_Angle(Angle_Error - atan(Position_Error / (kkk2 + abs(L) / 3)), Position_Error);
+            f = Calculation_Angle(Angle_Error - atan(Berr / (30 + abs(speed/2))), Berr);
         f = -f;
     }
     return f;
@@ -68,6 +73,7 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
 //计算终点线到当前车直线距离
 double Calculation_target_distance(double tx, double ty, double tyaw, double sx, double sy, double sv)
 {
+
     int RR = sqrt(((sx - tx) * (sx - tx)) + ((sy - ty) * (sy - ty)));
     //向量法求
     //先求目标角度

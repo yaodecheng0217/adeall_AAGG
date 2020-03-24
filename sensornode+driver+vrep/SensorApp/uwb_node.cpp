@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 12:17:45
- * @LastEditTime: 2020-03-22 17:42:02
+ * @LastEditTime: 2020-03-24 09:29:45
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -21,7 +21,7 @@ void uwb_node::initdata()
     _handle.driver_id= 1;
     _handle.driver_type= DIRVER_TYPE::LOCATION;
 
-    server_ip="127.0.0.1";
+    server_ip="192.168.2.16";
     server_port=StateMachine_port;
     source_id=ID_Sensor_uwb;
 }
@@ -59,5 +59,5 @@ void uwb_node::sendHandle(uint32_t seq)
 }
 int uwb_node::setDoubleValue(uint16_t type, double value)
 {
-
+   return 0;
 }

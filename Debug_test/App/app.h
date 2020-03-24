@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-22 18:12:19
+ * @LastEditTime: 2020-03-24 09:33:32
  * @LastEditors: Yaodecheng
  */
 /*
@@ -53,6 +53,7 @@ struct ReCall
 class APP
 {
 private:
+   const char * sip="192.168.2.16";
     ProtocolAnalysis *_msg;
     DRIVER_HANDLE control_handle = {"control", 1};
     uint32_t _seq = 0;

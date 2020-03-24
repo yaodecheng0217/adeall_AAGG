@@ -1,13 +1,13 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 12:17:27
- * @LastEditTime: 2020-03-22 16:50:20
+ * @LastEditTime: 2020-03-23 09:08:11
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
  */
 
-#include "../com/drivernode.h"
+#include "drivernode.h"
 #include<string.h>
 class uwb_node : public Driver_node
 {

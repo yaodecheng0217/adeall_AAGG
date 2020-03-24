@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:25
- * @LastEditTime: 2020-03-22 18:02:59
+ * @LastEditTime: 2020-03-24 11:35:38
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -15,7 +15,7 @@ void *APP::loop10ms(void *p)
     while (true)
     {
         a->TimeUpdate();
-        Sleep(50);
+        Sleep(10);
     }
 }
 void APP::print_Node_List()
@@ -27,9 +27,9 @@ void APP::print_Node_List()
     }
     printf("\n-------------->>\n");
 }
-void APP::setCode(uint32_t ack, uint32_t seq)
+void APP::recvAckCode(int ack, uint32_t seq)
 {
-    ScopeLocker K(&rslist_lock);
+    ScopeLocker K(&_rslist_lock);
     size_t count = _respondlist.size();
     for (size_t i = 0; i < count; i++)
     {
@@ -40,11 +40,23 @@ void APP::setCode(uint32_t ack, uint32_t seq)
         }
     }
 }
-void APP::SensorRsp(const char *ip, int prot, uint32_t seq)
+int APP::waitForACK(uint32_t seq, int *code, uint32_t timeout)
+{
+    for (size_t i = 0; i < timeout; i++)
+    {
+        Sleep(1);
+        if (*code != -1)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+void APP::SensorRsp(const char *ip, int prot, uint32_t seq,int code)
 {
     //回应非序列化
     TYPE_ACK_CODE aa;
-    aa.code = OK;
+    aa.code = code;
     aa.seq = seq;
     //printf("%d\n", seq);
     _msg->sendData(ip,
@@ -103,7 +115,7 @@ void APP::ClearDriverData(uint32_t id)
 
 void APP::clear_sqe(uint32_t seq)
 {
-    ScopeLocker K(&rslist_lock);
+    ScopeLocker K(&_rslist_lock);
     size_t c = _respondlist.size();
     for (size_t i = 0; i < c; i++)
     {

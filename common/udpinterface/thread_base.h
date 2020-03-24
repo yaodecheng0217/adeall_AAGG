@@ -4,7 +4,7 @@
  * @Author: Yaodecheng
  * @Date: 2019-10-19 10:32:13
  * @LastEditors: Yaodecheng
- * @LastEditTime: 2020-03-12 15:48:56
+ * @LastEditTime: 2020-03-23 22:41:15
  */
 #ifndef THREAD_BASE_H
 #define THREAD_BASE_H
@@ -26,6 +26,7 @@ class thread_base
 private:
 #ifdef _WIN32
 	static DWORD WINAPI threadfun(void *);
+	HANDLE Thandle;
 #else
 	pthread_t recvThread;
 	static void *threadfun(void *);

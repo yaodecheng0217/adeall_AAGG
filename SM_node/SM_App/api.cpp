@@ -181,7 +181,7 @@ void APP::Set_ACK(const char *ip, int port, int code, uint32_t seq)
     TYPE_ACK_CODE aa;
     aa.code = code;
     aa.seq = seq;
-    //printf("%d\n", seq);
+    //printf("%d   \n", seq,code);
     _msg->sendData(ip,
                    port,
                    ID_StateMachine,

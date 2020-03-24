@@ -2,8 +2,8 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-10-12 09:22:20
- * @LastEditTime: 2019-11-10 12:30:07
- * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2020-03-23 23:18:30
+ * @LastEditors: Yaodecheng
  */
 #ifndef MUTEXLOCK_HPP_
 #define MUTEXLOCK_HPP_
@@ -49,6 +49,7 @@ public:
 	}
 	~MutexLock()
 	{
+        CloseHandle(hEvent);
 	}
 	void lock()
 	{

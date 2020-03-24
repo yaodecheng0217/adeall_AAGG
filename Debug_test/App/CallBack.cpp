@@ -73,7 +73,6 @@ void APP::_Callback_ACK(ReturnFrameData in)
     break;
     case CMD_ACK_SET:
     {
-        //printf("ack set ");
        TYPE_ACK_CODE r;
         Decode_Struct_No_Serialize(&r, in._databuff);
         setCode(r.code,r.seq);

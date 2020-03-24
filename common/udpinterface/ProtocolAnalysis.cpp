@@ -4,7 +4,7 @@
  * @Author: Yaodecheng
  * @Date: 2019-10-19 10:26:48
  * @LastEditors: Yaodecheng
- * @LastEditTime: 2020-03-16 14:07:10
+ * @LastEditTime: 2020-03-23 18:19:41
  */
 
 #include "ProtocolAnalysis.h"
@@ -94,6 +94,7 @@ int ProtocolAnalysis::sendData(const char *ip, int prot, FrameDataStruct sdata)
 
 void ProtocolAnalysis::CallBackFuntion(std::vector<uint8_t> databuffer, void *ptr)
 {
+
     uint32_t bufferLength = databuffer.size();
    /* for (size_t i = 0; i < bufferLength; i++)
     {
@@ -142,6 +143,7 @@ void ProtocolAnalysis::CallBackFuntion(std::vector<uint8_t> databuffer, void *pt
                 memcpy(&out._databuff[0], &databuffer[15], datalength);
             out.port = ntohs(addr_client.sin_port);
             out.ip = inet_ntoa(addr_client.sin_addr);
+            //printf("%d\n",uu++);
             _outputfun(out);
         }
         break;

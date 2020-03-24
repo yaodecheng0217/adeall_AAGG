@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-22 17:48:12
+ * @LastEditTime: 2020-03-24 11:32:26
  * @LastEditors: Yaodecheng
  */
 /*
@@ -60,10 +60,11 @@ private:
         uint32_t seq;
         int *code;
     };
-    MutexLock rslist_lock;
+    MutexLock _rslist_lock;
     std::vector<RES> _respondlist;
     void clear_sqe(uint32_t seq);
-    void setCode(uint32_t ack, uint32_t seq);
+    int waitForACK(uint32_t seq, int *code, uint32_t timeout);
+    void recvAckCode(int ack, uint32_t seq);
     void SensorRsp_N(const char *ip, int prot, uint32_t seq);
 public:
     APP(ProtocolAnalysis *msg) : _msg(msg){};
@@ -71,9 +72,9 @@ public:
     void _Callback(ReturnFrameData in);
     void print_Node_List();
 
-private:
+public:
     void print_Node_INOF(Node_INFO info);
-    void SensorRsp(const char *ip, int prot, uint32_t seq);
+    void SensorRsp(const char *ip, int prot, uint32_t seq,int code);
     void AddNodeList(DRIVER_HANDLE handle, char *ip, int port);
     void *GetNodeData(DRIVER_HANDLE handle);
     void update(DRIVER_HANDLE handle, void *data);
