@@ -2,7 +2,7 @@
  * @Description: 状态机节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-24 10:58:56
+ * @LastEditTime: 2020-03-25 18:03:37
  * @LastEditors: Yaodecheng
  **/
 #include "APP/app.h"
@@ -34,15 +34,24 @@ int main()
   msgtest.init(Debug_port);
   pathControler ctrl(&app);
   ctrl.control_loop();
-  LOCATION_DATA uwb;
-  thread_base t(timee,NULL);
+ 
   while (true)
   {
-    int code = app.Set_Acc_motor(app.mode_abs, 0, 15);;
-    //Sleep(500);
+    double data;
+    int code = app.GetData(DATA_SET_GET_TYPE_LIST::Type_high_lasser,&data,50);;
+    printf("code=%s  %f\n", printf_status(code).c_str(),data);
+    code = app.GetData(DATA_SET_GET_TYPE_LIST::Type_high_lasser,&data,50);;
+    printf("code=%s  %f\n", printf_status(code).c_str(),data);
+    code = app.GetData(DATA_SET_GET_TYPE_LIST::Type_TrayH_lasser,&data,50);;
+    printf("code=%s  %f\n", printf_status(code).c_str(),data);
+    code = app.GetData(DATA_SET_GET_TYPE_LIST::Type_TrayL_lasser,&data,50);;
+    printf("code=%s  %f\n", printf_status(code).c_str(),data);
+    code = app.GetData(DATA_SET_GET_TYPE_LIST::Type_side_lasser,&data,50);;
+    printf("code=%s  %f\n", printf_status(code).c_str(),data);
+    Sleep(500);
     //thread_base t2(test2,NULL);
     ff++;
-    //printf("code=%s  %d\n", printf_status(code).c_str(),pp);
+    printf("=======\n");
   }
 
   return 0;

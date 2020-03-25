@@ -9,6 +9,7 @@
 
 void APP::_Callback(ReturnFrameData in)
 {
+   
     //return ;
     switch (in.ins)
     {
@@ -150,6 +151,20 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
             SensorRsp(in.ip, in.port, xx.seq,ERR);
         }
         
+    }
+    break;
+    case CMD_TYPE_LIST::CMD_HEARBEAT_DOUBLE_DATA :
+    {
+       TYPE_DOUBLE_UPDATE_DATA xx;
+        Decode_Struct_No_Serialize(&xx, in._databuff);
+        if (update(xx))
+        {
+            SensorRsp(in.ip, in.port, xx.seq,OK);
+        }
+        else
+        {
+            SensorRsp(in.ip, in.port, xx.seq,ERR);
+        }
     }
     break;
     default:

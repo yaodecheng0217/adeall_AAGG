@@ -58,9 +58,8 @@ void Driver_node::_Callback_Set(ReturnFrameData in)
     {
         TYPE_SET_DOUBLE_DATA r;
         Decode_Struct_No_Serialize(&r, in._databuff);
-        set_ACK_send(in.ip, in.port, OK, r.seq);//设置函数用时过长===========先响应
+        set_ACK_send(in.ip, in.port, OK, r.seq); //设置函数用时过长===========先响应
         int code = setDoubleValue(r.type, r.value);
-        
     }
     break;
     default:
@@ -123,6 +122,14 @@ void Driver_node::clearSqe(uint32_t seq)
 void Driver_node::sendDataLoop()
 {
 
+    if (cnt > 10)
+    {
+        Sleep(1000);
+        while(sendHandleAction()==0)
+        {
+            Sleep(1000);
+        }
+    }
     struct timeval tv;
     gettimeofday(&tv, NULL);
     uint32_t seq = _seq++;
@@ -136,32 +143,28 @@ void Driver_node::sendDataLoop()
     _respondlist.push_back(w);
     _rslist_lock.unlock();
     //printf("%d\n", w.seq);
-     for (size_t j = 0; j < 3; j++)
+    for (size_t j = 0; j < 3; j++)
     {
-    sendData(seq, timestamp);
-    if (waitForACK(w.seq, w.code, 20))
-    {
-        if(*w.code==ERR)
+        sendData(seq, timestamp);
+        if (waitForACK(w.seq, w.code, 20))
         {
-            sendHandleAction();
+            if (*w.code == ERR)
+            {
+                sendHandleAction();
+            }
+            cnt = 0;
+            clearSqe(w.seq);
+            return;
         }
-        cnt = 0;
-        clearSqe(w.seq);
-        return;
+        //printf("%d retry %d times,\n", w.seq, j + 1);
     }
-     //printf("%d retry %d times,\n", w.seq, j + 1);
-     }
     printf("%s update time out %d\n", _handle.driver_name.c_str(), w.seq);
     clearSqe(w.seq);
     cnt++;
-    if (cnt > 10)
-    {
-        Sleep(1000);
-        sendHandleAction();
-    }
+    
 }
 
-void Driver_node::sendHandleAction()
+int Driver_node::sendHandleAction()
 {
     //wait for ack
     int code = -1;
@@ -176,15 +179,25 @@ void Driver_node::sendHandleAction()
     for (size_t j = 0; j < 3; j++)
     {
         sendHandle(w.seq);
-        if (waitForACK(w.seq, w.code, 20))
+        if (waitForACK(w.seq, w.code, 50))
         {
-            clearSqe(w.seq);
-            printf("%s handle  ACK is ok ready to update!!\n", _handle.driver_name.c_str());
-            return;
+            if (*w.code == OK)
+            {
+                clearSqe(w.seq);
+                printf("%s handle  ACK is ok ready to update!!\n", _handle.driver_name.c_str());
+                return 1;
+            }
+            else
+            {
+                printf("%s handle  ACK is ERROR%d!!\n", _handle.driver_name.c_str(), *w.code);
+                clearSqe(w.seq);
+                return 0;
+            }
         }
     }
     printf("%s Send handle time out %d\n", _handle.driver_name.c_str(), w.seq);
     clearSqe(w.seq);
+    return 0;
 }
 void Driver_node::run()
 {
@@ -207,7 +220,14 @@ void *Driver_node::timer(void *is)
 void *Driver_node::hearbeatThread(void *is)
 {
     Driver_node *p = (Driver_node *)is;
-    p->sendHandleAction();
+    if(p->sendHandleAction())
+    {
+        p->cnt=0;
+    }
+    else
+    {
+        p->cnt=20;
+    }
     while (true)
     {
         p->time_lock.lock();

@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 13:45:32
- * @LastEditTime: 2020-03-24 15:46:49
+ * @LastEditTime: 2020-03-25 15:14:48
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -126,7 +126,7 @@ void vrep_interface::Set_Acc_motor(double value)
     simxSetJointTargetVelocity(clientID, _handle.Accelerator, value, simx_opmode_oneshot);
     simxSynchronousTrigger(clientID);
 }
-void vrep_interface::Set_Lift_motor(double value)
+void vrep_interface::Set_Lift_motor(double value) 
 {
     simxSetJointTargetVelocity(clientID, _handle.Lift, value, simx_opmode_oneshot);
     simxSynchronousTrigger(clientID);

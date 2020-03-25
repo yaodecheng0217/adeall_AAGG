@@ -1,33 +1,35 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 12:17:45
- * @LastEditTime: 2020-03-25 15:19:31
+ * @LastEditTime: 2020-03-25 15:39:05
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
  */
 
-#include "uwb_node.h"
+#include "lasser_node.h"
 
-uwb_node::uwb_node(ProtocolAnalysis *msg) : Driver_node(msg)
+lasser_node::lasser_node(ProtocolAnalysis *msg,std::string name,uint8_t id) : Driver_node(msg)
+{
+   _handle.driver_id=id;
+   _handle.driver_name=name;
+}
+lasser_node::~lasser_node()
 {
 }
-uwb_node::~uwb_node()
+void lasser_node::initdata()
 {
-}
-void uwb_node::initdata()
-{
-    _handle.driver_name="uwb_sensor";
-    _handle.driver_id= 1;
-    _handle.driver_type= DIRVER_TYPE::LOCATION;
+    
+    //_handle.driver_id= 1;
+    _handle.driver_type= DIRVER_TYPE::DOUBLE_DATA;
 
     server_ip="192.168.2.16";
     server_port=StateMachine_port;
     source_id=ID_Sensor_uwb;
 }
-void uwb_node::sendData(uint32_t seq, time_t timestamp)
+void lasser_node::sendData(uint32_t seq, time_t timestamp)
 {
-   TYPE_UWB_UPDATE_DATA hearbeat;
+   TYPE_DOUBLE_UPDATE_DATA hearbeat;
     hearbeat.id = _handle.driver_id;
     hearbeat.data = _data;
     hearbeat.seq = seq;
@@ -38,10 +40,10 @@ void uwb_node::sendData(uint32_t seq, time_t timestamp)
                      server_port,
                      source_id,
                      INS_LIST::INS_HARBEAT,
-                     CMD_TYPE_LIST::CMD_HEARBEAT_UWB_DATA,//设置
+                     CMD_TYPE_LIST::CMD_HEARBEAT_DOUBLE_DATA,//设置
                      hearbeat);
 }
-void uwb_node::sendHandle(uint32_t seq)
+void lasser_node::sendHandle(uint32_t seq)
 {
    neb::CJsonObject oJson;
    TYPE_handle_string s;
@@ -57,7 +59,7 @@ void uwb_node::sendHandle(uint32_t seq)
                    CMD_TYPE_LIST::CMD_HEARBEAT_HANDLE,//设置
                    oJson.ToString());
 }
-int uwb_node::setDoubleValue(uint16_t type, double value)
+int lasser_node::setDoubleValue(uint16_t type, double value)
 {
    return 0;
 }

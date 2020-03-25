@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:25
- * @LastEditTime: 2020-03-24 11:35:38
+ * @LastEditTime: 2020-03-25 15:59:31
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -112,7 +112,22 @@ void APP::ClearDriverData(uint32_t id)
     }
     printf("delet dire errr=%d\n", iter->id);
 }
-
+void APP::ClearDoubleData(uint32_t id)
+{
+    ScopeLocker K(&double_lock);
+    std::vector<DOUBLE_D>::iterator iter;
+    for (iter = _doubledata.begin(); iter != _doubledata.end(); iter++)
+    {
+        //printf("%d  %d\n", iter->id, id);
+        if (iter->id == id)
+        {
+            printf("delet double id=%d\n", iter->id);
+            _doubledata.erase(iter);
+            return;
+        }
+    }
+    printf("delet double error=%d\n", iter->id);
+}
 void APP::clear_sqe(uint32_t seq)
 {
     ScopeLocker K(&_rslist_lock);
@@ -155,7 +170,6 @@ void APP::clearonliecount(int type, uint32_t driver_id)
         Node_INFO *info = &_NodeList[i];
         if (info->handle.driver_id == driver_id && info->handle.driver_type == type)
         {
-
             info->onlinecnt = 0;
             return;
         }

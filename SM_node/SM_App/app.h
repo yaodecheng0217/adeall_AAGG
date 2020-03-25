@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-24 11:32:26
+ * @LastEditTime: 2020-03-25 17:41:17
  * @LastEditors: Yaodecheng
  */
 /*
@@ -28,7 +28,6 @@ struct Node_INFO
     DRIVER_HANDLE handle;
     std::string ip;
     int port;
-    void *data;
     time_t timestamp;
     int onlinecnt;
 };
@@ -41,6 +40,11 @@ struct DRIVER_D
 {
     uint32_t id;
     ETV_DRIVER_STATE_DATA data;
+};
+struct DOUBLE_D
+{
+    uint32_t id;
+    double data;
 };
 class APP
 {
@@ -55,6 +59,8 @@ private:
     std::vector<UWB_D> _uwbdata;
     MutexLock dri_lock;
     std::vector<DRIVER_D> _driverdata;
+    MutexLock double_lock;
+    std::vector<DOUBLE_D> _doubledata;
     struct RES
     {
         uint32_t seq;
@@ -77,20 +83,25 @@ public:
     void SensorRsp(const char *ip, int prot, uint32_t seq,int code);
     void AddNodeList(DRIVER_HANDLE handle, char *ip, int port);
     void *GetNodeData(DRIVER_HANDLE handle);
+    Node_INFO *GetNode_INFO(uint16_t  type,uint32_t driver_id);
     void update(DRIVER_HANDLE handle, void *data);
     void TimeUpdate();
     static void *loop10ms(void *);
     void ClearDriverData(uint32_t id);
     void ClearUWBData(uint32_t id);
+    void ClearDoubleData(uint32_t id);
     bool GetDataDetail(uint32_t driver_id, LOCATION_DATA *data);
     bool GetDataDetail(uint32_t driver_id, ETV_DRIVER_STATE_DATA *data);
+    bool GetDataDetail(uint32_t id, double *data);
     bool UpdateDataDetail(uint32_t driver_id, LOCATION_DATA data);
     bool UpdateDataDetail(uint32_t driver_id, ETV_DRIVER_STATE_DATA data);
+    bool UpdateDataDetail(uint32_t driver_id,double data);
     void *ETV_DriverOnlineChack();
     void *UWB_DriverOnlineChack();
     int sendToDriver(const char *ip, int port, uint8_t type, double value);
     bool update(uint32_t driver_id, LOCATION_DATA *data);
     bool update(uint32_t driver_id, ETV_DRIVER_STATE_DATA *data);
+    bool update(TYPE_DOUBLE_UPDATE_DATA data);
     void clearonliecount(int type,uint32_t driver_id);
 public:
     //设置油门值,取值范围(1，-1)

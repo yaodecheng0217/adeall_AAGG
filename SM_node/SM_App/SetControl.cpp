@@ -32,6 +32,19 @@ void *APP::UWB_DriverOnlineChack()
     }
     return NULL;
 }
+ Node_INFO *APP::GetNode_INFO(uint16_t  type,uint32_t driver_id)
+ {
+    ScopeLocker K(&info_lock);
+    size_t cnt = _NodeList.size();
+    for (size_t i = 0; i < cnt; i++)
+    {
+        if (_NodeList[i].handle.driver_type == type&&_NodeList[i].handle.driver_id==driver_id)
+        {
+            return &_NodeList[i];
+        }
+    }
+    return NULL;
+ }
 int APP::sendToDriver(const char *ip, int port, uint8_t type, double value)
 {
    

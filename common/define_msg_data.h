@@ -87,6 +87,7 @@ enum CMD_TYPE_LIST
     CMD_ACK_LOCATION_DATA,
     CMD_ACK_ONE_DATA,
     CMD_ACK_CODE,
+    CMD_HEARBEAT_DOUBLE_DATA,
 };
 //请求返回码
 enum STATE_CODE_LIST
@@ -105,6 +106,7 @@ enum DIRVER_TYPE
 {
     LOCATION,
     ETV_Driver,
+    DOUBLE_DATA,
 };
 struct LOCATION_DATA
 {
@@ -140,20 +142,27 @@ enum DATA_SET_GET_TYPE_LIST
     Type_AUTO,
 
     //====
-    Type_location
+    Type_location,
+    Type_high_lasser,
+    Type_forward_lasser,
+    Type_side_lasser,
+    Type_TrayH_lasser,
+    Type_TrayL_lasser,
+    Type_TurnWheel_angle,
+    Type_Accelerator_speed,
 };
 struct DRIVER_HANDLE
 {
-     std::string driver_name;
-     uint32_t driver_id;
-     uint32_t driver_type;
+    std::string driver_name;
+    uint32_t driver_id;
+    uint32_t driver_type;
 };
 struct TYPE_handle_string
 {
-     const std::string driver_name="driver";
-     const std::string driver_id="driver_id";
-     const std::string driver_type="driver_type";
-     const std::string seq="seq";
+    const std::string driver_name = "driver";
+    const std::string driver_id = "driver_id";
+    const std::string driver_type = "driver_type";
+    const std::string seq = "seq";
 };
 struct TYPE_UWB_UPDATE_DATA
 {
@@ -167,6 +176,14 @@ struct TYPE_ETV_DRIVER_UPDATE_DATA
 {
     uint32_t id;
     ETV_DRIVER_STATE_DATA data;
+    uint32_t seq;
+    bool state_ok;
+    time_t timestamp;
+};
+struct TYPE_DOUBLE_UPDATE_DATA
+{
+    uint32_t id;
+    double data;
     uint32_t seq;
     bool state_ok;
     time_t timestamp;

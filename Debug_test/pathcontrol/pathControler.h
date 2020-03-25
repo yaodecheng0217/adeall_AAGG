@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 10:55:58
- * @LastEditTime: 2020-03-24 16:53:06
+ * @LastEditTime: 2020-03-25 15:07:14
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence
@@ -30,6 +30,7 @@ private:
     static void *timer_50ms(void *);
     static void *timer_1000ms(void *);
     int angle_control_cycle(PostionData sdata,int speed);
+    int get_fork();
 };
 
 

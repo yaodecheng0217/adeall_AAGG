@@ -4,39 +4,21 @@
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
-void APP::update(DRIVER_HANDLE handle, void *data)
-{
-    Node_INFO *info = (Node_INFO *)GetNodeData(handle);
-    if (info)
-    {
-        switch (info->handle.driver_type)
-        {
-        case LOCATION:
-        {
-            if (UpdateDataDetail(info->handle.driver_id, (*(LOCATION_DATA *)data)))
-                info->onlinecnt = 0; //清零超时
-        }
-        break;
-        case ETV_Driver:
-        {
-            if (UpdateDataDetail(info->handle.driver_id, (*(ETV_DRIVER_STATE_DATA *)data)))
-                info->onlinecnt = 0; //清零超时
-        }
-        //other type....
-        default:
-            break;
-        }
-    }
-    else
-    {
-        printf("No mach\n");
-    }
-}
+
 bool APP::update(uint32_t driver_id,LOCATION_DATA *data)
 {
     if (UpdateDataDetail(driver_id, *data))
     {
         clearonliecount(LOCATION,driver_id); //清零超时
+        return 1;
+    }
+       return 0;
+}
+bool APP::update(TYPE_DOUBLE_UPDATE_DATA xx)
+{
+    if (UpdateDataDetail(xx.id,xx.data))
+    {
+        clearonliecount(DOUBLE_DATA,xx.id); //清零超时
         return 1;
     }
        return 0;
@@ -86,6 +68,7 @@ void APP::AddNodeList(DRIVER_HANDLE handle, char *ip, int port)
         x.handle = handle;
         x.ip = ip;
         x.port = port;
+        x.onlinecnt=0;
         switch (x.handle.driver_type)
         {
         case LOCATION:
@@ -104,11 +87,19 @@ void APP::AddNodeList(DRIVER_HANDLE handle, char *ip, int port)
             printf("B-------------%d  %d\n", data.id, x.handle.driver_id);
         }
         break;
+         case DOUBLE_DATA:
+        {
+            DOUBLE_D data;
+            data.id = x.handle.driver_id;
+            _doubledata.push_back(data);
+            printf("C-------------%d  %d\n", data.id, x.handle.driver_id);
+        }
+        break;
         default:
             break;
         }
         _NodeList.push_back(x);
-        printf("Add ok  %d   %d  %d\n", x.handle.driver_id, x.data, _uwbdata.size());
+        printf("Add ok  %d   %d \n", x.handle.driver_id, _uwbdata.size());
     }
 }
 void APP::print_Node_INOF(Node_INFO info)
@@ -147,6 +138,16 @@ void APP::print_Node_INOF(Node_INFO info)
         }
     }
     break;
+     case DOUBLE_DATA:
+    {
+
+         double d;
+        if (GetDataDetail(info.handle.driver_id, &d))
+        {
+            printf("data:\n  %f,\n", d);
+        }
+    }
+    break;
     //other type....
     default:
         break;
@@ -176,6 +177,18 @@ bool APP::GetDataDetail(uint32_t id, ETV_DRIVER_STATE_DATA *data)
     }
     return 0;
 }
+bool APP::GetDataDetail(uint32_t id, double *data)
+{
+    for (DOUBLE_D x : _doubledata)
+    {
+        if (x.id == id)
+        {
+            *data = x.data;
+            return 1;
+        }
+    }
+    return 0;
+}
 bool APP::UpdateDataDetail(uint32_t driver_id, LOCATION_DATA data)
 {
     std::vector<UWB_D>::iterator iter;
@@ -193,6 +206,19 @@ bool APP::UpdateDataDetail(uint32_t driver_id,ETV_DRIVER_STATE_DATA data)
 {
     std::vector<DRIVER_D>::iterator iter;
     for (iter = _driverdata.begin(); iter != _driverdata.end(); iter++)
+    {
+        if (iter->id == driver_id)
+        {
+            iter->data = data;
+            return 1;
+        }
+    }
+    return 0;
+}
+bool APP::UpdateDataDetail(uint32_t driver_id,double data)
+{
+    std::vector<DOUBLE_D>::iterator iter;
+    for (iter = _doubledata.begin(); iter != _doubledata.end(); iter++)
     {
         if (iter->id == driver_id)
         {

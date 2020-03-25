@@ -19,9 +19,12 @@
 
 using namespace msgpa;
 using namespace adeall;
+static uint32_t _seq = 0;
 class Driver_node
 {
 private:
+    
+
     struct RES
     {
         uint32_t seq;
@@ -29,11 +32,12 @@ private:
     };
     MutexLock _rslist_lock;
     std::vector<RES> _respondlist;
-    uint32_t _seq = 0;
+
     uint16_t _timeout = 3;
     uint16_t Frequency = 100;
     MutexLock time_lock;
     int cnt = 10;
+
 public:
     Driver_node(ProtocolAnalysis *msg) : _msg(msg){};
     ~Driver_node(){};
@@ -48,11 +52,12 @@ protected:
     virtual void initdata() = 0;
     virtual void sendData(uint32_t seq, time_t timestamp) = 0;
     virtual void sendHandle(uint32_t seq) = 0;
-    virtual int setDoubleValue(uint16_t type, double value)=0;
+    virtual int setDoubleValue(uint16_t type, double value) = 0;
+
 private:
     static void *hearbeatThread(void *);
     static void *timer(void *);
-    void sendHandleAction();
+    int sendHandleAction();
     void sendDataLoop();
     void clearSqe(uint32_t seq);
     int waitForACK(uint32_t seq, int *code, uint32_t timeout);
