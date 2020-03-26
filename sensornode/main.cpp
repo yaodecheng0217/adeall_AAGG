@@ -2,7 +2,7 @@
  * @Description: 传感器节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-22 15:43:11
+ * @LastEditTime: 2020-03-26 13:50:08
  * @LastEditors: Yaodecheng
  **/
 
@@ -16,13 +16,10 @@ uwb_node app(&msgtest);
 UWBsenser uwb;
 int main()
 {  
-    //vr.init();
     uwb.star("COM6","COM2");
     msgtest.init(Sensor_port);
     app.run();
     app._data.x = 1.11111;
-    //vr.Set_Turn_motor(90/57.3);
-    //vr.Set_Acc_motor(1);
     while (1)
     {
         //vrep_data d = vr.GetAllData();

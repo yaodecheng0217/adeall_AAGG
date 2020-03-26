@@ -57,6 +57,7 @@ void APP::_Callback_Get(ReturnFrameData in)
 }
 void APP::_Callback_Set(ReturnFrameData in)
 {
+    //printf("in_cmd=%d\n",in.cmd_type);
     switch (in.cmd_type)
     {
     case CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA:

@@ -45,6 +45,7 @@ ENDIF ()
 #为工程添加源文件,,第一个为工程名
 add_executable( ${PROJECT_NAME}
     "main.cpp"
+    "keyboard.cpp"
     ${SRC_FILES}
     ${SRC_BASIC_FILES}
     ${SRC_Cjson_FILES}

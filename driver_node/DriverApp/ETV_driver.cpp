@@ -1,38 +1,41 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 13:48:45
- * @LastEditTime: 2020-03-23 18:09:41
+ * @LastEditTime: 2020-03-26 15:03:01
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
  */
 #include "ETV_driver.h"
 #include "udpinterface/thread_base.h"
+#include "output.h"
 ETV_driver::ETV_driver(ProtocolAnalysis *msg,int n) : Driver_node(msg)
 {
     _handle.driver_id = n;
 }
-
-ETV_driver::~ETV_driver()
+void *ETV_driver::controlOnline(void *etv)
 {
-}
-void * ETV_driver::controlOnline(void *etv)
-{
-    ETV_driver *p=(ETV_driver *)etv;
+    ETV_driver *p = (ETV_driver *)etv;
     while (true)
     {
-        if(p->Control_count>5)
+        if (p->Control_count > 20)
         {
+            p->_data.AcceleratorValue=0;
+            p->_data.LiftValue=0;
+            Set_Acc_motor(0);
+            Set_Lift_motor(0);
             p->Control_count--;
         }
         p->Control_count++;
-        Sleep(100);
+        Sleep(10);
     }
-    
+}
+ETV_driver::~ETV_driver()
+{
 }
 void ETV_driver::initdata()
 {
-    _handle.driver_name = "Driver"; 
+    _handle.driver_name = "ERCdriver"; 
     _handle.driver_type = DIRVER_TYPE::ETV_Driver;
 
      server_ip="192.168.2.16";
@@ -40,6 +43,7 @@ void ETV_driver::initdata()
     source_id = ID_Sensor_uwb;
     _data.AUTO=1;
     thread_base t(controlOnline,this);
+    ERC212_initoutput();
 }
 void ETV_driver::sendData(uint32_t seq, time_t timestamp)
 {
@@ -72,33 +76,29 @@ void ETV_driver::sendHandle(uint32_t seq)
                    INS_LIST::INS_HARBEAT,
                    CMD_TYPE_LIST::CMD_HEARBEAT_HANDLE,//设置
                    oJson.ToString());
-   _msg->sendStringData("192.168.2.16",
-                   9888,
-                   source_id,
-                   INS_LIST::INS_HARBEAT,
-                   CMD_TYPE_LIST::CMD_HEARBEAT_HANDLE,//设置
-                   oJson.ToString());
    //printf("\n%s\n",oJson.ToString().c_str());
 }
 int ETV_driver::setDoubleValue(uint16_t type, double value)
 {
-    //printf("set-->\n");
+   // printf("set-->\n");
      Control_count=0;
     switch (type)
     {
     case DATA_SET_GET_TYPE_LIST::Type_AcceleratorValue:
         _data.AcceleratorValue = value;
         //vr->Set_Acc_motor(-value);
+        Set_Acc_motor( value);
         break;
     case DATA_SET_GET_TYPE_LIST::Type_BrakeValue:
-        _data.BrakeValue = value;
+        //_data.BrakeValue = value;
         break;
     case DATA_SET_GET_TYPE_LIST::Type_LiftValue:
         _data.LiftValue = value;
         //vr->Set_Lift_motor(value);
+        Set_Lift_motor(value);
         break;
     case DATA_SET_GET_TYPE_LIST::Type_MoveForwardValue:
-        _data.MoveForwardValue = value;
+        //_data.MoveForwardValue = value;
         ///vr->Set_Forward_motor(value);
         break;
     case DATA_SET_GET_TYPE_LIST::Type_SideValue:
@@ -106,17 +106,20 @@ int ETV_driver::setDoubleValue(uint16_t type, double value)
         //vr->Set_Side_motor(value);
         break;
     case DATA_SET_GET_TYPE_LIST::Type_TiltValue:
-        _data.TiltValue = value;
+        //_data.TiltValue = value;
         break;
     case DATA_SET_GET_TYPE_LIST::Type_TurnAngleValue:
         _data.TurnAngleValue = value;
         //vr->Set_Turn_motor(value);
+        Set_Turn_motor( value);
         break;
     case DATA_SET_GET_TYPE_LIST::Type_AUTO:
         _data.AUTO = value;
+        Set_AUTO(value);
         break;
     case DATA_SET_GET_TYPE_LIST::Type_LED_Green:
         _data.LED_Green = value;
+        
         break;
     case DATA_SET_GET_TYPE_LIST::Type_LED_Red:
         _data.LED_Red = value;

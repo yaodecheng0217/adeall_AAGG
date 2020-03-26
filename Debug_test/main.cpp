@@ -1,4 +1,12 @@
 /*
+ * @Author: Yaodecheng
+ * @Date: 2020-03-24 15:09:30
+ * @LastEditTime: 2020-03-26 14:16:00
+ * @LastEditors: Yaodecheng
+ * @Description: 
+ * @Adeall licence@2020
+ */
+/*
  * @Description: 状态机节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
@@ -8,6 +16,7 @@
 #include "APP/app.h"
 #include "sleep.h"
 #include "pathcontrol/pathControler.h"
+#include "keyboard.h"
 void Callback_outdata(ReturnFrameData in);
 msgpa::ProtocolAnalysis msgtest(Callback_outdata);
 APP app(&msgtest);
@@ -33,6 +42,11 @@ int main()
   app.run();
   msgtest.init(Debug_port);
   pathControler ctrl(&app);
+  StarKeyboard();
+  while(1)
+  {
+    Sleep(1);
+  }
   ctrl.control_loop();
  
   while (true)

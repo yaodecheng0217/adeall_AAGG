@@ -327,7 +327,7 @@ void LocalSenerDealdata(string str,int L, UWBsenser* P)
 					temp = (temp << 8) | data[15 + 1];
 					TimeStam = temp;
 
-				    cout << "Tagid=" << Tagid << " Posx=" << Posx << " Posy=" << Posy << " Posz=" << Posz << " TimeStam=" << TimeStam << std::endl;
+				    //cout << "Tagid=" << Tagid << " Posx=" << Posx << " Posy=" << Posy << " Posz=" << Posz << " TimeStam=" << TimeStam << std::endl;
 					P->localsenser_data.Posx = Posx;
 					P->localsenser_data.Posy = Posy;
 					P->localsenser_data.Posz = Posz;
@@ -551,7 +551,7 @@ void LocalSenerDealdata(string str,int L, UWBsenser* P)
 		}
 }
 
-DWORD WINAPI  UWBsenser::UWBthread1(void* args)
+DWORD WINAPI  UWBthread1(void* args)
 {
 	UWBsenser* P = (UWBsenser*)args;
 	while (1)
@@ -565,7 +565,7 @@ DWORD WINAPI  UWBsenser::UWBthread1(void* args)
 		Sleep(10);
 	}
 }
-DWORD WINAPI  UWBsenser::UWBthread2(void* args)
+DWORD WINAPI  UWBthread2(void* args)
 {
 	UWBsenser* P = (UWBsenser*)args;
 	while (1)
@@ -579,7 +579,7 @@ DWORD WINAPI  UWBsenser::UWBthread2(void* args)
 		Sleep(10);
 	}
 }
-DWORD WINAPI  UWBsenser::onlineChick(void* args)
+DWORD WINAPI  onlineChick(void* args)
 {
 	UWBsenser* P = (UWBsenser*)args;
 	long long int temperature = 0;

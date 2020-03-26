@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/../common/udpinterface/",
                 "${workspaceFolder}/../common/",
+                "${workspaceFolder}/../common/windows",
                 "${workspaceFolder}/../",
                 "${workspaceFolder}/**"
             ],

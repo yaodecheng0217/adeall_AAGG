@@ -10,16 +10,18 @@ set(CMAKE_BUILD_TYPE "Debug") #Release
 set(CMAKE_CXX_FLAGS "-std=c++11 -std=gnu++11")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g"
 # Set Compiler，指定编译为32位程序
-SET(CMAKE_C_FLAGS "-m64")
-SET(CMAKE_CXX_FLAGS "-m64")
+SET(CMAKE_C_FLAGS "-m32")
+SET(CMAKE_CXX_FLAGS "-m32")
 aux_source_directory(./DriverApp SRC_FILES)
 aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)
 aux_source_directory(../common SRC_Cjson_FILES)
+aux_source_directory(../common/windows SRC_Cjson_FILES)
 #添加头文件目录
 include_directories(
      ../common/
      ../common/udpinterface/
+     ../common/windows
     )
 #添加连接库路径
 list( APPEND PROJECK_LINKS_LIBS

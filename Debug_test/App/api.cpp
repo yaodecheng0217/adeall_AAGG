@@ -185,28 +185,28 @@ int APP::setControl(uint8_t mode, double value, uint16_t timeout,
 
     return ERR;
 }
-int APP::Set_Forward_motor(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Forward_motor(UINT8 mode, double value, uint16_t timeout)
 {
     return setControl(mode, value, timeout, Type_MoveForwardValue);
 }
 
-int APP::Set_Acc_motor(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Acc_motor(UINT8 mode, double value, uint16_t timeout)
 {
     return setControl(mode, value, timeout, Type_AcceleratorValue);
 }
-int APP::Set_Lift_motor(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Lift_motor(UINT8 mode, double value, uint16_t timeout)
 {
     return setControl(mode, value, timeout, Type_LiftValue);
 }
-int APP::Set_Side_motor(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Side_motor(UINT8 mode, double value, uint16_t timeout)
 {
     return setControl(mode, value, timeout, Type_SideValue);
 }
-int APP::Set_Turn_motor(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Turn_motor(UINT8 mode, double value, uint16_t timeout)
 {
     return setControl(mode, value, timeout, Type_TurnAngleValue);
 }
-int APP::Set_Brake(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Brake(UINT8 mode, double value, uint16_t timeout)
 {
     return setControl(mode, value, timeout, Type_BrakeValue);
 }

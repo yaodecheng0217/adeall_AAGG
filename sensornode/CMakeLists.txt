@@ -15,9 +15,9 @@ SET(CMAKE_CXX_FLAGS "-m32")
 aux_source_directory(./SensorApp SRC_FILES)
 aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)
-aux_source_directory(./vrep/remoteApi SRC_FILES)
-aux_source_directory(./vrep SRC_FILES)
 aux_source_directory(./uwb SRC_FILES)
+aux_source_directory(../common SRC_Cjson_FILES)
+
 
 add_definitions(-D WIN32)
 add_definitions(-D NDEBUG)
@@ -27,8 +27,6 @@ add_definitions(-D MAX_EXT_API_CONNECTIONS=255)
 
 #添加头文件目录
 include_directories(
-    ./vrep/remoteApi
-    ./vrep/include
      ../common
      ../common/udpinterface
     )
