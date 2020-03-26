@@ -10,8 +10,8 @@ set(CMAKE_BUILD_TYPE "Debug") #Release
 set(CMAKE_CXX_FLAGS "-std=c++11 -std=gnu++11")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g"
 # Set Compiler，指定编译为32位程序
-SET(CMAKE_C_FLAGS "-m32")
-SET(CMAKE_CXX_FLAGS "-m32")
+SET(CMAKE_C_FLAGS "-m64")
+SET(CMAKE_CXX_FLAGS "-m64")
 aux_source_directory(./SensorApp SRC_FILES)
 aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)

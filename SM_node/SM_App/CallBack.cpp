@@ -109,7 +109,7 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
            ss<<x;
         }
         neb::CJsonObject oJson(ss.str().c_str());
-        //printf("\n%s\n",oJson.ToString().c_str());
+        printf("\n%s\n",oJson.ToFormattedString().c_str());
         DRIVER_HANDLE handle;
         TYPE_handle_string s;
         oJson.Get("driver_name",handle.driver_name);
@@ -125,48 +125,25 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
         //printf(".");
     }
     break;
-    case CMD_TYPE_LIST::CMD_HEARBEAT_ETV_DRIVER_DATA:
+    case CMD_TYPE_LIST::CMD_UPDATE_DATA:
     {
-        TYPE_ETV_DRIVER_UPDATE_DATA xx;
-        Decode_Struct_No_Serialize(&xx, in._databuff);
-        if (update(xx.id, &xx.data))
+        std::stringstream ss;
+        for (uint8_t x:in._databuff)
         {
-            SensorRsp(in.ip, in.port, xx.seq,OK);
+           ss<<x;
+        }
+        
+        neb::CJsonObject oJson(ss.str().c_str());
+        //printf("\n%s\n",oJson.ToFormattedString().c_str());
+        uint32_t seq;
+        oJson.Get("seq",seq);
+        if(UpdateDataDetail(oJson["update"]))
+        {
+            SensorRsp(in.ip, in.port, seq,OK);
         }
         else
         {
-            SensorRsp(in.ip, in.port, xx.seq,ERR);
-        }
-        
-    }
-    break;
-    case CMD_TYPE_LIST::CMD_HEARBEAT_UWB_DATA:
-    {
-        
-        TYPE_UWB_UPDATE_DATA xx;
-        Decode_Struct_No_Serialize(&xx, in._databuff);
-        if (update(xx.id, &xx.data))
-        {
-            SensorRsp(in.ip, in.port, xx.seq,OK);
-        }
-        else
-        {
-            SensorRsp(in.ip, in.port, xx.seq,ERR);
-        }
-        
-    }
-    break;
-    case CMD_TYPE_LIST::CMD_HEARBEAT_DOUBLE_DATA :
-    {
-       TYPE_DOUBLE_UPDATE_DATA xx;
-        Decode_Struct_No_Serialize(&xx, in._databuff);
-        if (update(xx))
-        {
-            SensorRsp(in.ip, in.port, xx.seq,OK);
-        }
-        else
-        {
-            SensorRsp(in.ip, in.port, xx.seq,ERR);
+            SensorRsp(in.ip, in.port, seq,ERR);
         }
     }
     break;

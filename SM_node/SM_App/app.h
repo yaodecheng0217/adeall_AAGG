@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-26 18:40:25
+ * @LastEditTime: 2020-03-26 22:35:44
  * @LastEditors: Yaodecheng
  */
 /*
@@ -16,6 +16,8 @@ sudo  apt-get  install   gcc-7-multilib g++-7-multilib
 #include <vector>
 #include "thread_base.h"
 #include <list>
+#include "CJson/cJSON.h"
+#include "CJson/CJsonObject.hpp"
 
 #ifndef _APP_H_
 #define _APP_H_
@@ -26,6 +28,7 @@ using namespace adeall;
 struct Node_INFO
 {
     DRIVER_HANDLE handle;
+    neb::CJsonObject data;
     std::string ip;
     int port;
     time_t timestamp;
@@ -95,6 +98,9 @@ public:
     void print_Node_List();
 
 public:
+neb::CJsonObject *GetDataDetail(std::string driver_name, std::string dataname);
+    
+    bool UpdateDataDetail(neb::CJsonObject newdata);
     void print_Node_INOF(Node_INFO info);
     void SensorRsp(const char *ip, int prot, uint32_t seq,int code);
     void AddNodeList(DRIVER_HANDLE handle, char *ip, int port);
@@ -106,10 +112,9 @@ public:
     void ClearDriverData(uint32_t id);
     void ClearUWBData(uint32_t id);
     void ClearDoubleData(uint32_t id);
-    bool GetDataDetail(uint32_t driver_id, LOCATION_DATA *data);
-    bool GetDataDetail(uint32_t driver_id, ETV_DRIVER_STATE_DATA *data);
-    bool GetDataDetail(uint32_t id, double *data);
-    bool UpdateDataDetail(uint32_t driver_id, LOCATION_DATA data);
+    bool GetDataDetail(std::string driver_name, std::vector<double> *data);
+    bool GetDataDetail(std::string driver_name, std::vector<bool> *data);
+    bool UpdateDataDetail(std::string updatedata);
     bool UpdateDataDetail(uint32_t driver_id, ETV_DRIVER_STATE_DATA data);
     bool UpdateDataDetail(uint32_t driver_id,double data);
     void *ETV_DriverOnlineChack();
@@ -119,6 +124,8 @@ public:
     bool update(uint32_t driver_id, ETV_DRIVER_STATE_DATA *data);
     bool update(TYPE_DOUBLE_UPDATE_DATA data);
     void clearonliecount(int type,uint32_t driver_id);
+    int GetlistLoc(std::string driver_name,std::vector<V_double>list);
+    int GetlistLoc(std::string driver_name,std::vector<V_bool>list);
 public:
     //设置油门值,取值范围(1，-1)
     int SetAcceleratorValue(double value);

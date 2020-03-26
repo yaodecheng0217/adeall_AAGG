@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:25
- * @LastEditTime: 2020-03-26 18:39:43
+ * @LastEditTime: 2020-03-26 22:38:28
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -168,7 +168,7 @@ void APP::clearonliecount(int type, uint32_t driver_id)
     for (size_t i = 0; i < size; i++)
     {
         Node_INFO *info = &_NodeList[i];
-        if (info->handle.driver_id == driver_id && info->handle.driver_type == type)
+        if (info->handle.driver_id == driver_id && info->handle.driver_id == type)
         {
             info->onlinecnt = 0;
             return;

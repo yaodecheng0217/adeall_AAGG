@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-15 17:54:06
- * @LastEditTime: 2020-03-24 11:35:06
+ * @LastEditTime: 2020-03-26 22:37:21
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -12,7 +12,7 @@ void *APP::ETV_DriverOnlineChack()
     size_t cnt = _NodeList.size();
     for (size_t i = 0; i < cnt; i++)
     {
-        if (_NodeList[i].handle.driver_type == ETV_Driver)
+        if (_NodeList[i].handle.driver_id == ETV_Driver)
         {
             return &_NodeList[i];
         }
@@ -25,7 +25,7 @@ void *APP::UWB_DriverOnlineChack()
     size_t cnt = _NodeList.size();
     for (size_t i = 0; i < cnt; i++)
     {
-        if (_NodeList[i].handle.driver_type == LOCATION)
+        if (_NodeList[i].handle.driver_id == LOCATION)
         {
             return &_NodeList[i];
         }
@@ -38,7 +38,7 @@ void *APP::UWB_DriverOnlineChack()
     size_t cnt = _NodeList.size();
     for (size_t i = 0; i < cnt; i++)
     {
-        if (_NodeList[i].handle.driver_type == type&&_NodeList[i].handle.driver_id==driver_id)
+        if (_NodeList[i].handle.driver_id == type&&_NodeList[i].handle.driver_id==driver_id)
         {
             return &_NodeList[i];
         }

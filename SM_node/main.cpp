@@ -2,12 +2,11 @@
  * @Description: 状态机节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-26 18:19:14
+ * @LastEditTime: 2020-03-26 22:41:24
  * @LastEditors: Yaodecheng
  **/
 #include "SM_App/app.h"
 #include "sleep.h"
-#include "CJson/CJsonObject.hpp"
 void Callback_outdata(ReturnFrameData in);
 msgpa::ProtocolAnalysis msgtest(Callback_outdata);
 APP app(&msgtest);
@@ -20,9 +19,9 @@ int main()
 
     while (1)
     {
-        // _sleep_ms(1000);
+         _sleep_ms(1000);
         //system("cls");
-        //app.print_Node_List();
+        app.print_Node_List();
         // app.printf__RecallList();
         //app.SensorRsp("127.0.0.1",9001,1);
         // Sleep(1000);
