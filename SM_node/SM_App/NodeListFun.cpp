@@ -4,33 +4,34 @@
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
-
-bool APP::update(uint32_t driver_id,LOCATION_DATA *data)
+#include "CJson/cJSON.h"
+#include "CJson/CJsonObject.hpp"
+bool APP::update(uint32_t driver_id, LOCATION_DATA *data)
 {
     if (UpdateDataDetail(driver_id, *data))
     {
-        clearonliecount(LOCATION,driver_id); //清零超时
+        clearonliecount(LOCATION, driver_id); //清零超时
         return 1;
     }
-       return 0;
+    return 0;
 }
 bool APP::update(TYPE_DOUBLE_UPDATE_DATA xx)
 {
-    if (UpdateDataDetail(xx.id,xx.data))
+    if (UpdateDataDetail(xx.id, xx.data))
     {
-        clearonliecount(DOUBLE_DATA,xx.id); //清零超时
+        clearonliecount(DOUBLE_DATA, xx.id); //清零超时
         return 1;
     }
-       return 0;
+    return 0;
 }
 bool APP::update(uint32_t driver_id, ETV_DRIVER_STATE_DATA *data)
 {
     if (UpdateDataDetail(driver_id, *data))
     {
-        clearonliecount(ETV_Driver,driver_id); //清零超时
+        clearonliecount(ETV_Driver, driver_id); //清零超时
         return 1;
     }
-       return 0;
+    return 0;
 }
 void APP::TimeUpdate()
 {
@@ -42,7 +43,7 @@ void APP::TimeUpdate()
         if (_NodeList[i].onlinecnt++ > 10)
         {
             printf("%s %d sensor die!\n", _NodeList[i].handle.driver_name.c_str(), _NodeList[i].handle.driver_id);
-            switch (_NodeList[i].handle.driver_type)
+            switch (_NodeList[i].handle.data_type)
             {
             case LOCATION:
                 ClearUWBData(_NodeList[i].handle.driver_id);
@@ -63,89 +64,98 @@ void APP::AddNodeList(DRIVER_HANDLE handle, char *ip, int port)
     ScopeLocker lock(&info_lock);
     if (GetNodeData(handle) == NULL)
     {
-
         Node_INFO x;
         x.handle = handle;
         x.ip = ip;
         x.port = port;
-        x.onlinecnt=0;
-        switch (x.handle.driver_type)
+        x.onlinecnt = 0;
+
+        switch (x.handle.data_type)
         {
-        case LOCATION:
+        case type_double:
         {
-            UWB_D data;
-            data.id = x.handle.driver_id;
-            _uwbdata.push_back(data);
-            printf("A-------------%d  %d\n", data.id, x.handle.driver_id);
+            V_double info;
+            info.data.resize(x.handle.data_size);
+            info.driver_name = x.handle.driver_name;
+            _doubledatalist.push_back(info);
         }
         break;
-        case ETV_Driver:
+        case type_bool:
         {
-            DRIVER_D data;
-            data.id = x.handle.driver_id;
-            _driverdata.push_back(data);
-            printf("B-------------%d  %d\n", data.id, x.handle.driver_id);
-        }
-        break;
-         case DOUBLE_DATA:
-        {
-            DOUBLE_D data;
-            data.id = x.handle.driver_id;
-            _doubledata.push_back(data);
-            printf("C-------------%d  %d\n", data.id, x.handle.driver_id);
+
+            V_bool info;
+            info.data.resize(x.handle.data_size);
+            info.driver_name = x.handle.driver_name;
+            _booldatalist.push_back(info);
         }
         break;
         default:
             break;
         }
         _NodeList.push_back(x);
-        printf("Add ok  %d   %d \n", x.handle.driver_id, _uwbdata.size());
+        printf("Add node ok  %s\n", x.handle.driver_name.c_str());
     }
 }
 void APP::print_Node_INOF(Node_INFO info)
 {
-    printf("name=%s driver_id=%d type=%d  %s  %d\n", info.handle.driver_name.c_str(), info.handle.driver_id, info.handle.driver_type, info.ip.c_str(), info.port);
-    switch (info.handle.driver_type)
+    printf("name=%s driver_id=%d type=%d  %s  %d\n", info.handle.driver_name.c_str(), info.handle.driver_id, info.handle.data_type, info.ip.c_str(), info.port);
+    switch (info.handle.data_type)
     {
-    case LOCATION:
+    case type_bool:
     {
-
-         LOCATION_DATA d;
-        if (GetDataDetail(info.handle.driver_id, &d))
+        size_t listsize = _doubledatalist.size();
+        int loc = -1;
+        for (size_t i = 0; i < listsize; i++)
         {
-            printf("data:\n  x=%f,\n  y=%f,\n  z=%f,\n  yaw=%f\n", d.x, d.y, d.z, d.yaw);
+            if (_doubledatalist[i].driver_name == info.handle.data_name)
+            {
+                loc = i;
+                break;
+            }
         }
+        if (loc == -1)
+            break;
+
+        neb::CJsonObject oJson(info.handle.data_name);
+        std::cout << "data:";
+        size_t count = oJson.GetArraySize();
+        for (size_t i = 0; i < count; i++)
+        {
+            std::string name;
+            oJson.Get(i, name);
+            std::cout << "\n"
+                      << name.c_str() << _doubledatalist[loc].data[i];
+        }
+        std::cout << std::endl;
     }
     break;
-    case ETV_Driver:
+    case type_double:
     {
 
-        ETV_DRIVER_STATE_DATA d;
-        if (GetDataDetail(info.handle.driver_id, &d))
+       size_t listsize = _booldatalist.size();
+        int loc = -1;
+        for (size_t i = 0; i < listsize; i++)
         {
-            std::cout << "data:"
-                      << "\n   AcceleratorValue=" << d.AcceleratorValue
-                      << "\n   BrakeValue=" << d.BrakeValue
-                      << "\n   TurnAngleValue=" << d.TurnAngleValue
-                      << "\n   LiftValue=" << d.LiftValue
-                      << "\n   SideValue=" << d.SideValue
-                      << "\n   MoveForwardValue=" << d.MoveForwardValue
-                      << "\n   TiltValue=" << d.TiltValue
-                      << "\n   LED_Green=" << d.LED_Green
-                      << "\n   LED_Red=" << d.LED_Red
-                      << "\n   Paking=" << d.Paking
-                      << "\n   AUTO=" << d.AUTO << std::endl;
+            if (_doubledatalist[i].driver_name == info.handle.data_name)
+            {
+                loc = i;
+                break;
+            }
         }
-    }
-    break;
-     case DOUBLE_DATA:
-    {
+        if (loc == -1)
+            break;
 
-         double d;
-        if (GetDataDetail(info.handle.driver_id, &d))
+        neb::CJsonObject oJson(info.handle.data_name);
+        std::cout << "data:";
+        size_t count = oJson.GetArraySize();
+        for (size_t i = 0; i < count; i++)
         {
-            printf("data:\n  %f,\n", d);
+            std::string name;
+            oJson.Get(i, name);
+            std::cout << "\n"
+                      << name.c_str() << _booldatalist[loc].data[i];
         }
+        std::cout << std::endl;
     }
     break;
     //other type....
@@ -153,7 +163,7 @@ void APP::print_Node_INOF(Node_INFO info)
         break;
     }
 }
-bool APP::GetDataDetail(uint32_t id,LOCATION_DATA *data)
+bool APP::GetDataDetail(uint32_t id, LOCATION_DATA *data)
 {
     for (UWB_D x : _uwbdata)
     {
@@ -202,7 +212,7 @@ bool APP::UpdateDataDetail(uint32_t driver_id, LOCATION_DATA data)
     }
     return 0;
 }
-bool APP::UpdateDataDetail(uint32_t driver_id,ETV_DRIVER_STATE_DATA data)
+bool APP::UpdateDataDetail(uint32_t driver_id, ETV_DRIVER_STATE_DATA data)
 {
     std::vector<DRIVER_D>::iterator iter;
     for (iter = _driverdata.begin(); iter != _driverdata.end(); iter++)
@@ -215,7 +225,7 @@ bool APP::UpdateDataDetail(uint32_t driver_id,ETV_DRIVER_STATE_DATA data)
     }
     return 0;
 }
-bool APP::UpdateDataDetail(uint32_t driver_id,double data)
+bool APP::UpdateDataDetail(uint32_t driver_id, double data)
 {
     std::vector<DOUBLE_D>::iterator iter;
     for (iter = _doubledata.begin(); iter != _doubledata.end(); iter++)

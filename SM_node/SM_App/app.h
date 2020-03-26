@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-25 17:41:17
+ * @LastEditTime: 2020-03-26 18:40:25
  * @LastEditors: Yaodecheng
  */
 /*
@@ -31,6 +31,16 @@ struct Node_INFO
     time_t timestamp;
     int onlinecnt;
 };
+struct V_double
+{
+    std::string driver_name;
+    std::vector<double> data;
+};
+struct V_bool
+{
+    std::string driver_name;
+    std::vector<bool> data;
+};
 struct UWB_D
 {
     uint32_t id;
@@ -49,6 +59,12 @@ struct DOUBLE_D
 class APP
 {
 private:
+
+    MutexLock vd_lock;
+    std::vector<V_double> _doubledatalist;
+    std::vector<V_bool> _booldatalist;
+
+
     ProtocolAnalysis *_msg;
     DRIVER_HANDLE StateMachine = {"StateMachine", 1};
     uint32_t _seq = 0;

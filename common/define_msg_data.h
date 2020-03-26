@@ -155,7 +155,18 @@ struct DRIVER_HANDLE
 {
     std::string driver_name;
     uint32_t driver_id;
-    uint32_t driver_type;
+    uint32_t data_type;//描述了数据类型
+    uint32_t data_size;//描述了数据量
+    std::string data_name;//json数组
+};
+enum DATA_TYPE_LIST
+{
+    type_uint16_t,
+    type_int32_t,
+    type_double,
+    type_float,
+    type_bool,
+    type_string,
 };
 struct TYPE_handle_string
 {

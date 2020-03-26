@@ -15,9 +15,10 @@ handle的定义如下
 struct DRIVER_HANDLE
 {
     std::string driver_name;//设备名称
-    std::string d
+    std::string data_name;//描述每一个数据名称,格式为json,如{name:["yaw","x"]}
     uint32_t driver_id;//id标识了所代表的设备，id是唯一的
-    uint32_t driver_type;//代表了该设备更新维护的数据类型
+    uint32_t driver_type;//代表了该设备更新维护的数据类型,一般为double
+    uint32_t data_size;//数据大小，即发布的数据个数
 };
 ```
 ## 2.2设备id
@@ -57,10 +58,7 @@ id|标识符|描述
 StateMachine管理的所有数据数据类型在**DIRVER_TYPE_LIST**进行定义，数据类型定义用于区分不同的数据，从而进行存储和读取
 传感器|数据类型|描述
 :--:|:--:|:--
-uwb|LOCATION_DATA|包含坐标信息
-相机|CCAMEAR_DATA|--待定义--
-驱动|CAR_DRIVER_DATA|包含车辆执行器所有控制数据，目前以ETV车型为参考，控制量较为全面
-SICK激光|SICK_DATA|包含两个SICK状态数据，以及两个输出数据
+
 浮点数|DOUBLE_DATA|包含一个double类型数据，此类型可以用于发布转角仪或者激光测距等只有一个数据输出的数据
 开关量|BOOL_DATA|包含一个bool类型数据，像车辆灯光风扇
 整形|INT32_DATA|包含一个int32_t类型数据
