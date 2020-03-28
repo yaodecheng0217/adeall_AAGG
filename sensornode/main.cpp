@@ -2,7 +2,7 @@
  * @Description: 传感器节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-26 13:50:08
+ * @LastEditTime: 2020-03-28 11:40:00
  * @LastEditors: Yaodecheng
  **/
 
@@ -24,11 +24,13 @@ int main()
     {
         //vrep_data d = vr.GetAllData();
         //printf("%f  %f  %f  %f  %f\n", d.Uwb_x, d.Uwb_y, d.Uwb_yaw * 57.3,d.side_lasser,d.TrayH_lasser);
-        app._data.x=uwb.localsenser_data.Posx;
-        app._data.y=uwb.localsenser_data.Posy;
-        app._data.yaw=0;
+        app.updateX(uwb.localsenser_data.Posx);
+        app.updatey(uwb.localsenser_data.Posy);
+        app.updatez(uwb.localsenser_data.Posz);
         //printf("-->%f  %f  %f\n", app._data.x,app._data.y,app._data.yaw);
         Sleep(50);
+        //system("cls");
+        //app.printfNodeInfo();
     }
     return 0;
 }

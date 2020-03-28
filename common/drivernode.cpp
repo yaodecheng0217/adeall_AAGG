@@ -122,10 +122,10 @@ void Driver_node::clearSqe(uint32_t seq)
 void Driver_node::sendDataLoop()
 {
 
-    if (cnt > 10)
+    if (_cnt > 10)
     {
         Sleep(1000);
-        while(sendHandleAction()==0)
+        while (sendHandleAction() == 0)
         {
             Sleep(1000);
         }
@@ -152,7 +152,7 @@ void Driver_node::sendDataLoop()
             {
                 sendHandleAction();
             }
-            cnt = 0;
+            _cnt = 0;
             clearSqe(w.seq);
             return;
         }
@@ -160,10 +160,40 @@ void Driver_node::sendDataLoop()
     }
     printf("%s update time out %d\n", _handle.driver_name.c_str(), w.seq);
     clearSqe(w.seq);
-    cnt++;
-    
+    _cnt++;
 }
+void Driver_node::sendHandle(uint32_t seq)
+{
+    neb::CJsonObject oJson;
+    TYPE_handle_string s;
+    oJson.Add("driver_name", _handle.driver_name);
+    oJson.Add("driver_id", _handle.driver_id);
+    oJson.Add("data_type", _handle.data_type);
+    oJson.Add("data_size", _handle.data_size);
+    oJson.Add("data_list", _handle.data_list);
+    oJson.Add("seq", seq);
 
+    _msg->sendStringData(server_ip.c_str(),
+                         server_port,
+                         source_id,
+                         INS_LIST::INS_HARBEAT,
+                         CMD_TYPE_LIST::CMD_HEARBEAT_HANDLE, //设置
+                         oJson.ToString());
+}
+void Driver_node::sendData(uint32_t seq, time_t timestamp)
+{
+    neb::CJsonObject oJson;
+    oJson.Add("seq", seq);
+    oJson.AddEmptySubObject("update");
+    oJson["update"].Add(_handle.driver_name, _handle.data_list);
+
+    _msg->sendStringData(server_ip.c_str(),
+                         server_port,
+                         source_id,
+                         INS_LIST::INS_HARBEAT,
+                         CMD_TYPE_LIST::CMD_UPDATE_DATA, //设置
+                         oJson.ToString());
+}
 int Driver_node::sendHandleAction()
 {
     //wait for ack
@@ -211,26 +241,25 @@ void *Driver_node::timer(void *is)
     Driver_node *p = (Driver_node *)is;
     while (true)
     {
-        p->time_lock.unlock();
-        Sleep(40);
-        //Sleep(1000 / p->Frequency);
+        p->_time_lock.unlock();
+        Sleep(p->_SendingInterval);
     }
     return 0;
 }
 void *Driver_node::hearbeatThread(void *is)
 {
     Driver_node *p = (Driver_node *)is;
-    if(p->sendHandleAction())
+    if (p->sendHandleAction())
     {
-        p->cnt=0;
+        p->_cnt = 0;
     }
     else
     {
-        p->cnt=20;
+        p->_cnt = 20;
     }
     while (true)
     {
-        p->time_lock.lock();
+        p->_time_lock.lock();
         p->sendDataLoop();
     }
     return 0;
@@ -239,10 +268,6 @@ void *Driver_node::hearbeatThread(void *is)
 void Driver_node::SetTimeout(uint16_t timeout)
 {
     _timeout = timeout;
-}
-void Driver_node::SetFrequency(uint16_t hz)
-{
-    Frequency = hz;
 }
 void Driver_node::set_ACK_send(const char *ip, int prot, int code, uint32_t seq)
 {
@@ -257,4 +282,17 @@ void Driver_node::set_ACK_send(const char *ip, int prot, int code, uint32_t seq)
                    INS_ACK,
                    CMD_TYPE_LIST::CMD_ACK_SET,
                    aa);
+}
+void Driver_node::SetSendingInterval(uint16_t time)
+{
+    _SendingInterval = time;
+}
+void Driver_node::printfNodeInfo()
+{
+    printf("=====Node info:=====\nSM=%s %d\nSendingInterval=%dms\nnodeName=%s\ndatalist:\n%s\n",
+           server_ip.c_str(),
+           server_port,
+           _SendingInterval,
+           _handle.driver_name.c_str(),
+           _handle.data_list.ToFormattedString().c_str());
 }

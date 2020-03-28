@@ -15,7 +15,6 @@ SET(CMAKE_CXX_FLAGS "-m32")
 aux_source_directory(./SensorApp SRC_FILES)
 aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)
-aux_source_directory(./uwb SRC_FILES)
 aux_source_directory(../common SRC_Cjson_FILES)
 
 

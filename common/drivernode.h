@@ -24,7 +24,6 @@ class Driver_node
 {
 private:
     
-
     struct RES
     {
         uint32_t seq;
@@ -34,9 +33,9 @@ private:
     std::vector<RES> _respondlist;
 
     uint16_t _timeout = 3;
-    uint16_t Frequency = 100;
-    MutexLock time_lock;
-    int cnt = 10;
+    uint16_t _SendingInterval = 20;
+    MutexLock _time_lock;
+    int _cnt = 10;
 
 public:
     Driver_node(ProtocolAnalysis *msg) : _msg(msg){};
@@ -44,17 +43,23 @@ public:
     void run();
     void _Callback(ReturnFrameData in);
     void SetTimeout(uint16_t timeout);
-    void SetFrequency(uint16_t Hz);
+    void SetSendingInterval(uint16_t Hz);
+    void printfNodeInfo();
 
 protected:
+    std::string server_ip;
+    int server_port;
+    uint16_t source_id;
     DRIVER_HANDLE _handle;
     ProtocolAnalysis *_msg;
     virtual void initdata() = 0;
-    virtual void sendData(uint32_t seq, time_t timestamp) = 0;
-    virtual void sendHandle(uint32_t seq) = 0;
+    
+    
     virtual int setDoubleValue(uint16_t type, double value) = 0;
 
 private:
+    void sendData(uint32_t seq, time_t timestamp);
+    void sendHandle(uint32_t seq);
     static void *hearbeatThread(void *);
     static void *timer(void *);
     int sendHandleAction();

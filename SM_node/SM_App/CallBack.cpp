@@ -109,14 +109,15 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
            ss<<x;
         }
         neb::CJsonObject oJson(ss.str().c_str());
-        printf("\n%s\n",oJson.ToFormattedString().c_str());
+        //printf("\n%s\n",oJson.ToString().c_str());
         DRIVER_HANDLE handle;
         TYPE_handle_string s;
         oJson.Get("driver_name",handle.driver_name);
         oJson.Get("driver_id",handle.driver_id);
         oJson.Get("data_type",handle.data_type);
         oJson.Get("data_size",handle.data_size);
-        oJson.Get("data_name",handle.data_name);
+       // oJson.Get("data_name",handle.data_name);
+        handle.data_list=oJson["data_list"];
         uint32_t seq;
         oJson.Get("seq",seq);
         //printf("%s  %d  %d  %d\n",handle.driver_name.c_str(),handle.datatype,handle.driver_id,seq); 
@@ -134,7 +135,7 @@ void APP::_Callback_HEARBEAT(ReturnFrameData in)
         }
         
         neb::CJsonObject oJson(ss.str().c_str());
-        //printf("\n%s\n",oJson.ToFormattedString().c_str());
+        //printf("\n%s\n",oJson.ToString().c_str());
         uint32_t seq;
         oJson.Get("seq",seq);
         if(UpdateDataDetail(oJson["update"]))

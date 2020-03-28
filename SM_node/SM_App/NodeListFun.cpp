@@ -35,7 +35,7 @@ void APP::AddNodeList(DRIVER_HANDLE handle, char *ip, int port)
 void APP::print_Node_INOF(Node_INFO info)
 {
     printf("name=%s driver_id=%d type=%d  %s  %d\n", info.handle.driver_name.c_str(), info.handle.driver_id, info.handle.data_type, info.ip.c_str(), info.port);
-    printf("data:\n%s\n", info.data.ToFormattedString().c_str());
+    printf("data:\n%s\n", info.handle.data_list.ToFormattedString().c_str());
 }
 neb::CJsonObject *APP::GetDataDetail(std::string driver_name, std::string dataname)
 {
@@ -44,7 +44,7 @@ neb::CJsonObject *APP::GetDataDetail(std::string driver_name, std::string datana
     {
         if (_NodeList[i].handle.driver_name == driver_name)
         {
-            return &_NodeList[i].data[dataname];
+            return &_NodeList[i].handle.data_list;
         }
     }
     return NULL;
@@ -59,10 +59,12 @@ bool APP::UpdateDataDetail(neb::CJsonObject newdata)
     {
         if (_NodeList[i].handle.driver_name == driver_name)
         {
-            _NodeList[i].data = newdata[driver_name];
+            _NodeList[i].handle.data_list = newdata[driver_name];
             _NodeList[i].onlinecnt = 0;
+            //printf("update ok\n");
             return 1;
         }
     }
+     //printf("update error\n");
     return 0;
 }

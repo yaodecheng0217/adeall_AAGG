@@ -44,7 +44,7 @@ struct SOMEDATA
 #include <stdint.h>
 #include <string>
 #include <sys/time.h>
-
+#include "CJson/CJsonObject.hpp"
 namespace adeall
 {
 enum PORT_LIST
@@ -158,7 +158,7 @@ struct DRIVER_HANDLE
     uint32_t driver_id;
     uint32_t data_type;//描述了数据类型
     uint32_t data_size;//描述了数据量
-    std::string data_name;//json数组
+    neb::CJsonObject data_list;//json数组
 };
 enum DATA_TYPE_LIST
 {
