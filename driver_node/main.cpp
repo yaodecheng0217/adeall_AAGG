@@ -2,7 +2,7 @@
  * @Description: 传感器节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-26 11:57:15
+ * @LastEditTime: 2020-03-29 23:02:14
  * @LastEditors: Yaodecheng
  **/
 #include "DriverApp/ETV_driver.h"
@@ -11,7 +11,7 @@
 
 void Callback_outdata(ReturnFrameData in);
 msgpa::ProtocolAnalysis msgtest(Callback_outdata);
-ETV_driver app(&msgtest, 12);
+Car_control app(&msgtest);
 
 int main()
 {

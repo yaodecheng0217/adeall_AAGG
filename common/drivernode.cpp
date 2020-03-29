@@ -56,10 +56,23 @@ void Driver_node::_Callback_Set(ReturnFrameData in)
     {
     case CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA:
     {
-        TYPE_SET_DOUBLE_DATA r;
-        Decode_Struct_No_Serialize(&r, in._databuff);
-        set_ACK_send(in.ip, in.port, OK, r.seq); //设置函数用时过长===========先响应
-        int code = setDoubleValue(r.type, r.value);
+
+        std::stringstream ss;
+        for (uint8_t x : in._databuff)
+        {
+            ss << x;
+        }
+        neb::CJsonObject set(ss.str().c_str());
+
+        uint32_t seq;
+        std::string type;
+        double value;
+        set.Get("seq", seq);
+        set.Get("type", type);
+        set.Get("value", value);
+        printf("set %s %f seq=%d\n",type.c_str(),value,seq);
+        set_ACK_send(in.ip, in.port, OK, seq); //设置函数用时过长===========先响应
+        int code = setDoubleValue(type, value);
     }
     break;
     default:

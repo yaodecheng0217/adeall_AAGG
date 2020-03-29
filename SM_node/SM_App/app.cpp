@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:25
- * @LastEditTime: 2020-03-26 22:38:28
+ * @LastEditTime: 2020-03-29 21:49:28
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -79,55 +79,6 @@ void *APP::GetNodeData(DRIVER_HANDLE handle)
     return NULL;
 }
 
-void APP::ClearUWBData(uint32_t id)
-{
-    ScopeLocker K(&uwb_lock);
-    std::vector<UWB_D>::iterator iter;
-    for (iter = _uwbdata.begin(); iter != _uwbdata.end(); iter++)
-    {
-        printf("%d  %d\n", iter->id, id);
-        if (iter->id == id)
-        {
-
-            printf("delet uwb id=%d\n", iter->id);
-            _uwbdata.erase(iter);
-            return;
-        }
-    }
-    printf("delet uwb error=%d\n", iter->id);
-}
-void APP::ClearDriverData(uint32_t id)
-{
-    ScopeLocker K(&dri_lock);
-    std::vector<DRIVER_D>::iterator iter;
-    for (iter = _driverdata.begin(); iter != _driverdata.end(); iter++)
-    {
-        printf("%d  %d\n", iter->id, id);
-        if (iter->id == id)
-        {
-            printf("delet dire id=%d\n", iter->id);
-            _driverdata.erase(iter);
-            return;
-        }
-    }
-    printf("delet dire errr=%d\n", iter->id);
-}
-void APP::ClearDoubleData(uint32_t id)
-{
-    ScopeLocker K(&double_lock);
-    std::vector<DOUBLE_D>::iterator iter;
-    for (iter = _doubledata.begin(); iter != _doubledata.end(); iter++)
-    {
-        //printf("%d  %d\n", iter->id, id);
-        if (iter->id == id)
-        {
-            printf("delet double id=%d\n", iter->id);
-            _doubledata.erase(iter);
-            return;
-        }
-    }
-    printf("delet double error=%d\n", iter->id);
-}
 void APP::clear_sqe(uint32_t seq)
 {
     ScopeLocker K(&_rslist_lock);
@@ -175,6 +126,19 @@ void APP::clearonliecount(int type, uint32_t driver_id)
         }
     }
 }
+ Node_INFO *APP::GetNode_INFO(std::string driver_name)
+ {
+    ScopeLocker K(&info_lock);
+    size_t cnt = _NodeList.size();
+    for (size_t i = 0; i < cnt; i++)
+    {
+        if (_NodeList[i].handle.driver_name == driver_name)
+        {
+            return &_NodeList[i];
+        }
+    }
+    return NULL;
+ }
 //        梅花
 //     作者：王安石
 //墙角数枝梅，凌寒独自开。

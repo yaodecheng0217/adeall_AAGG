@@ -175,6 +175,7 @@ int APP::setControl(uint8_t mode, double value, uint16_t timeout,
     {
         double v;
         int code = GetData(type, &v, 20);
+        printf("coude=%d\n",code);
         if (code == OK)
         {
             code = SendContrl(type, v + value, timeout);

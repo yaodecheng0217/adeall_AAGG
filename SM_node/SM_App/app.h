@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-26 22:35:44
+ * @LastEditTime: 2020-03-29 22:35:38
  * @LastEditors: Yaodecheng
  */
 /*
@@ -10,6 +10,11 @@ sudo apt-get install  build-essential libc6-dev libc6-dev-i386
 如遇到缺少 bits/c++config.h的情况，输入以下命令安装gcc编译相关库
 sudo  apt-get  install   gcc-7-multilib g++-7-multilib
 */
+
+
+#ifndef _APP_H_
+#define _APP_H_
+
 #include "ProtocolAnalysis.h"
 #include <string>
 #include "define_msg_data.h"
@@ -19,8 +24,6 @@ sudo  apt-get  install   gcc-7-multilib g++-7-multilib
 #include "CJson/cJSON.h"
 #include "CJson/CJsonObject.hpp"
 
-#ifndef _APP_H_
-#define _APP_H_
 
 using namespace msgpa;
 using namespace adeall;
@@ -28,7 +31,6 @@ using namespace adeall;
 struct Node_INFO
 {
     DRIVER_HANDLE handle;
-    neb::CJsonObject data;
     std::string ip;
     int port;
     time_t timestamp;
@@ -62,11 +64,9 @@ struct DOUBLE_D
 class APP
 {
 private:
-
     MutexLock vd_lock;
     std::vector<V_double> _doubledatalist;
     std::vector<V_bool> _booldatalist;
-
 
     ProtocolAnalysis *_msg;
     DRIVER_HANDLE StateMachine = {"StateMachine", 1};
@@ -90,7 +90,8 @@ private:
     void clear_sqe(uint32_t seq);
     int waitForACK(uint32_t seq, int *code, uint32_t timeout);
     void recvAckCode(int ack, uint32_t seq);
-    void SensorRsp_N(const char *ip, int prot, uint32_t seq);
+    //void SensorRsp_N(const char *ip, int prot, uint32_t seq);
+
 public:
     APP(ProtocolAnalysis *msg) : _msg(msg){};
     void run();
@@ -98,34 +99,20 @@ public:
     void print_Node_List();
 
 public:
-neb::CJsonObject *GetDataDetail(std::string driver_name, std::string dataname);
-    
+    neb::CJsonObject *GetDataDetail(std::string driver_name);
     bool UpdateDataDetail(neb::CJsonObject newdata);
     void print_Node_INOF(Node_INFO info);
-    void SensorRsp(const char *ip, int prot, uint32_t seq,int code);
+    void SensorRsp(const char *ip, int prot, uint32_t seq, int code);
     void AddNodeList(DRIVER_HANDLE handle, char *ip, int port);
     void *GetNodeData(DRIVER_HANDLE handle);
-    Node_INFO *GetNode_INFO(uint16_t  type,uint32_t driver_id);
+    Node_INFO *GetNode_INFO(std::string driver_name);
     void update(DRIVER_HANDLE handle, void *data);
     void TimeUpdate();
     static void *loop10ms(void *);
-    void ClearDriverData(uint32_t id);
-    void ClearUWBData(uint32_t id);
-    void ClearDoubleData(uint32_t id);
-    bool GetDataDetail(std::string driver_name, std::vector<double> *data);
-    bool GetDataDetail(std::string driver_name, std::vector<bool> *data);
     bool UpdateDataDetail(std::string updatedata);
-    bool UpdateDataDetail(uint32_t driver_id, ETV_DRIVER_STATE_DATA data);
-    bool UpdateDataDetail(uint32_t driver_id,double data);
-    void *ETV_DriverOnlineChack();
-    void *UWB_DriverOnlineChack();
     int sendToDriver(const char *ip, int port, uint8_t type, double value);
-    bool update(uint32_t driver_id, LOCATION_DATA *data);
-    bool update(uint32_t driver_id, ETV_DRIVER_STATE_DATA *data);
-    bool update(TYPE_DOUBLE_UPDATE_DATA data);
-    void clearonliecount(int type,uint32_t driver_id);
-    int GetlistLoc(std::string driver_name,std::vector<V_double>list);
-    int GetlistLoc(std::string driver_name,std::vector<V_bool>list);
+    int sendToDriver(const char *ip, int port, std::string type, double value);
+    void clearonliecount(int type, uint32_t driver_id);
 public:
     //设置油门值,取值范围(1，-1)
     int SetAcceleratorValue(double value);
@@ -153,7 +140,7 @@ public:
 
 private:
     //=========================api==============
-    void Get_Information(const char *ip, int port, uint16_t type, uint32_t seq);
+    //void Get_Information(const char *ip, int port, uint16_t type, uint32_t seq);
     int set_ControlValue(uint16_t type, double value);
     void Set_ACK(const char *ip, int port, int code, uint32_t seq);
     void ACK_One_data(const char *ip, int port, uint16_t type, uint32_t seq);

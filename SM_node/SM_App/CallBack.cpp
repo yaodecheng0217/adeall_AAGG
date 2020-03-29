@@ -45,7 +45,6 @@ void APP::_Callback_Get(ReturnFrameData in)
     {
     case CMD_TYPE_LIST::CMD_GET_DATA:
     {
-        
         TYPE_GET_DATA r;
         Decode_Struct_No_Serialize(&r, in._databuff);
         ACK_One_data(in.ip, in.port, r.type, r.seq);
@@ -61,7 +60,7 @@ void APP::_Callback_Set(ReturnFrameData in)
     switch (in.cmd_type)
     {
     case CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA:
-    {
+    {//
         TYPE_SET_DOUBLE_DATA r;
         Decode_Struct_No_Serialize(&r, in._databuff);
         int code = set_ControlValue(r.type, r.value);

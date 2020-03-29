@@ -55,7 +55,7 @@ protected:
     virtual void initdata() = 0;
     
     
-    virtual int setDoubleValue(uint16_t type, double value) = 0;
+    virtual int setDoubleValue(std::string type, double value) = 0;
 
 private:
     void sendData(uint32_t seq, time_t timestamp);

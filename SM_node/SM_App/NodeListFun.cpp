@@ -37,7 +37,7 @@ void APP::print_Node_INOF(Node_INFO info)
     printf("name=%s driver_id=%d type=%d  %s  %d\n", info.handle.driver_name.c_str(), info.handle.driver_id, info.handle.data_type, info.ip.c_str(), info.port);
     printf("data:\n%s\n", info.handle.data_list.ToFormattedString().c_str());
 }
-neb::CJsonObject *APP::GetDataDetail(std::string driver_name, std::string dataname)
+neb::CJsonObject *APP::GetDataDetail(std::string driver_name)
 {
     size_t cnt = _NodeList.size();
     for (size_t i = 0; i < cnt; i++)
