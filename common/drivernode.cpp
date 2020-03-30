@@ -70,7 +70,7 @@ void Driver_node::_Callback_Set(ReturnFrameData in)
         set.Get("seq", seq);
         set.Get("type", type);
         set.Get("value", value);
-        printf("set %s %f seq=%d\n",type.c_str(),value,seq);
+        //printf("set %s %f seq=%d\n",type.c_str(),value,seq);
         set_ACK_send(in.ip, in.port, OK, seq); //设置函数用时过长===========先响应
         int code = setDoubleValue(type, value);
     }
@@ -198,6 +198,7 @@ void Driver_node::sendData(uint32_t seq, time_t timestamp)
     neb::CJsonObject oJson;
     oJson.Add("seq", seq);
     oJson.AddEmptySubObject("update");
+    datalist_up();
     oJson["update"].Add(_handle.driver_name, _handle.data_list);
 
     _msg->sendStringData(server_ip.c_str(),

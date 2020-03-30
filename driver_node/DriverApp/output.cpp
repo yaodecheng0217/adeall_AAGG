@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-26 10:12:45
- * @LastEditTime: 2020-03-26 11:57:53
+ * @LastEditTime: 2020-03-30 14:53:16
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -31,13 +31,13 @@ double LimitingAmplitude(double in, double max)
 void outcallback(int L, string str, void *)
 {
     
-    printf("recv=%s\n", str.c_str());
+    //printf("recv=%s\n", str.c_str());
 }
 void *contrlloop(void *)
 {
     while (1)
     {
-        Sleep(50);
+        Sleep(100);
         sendonedata();
     }
 }
@@ -67,6 +67,8 @@ void sendonedata()
 
 void Set_Lift_motor(double value)
 {
+   
+
     dc.litf = LimitingAmplitude(value, 1);
 }
 void Set_Acc_motor(double value)
@@ -75,6 +77,7 @@ void Set_Acc_motor(double value)
 }
 void Set_Turn_motor(double value)
 {
+    value=value*57.3/100;
     dc.turn = LimitingAmplitude(value, 1);
 }
 void Set_AUTO(bool value)

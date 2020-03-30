@@ -14,3 +14,4 @@ void Set_Lift_motor(double value);
 void Set_Acc_motor(double value);
 void Set_Turn_motor(double value);
 void Set_AUTO(bool value);
+double LimitingAmplitude(double in, double max);

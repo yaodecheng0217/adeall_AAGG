@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-18 11:01:49
- * @LastEditTime: 2020-03-24 18:37:49
+ * @LastEditTime: 2020-03-30 17:31:40
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -9,6 +9,7 @@
 
 #include "angleControler.h"
 #include "stdio.h"
+#include "PID.h"
 //@计算纯角度导航输出量
 //@输入角度误差
 double Calculation_Angle(double Angie_Error)
@@ -26,14 +27,30 @@ double Calculation_Angle(double Angie_Error)
         Qt = -pi / 2;
     return Qt;
 }
-double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double speed)
+ PID_IncTypeDef incpidinfo;
+  PID_IncTypeDef tfinfo;
+  double buchang=0;
+ double fout=0;
+double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double speed,double lastf)
 {
-    //接近轨道阈值，超过此阈值将直接将车垂直九十度先接近轨道
+
+    incpidinfo.Kp=0.1;
+    tfinfo.Kp=0.00001;
+
+   
+    // 接近轨道阈值，超过此阈值将直接将车垂直九十度先接近轨道
+    // double front_FL = 200;
+    // double rear_FL = 20;
+    // 前视距离
+    // double front_CL = 180;
+    // double rear_CL = 120;
+
+     //接近轨道阈值，超过此阈值将直接将车垂直九十度先接近轨道
     double front_FL = 200;
-    double rear_FL = 20;
+    double rear_FL = 70;
     //前视距离
-    double front_CL = 180;
-    double rear_CL = 120;
+    double front_CL = 170;
+    double rear_CL = 140;
 
     //
     double f = 0;
@@ -43,6 +60,8 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
 
         //换算前叉误差
         double Ferr = (Position_Error / sin(Angle_Error) - front_CL) * sin(Angle_Error);
+        
+
         //printf("%f   %f===\n", Position_Error, Ferr);
         if (abs(Position_Error) > front_FL)
         {
@@ -52,13 +71,17 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
                 f = Calculation_Angle(Angle_Error + pi / 2);
         }
         else
+        {
             f = Calculation_Angle(Angle_Error - atan(Ferr / (20 + abs(speed))));
+             if((Angle_Error)<10/57.3)
+            buchang=buchang+PID_Inc(0,-Ferr,&tfinfo);
+        }
     }
     else
     {
         //换算前叉误差
         double Berr = (Position_Error / sin(Angle_Error) - rear_CL) * sin(Angle_Error);
-        printf("%f   %f===\n", Position_Error, Berr);
+       // printf("%f   %f===\n", Position_Error, Berr);
         if (abs(Berr) > rear_FL)
         {
             if (Berr < 0)
@@ -71,9 +94,16 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
             f = Calculation_Angle(Angle_Error);
         else
             f = Calculation_Angle(Angle_Error + atan(Position_Error / (20 + abs(speed))));
+            //if(abs(Position_Error)<15&&abs(Angle_Error)<10/57.3)
+            //buchang=buchang+PID_Inc(0,-Position_Error,&tfinfo);
+             if((Angle_Error)<10/57.3)
+            buchang=buchang+PID_Inc(0,-Position_Error,&tfinfo);
+
             f=-f;
     }
-    return f;
+    printf("      ==   %f",buchang*57.3);
+    fout=lastf+PID_Inc(f,lastf,&incpidinfo);
+    return fout+buchang;
 }
 //计算终点线到当前车直线距离
 double Calculation_target_distance(double tx, double ty, double tyaw, double sx, double sy, double sv)

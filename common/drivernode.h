@@ -23,7 +23,6 @@ static uint32_t _seq = 0;
 class Driver_node
 {
 private:
-    
     struct RES
     {
         uint32_t seq;
@@ -53,8 +52,7 @@ protected:
     DRIVER_HANDLE _handle;
     ProtocolAnalysis *_msg;
     virtual void initdata() = 0;
-    
-    
+    virtual void datalist_up() = 0;
     virtual int setDoubleValue(std::string type, double value) = 0;
 
 private:

@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-03-25 18:26:19
+ * @LastEditTime: 2020-03-30 17:19:38
  * @LastEditors: Yaodecheng
  * @Description: 路径控制层
  *   ^
@@ -47,51 +47,71 @@ void pathControler::control_loop()
 {
 	PostionData sdata;
 	int speed = 50;
-	while (1)
+while (1)
+{
+	sdata.x = -550;
+	sdata.y = 100;
+	//sdata.x = 0;
+	//sdata.y = 1000;
+	sdata.yaw = 180 / 57.3;
+	while (true)
 	{
+		time_50ms_Lock.lock();
+		if (angle_control_cycle(sdata, 50))
+			break;
+	}
 
-		sdata.x = -100;
-		sdata.y = 0;
-		sdata.yaw = 180 / 57.3;
-		while (true)
-		{
-			time_50ms_Lock.lock();
-			if (angle_control_cycle(sdata, 50))
-				break;
-		}
-		get_fork();
-		while (1)
+	printf("path is ok!!\n");
+	Sleep(5000);
+	// sdata.x = 0;
+	// sdata.y = -200;
+	// sdata.yaw = 270 / 57.3;
+	sdata.x = 200;
+	sdata.y = 100;
+	sdata.yaw = 0 / 57.3;
+	while (true)
+	{
+		time_50ms_Lock.lock();
+		if (angle_control_cycle(sdata, -50))
+			break;
+	}
+	printf("path is ok22!!\n");
+	Sleep(5000);
+}
+
+	
+	//get_fork();
+	/*while (1)
 		{
 			Sleep(1);
-		}
-		// sdata.x = 500;
-		// sdata.y = -1000;
-		// sdata.yaw = 270 / 57.3;
-		// while (true)
-		// {
-		// 	time_50ms_Lock.lock();
-		// 	if (angle_control_cycle(sdata,-50))
-		// 		break;
-		// }
-		// sdata.x = 0;
-		// sdata.y = 0;
-		// sdata.yaw = 90 / 57.3;
-		// while (true)
-		// {
-		// 	time_50ms_Lock.lock();
-		// 	if (angle_control_cycle(sdata,50))
-		// 		break;
-		// }
-		// sdata.x = 500;
-		// sdata.y = -1000;
-		// sdata.yaw = 270 / 57.3;
-		// while (true)
-		// {
-		// 	time_50ms_Lock.lock();
-		// 	if (angle_control_cycle(sdata,50))
-		// 		break;
-		// }
-	}
+		}*/
+	// sdata.x = 500;
+	// sdata.y = -1000;
+	// sdata.yaw = 270 / 57.3;
+	// while (true)
+	// {
+	// 	time_50ms_Lock.lock();
+	// 	if (angle_control_cycle(sdata,-50))
+	// 		break;
+	// }
+	// sdata.x = 0;
+	// sdata.y = 0;
+	// sdata.yaw = 90 / 57.3;
+	// while (true)
+	// {
+	// 	time_50ms_Lock.lock();
+	// 	if (angle_control_cycle(sdata,50))
+	// 		break;
+	// }
+	// sdata.x = 500;
+	// sdata.y = -1000;
+	// sdata.yaw = 270 / 57.3;
+	// while (true)
+	// {
+	// 	time_50ms_Lock.lock();
+	// 	if (angle_control_cycle(sdata,50))
+	// 		break;
+	// }
 }
 
 //路径控制==============算法================================================================
@@ -133,8 +153,12 @@ int pathControler::angle_control_cycle(PostionData p, int speed)
 		double Angle_Error = CalculationAngleError(p.yaw, s.yaw);
 		double Position_Error = CalculationPositionError(p.x, p.y, p.yaw, s.x, s.y);
 		double target_dis = Calculation_target_distance(p.x, p.y, p.yaw, s.x, s.y, speed);
-		double f = CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed);
-		//printf("---->%f    %f    %f    %f\n", s.yaw * 57.3,Angle_Error*57.3,Position_Error,target_dis);
+        
+		double getF;
+		driver->GetData(Type_TurnAngleValue,&getF);
+        //printf("get wheel %f\n",getF*57.3);
+		double f = CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed,getF);
+		printf("---->%f    %f    %f    %f\n", f * 57.3, Angle_Error * 57.3, Position_Error, target_dis);
 		//============================================================================
 		//==================================输出和目标距离判断============================
 		driver->Set_Turn_motor(driver->mode_abs, f, 15);
@@ -147,7 +171,7 @@ int pathControler::angle_control_cycle(PostionData p, int speed)
 			}
 			else
 			{
-				driver->Set_Acc_motor(driver->mode_abs, speed / 30.0, 15);
+				driver->Set_Acc_motor(driver->mode_abs, 0.7, 15);
 			}
 		}
 		else
@@ -159,7 +183,7 @@ int pathControler::angle_control_cycle(PostionData p, int speed)
 			}
 			else
 			{
-				driver->Set_Acc_motor(driver->mode_abs, speed / 30.0, 15);
+				driver->Set_Acc_motor(driver->mode_abs, -0.6, 15);
 			}
 		}
 		//============================================================
@@ -229,7 +253,7 @@ int pathControler::get_fork()
 		}
 	}
 	driver->Set_Lift_motor(driver->mode_abs, 0, 15);
-    while (true)
+	while (true)
 	{
 		time_50ms_Lock.lock();
 		driver->Set_Forward_motor(driver->mode_abs, -0.1, 15);

@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 13:48:45
- * @LastEditTime: 2020-03-25 15:25:14
+ * @LastEditTime: 2020-03-30 15:32:49
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -21,111 +21,88 @@ void *ETV_driver::controlOnline(void *etv)
     ETV_driver *p = (ETV_driver *)etv;
     while (true)
     {
-        if (p->Control_count > 5)
+        if (p->Control_count > 3)
         {
-            p->vr->Set_Acc_motor(0);
-            p->vr->Set_Forward_motor(0);
-            p->vr->Set_Lift_motor(0);
-            p->vr->Set_Side_motor(0);
+            p->_data.acc = 0;
+            p->_data.lift = 0;
+            p->_data.side = 0;
+            p->_data.forwarld = 0;
             p->Control_count--;
         }
         p->Control_count++;
-        Sleep(100);
+        p->vr->Set_Acc_motor(p->_data.acc);
+        p->vr->Set_Forward_motor(p->_data.forwarld);
+        p->vr->Set_Lift_motor(p->_data.lift);
+        p->vr->Set_Side_motor(p->_data.side);
+        p->vr->Set_Turn_motor(p->_data.turn+5/57.3);
+        Sleep(50);
     }
 }
 void ETV_driver::initdata()
 {
-    _handle.driver_name = "Driver";
-    _handle.driver_type = DIRVER_TYPE::ETV_Driver;
-
-    server_ip = "192.168.2.16";
+    server_ip = "127.0.0.1";
     server_port = StateMachine_port;
     source_id = ID_Sensor_uwb;
-    _data.AUTO = 1;
+
+    _handle.driver_name = "Car_control";
+    _handle.driver_id = 1;
+
+    //添加维护数据
+    _handle.data_list.Add("acc", _data.acc);
+    _handle.data_list.Add("turn", _data.turn);
+    _handle.data_list.Add("lift", _data.lift);
+    _handle.data_list.Add("forwarld", _data.forwarld);
+    _handle.data_list.Add("side", _data.side);
+    _handle.data_list.Add("auto_mode", _data.auto_mode);
+    _data.auto_mode = 1;
     thread_base t(controlOnline, this);
 }
-void ETV_driver::sendData(uint32_t seq, time_t timestamp)
+void ETV_driver::datalist_up()
 {
-    TYPE_ETV_DRIVER_UPDATE_DATA hearbeat;
-    hearbeat.id = _handle.driver_id;
-    hearbeat.data = _data;
-    hearbeat.seq = seq;
-    hearbeat.timestamp = timestamp;
-    hearbeat.state_ok = OK;
-
-    _msg->sendData(server_ip.c_str(),
-                   server_port,
-                   source_id,
-                   INS_LIST::INS_HARBEAT,
-                   CMD_TYPE_LIST::CMD_HEARBEAT_ETV_DRIVER_DATA, //设置
-                   hearbeat);
+    _handle.data_list.Replace("acc", _data.acc);
+    _handle.data_list.Replace("turn", _data.turn);
+    _handle.data_list.Replace("lift", _data.lift);
+    _handle.data_list.Replace("forwarld", _data.forwarld);
+    _handle.data_list.Replace("side", _data.side);
+    _handle.data_list.Replace("auto_mode", _data.auto_mode);
 }
-void ETV_driver::sendHandle(uint32_t seq)
-{
-    neb::CJsonObject oJson;
-    TYPE_handle_string s;
-    oJson.Add(s.driver_name, _handle.driver_name);
-    oJson.Add(s.driver_id, _handle.driver_id);
-    oJson.Add(s.driver_type, _handle.driver_type);
-    oJson.Add(s.seq, seq);
-
-    _msg->sendStringData(server_ip.c_str(),
-                         server_port,
-                         source_id,
-                         INS_LIST::INS_HARBEAT,
-                         CMD_TYPE_LIST::CMD_HEARBEAT_HANDLE, //设置
-                         oJson.ToString());
-
-    // printf("\n%s\n",oJson.ToString().c_str());
-}
-int ETV_driver::setDoubleValue(uint16_t type, double value)
+int ETV_driver::setDoubleValue(std::string type, double value)
 {
     Control_count = 0;
-    switch (type)
+    if (type == "acc")
     {
-    case DATA_SET_GET_TYPE_LIST::Type_AcceleratorValue:
-        if (value != _data.AcceleratorValue);
-        vr->Set_Acc_motor(-value);
-        _data.AcceleratorValue = value;
-        break;
-    case DATA_SET_GET_TYPE_LIST::Type_BrakeValue:
-        _data.BrakeValue = value;
-        break;
-    case DATA_SET_GET_TYPE_LIST::Type_LiftValue:
-        _data.LiftValue = value;
-        vr->Set_Lift_motor(value);
-        break;
-    case DATA_SET_GET_TYPE_LIST::Type_MoveForwardValue:
-        _data.MoveForwardValue = value;
-        vr->Set_Forward_motor(value);
-        break;
-    case DATA_SET_GET_TYPE_LIST::Type_SideValue:
-        _data.SideValue = value;
-        vr->Set_Side_motor(value);
-        break;
-    case DATA_SET_GET_TYPE_LIST::Type_TiltValue:
-        _data.TiltValue = value;
-        break;
-    case DATA_SET_GET_TYPE_LIST::Type_TurnAngleValue:
-        if (value != _data.TurnAngleValue)
-            vr->Set_Turn_motor(value);
-        _data.TurnAngleValue = value;
-        break;
-    case DATA_SET_GET_TYPE_LIST::Type_AUTO:
-        _data.AUTO = value;
-        break;
-    case DATA_SET_GET_TYPE_LIST::Type_LED_Green:
-        _data.LED_Green = value;
-        break;
-    case DATA_SET_GET_TYPE_LIST::Type_LED_Red:
-        _data.LED_Red = value;
-        break;
-    case DATA_SET_GET_TYPE_LIST::Type_Paking:
-        _data.Paking = value;
-        break;
-    default:
-        return ERR;
-        break;
+        _data.acc = -value;
+        return OK;
     }
-    return OK;
+    else if (type == "lift")
+    {
+        _data.lift = value/5.0;
+        return OK;
+    }
+    else if (type == "side")
+    {
+        _data.side = value/5.0;
+        return OK;
+    }
+    else if (type == "forwarld")
+    {
+        _data.forwarld = value/5.0;
+        return OK;
+    }
+    else if (type == "turn")
+    {
+        _data.turn = value;
+        return OK;
+    }
+    else if (type == "turn")
+    {
+        _data.turn = value;
+        return OK;
+    }
+    else if (type == "auto_mode")
+    {
+        _data.auto_mode = value;
+        return OK;
+    }
+    return ERR;
 }

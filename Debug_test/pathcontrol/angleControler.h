@@ -20,7 +20,7 @@ struct state
     double yaw;
     double v;
 };
-double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double speed);
+double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double speed,double lastf);
 double CalculationPositionError(double tx, double ty, double tyaw, double sx, double sy);
 double CalculationAngleError(double target, double starting);
 //计算终点线到当前车直线距离

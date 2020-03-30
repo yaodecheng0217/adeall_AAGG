@@ -59,101 +59,278 @@ void APP::ACK_One_data(const char *ip, int port, uint16_t type, uint32_t seq)
     }
     else
     {
-        Node_INFO *driver = GetNode_INFO("Car_control");
-        if (driver == NULL)
-        {
-            printf("driver is not find!\n");
-            code = DriverIsNull;
-        }
-        else
-        {
 
-            switch (type)
+        switch (type)
+        {
+        case Type_AcceleratorValue:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
             {
-            case Type_AcceleratorValue:
-                if (driver->handle.data_list.Get("acc", value))
-                {
-                    code = OK;
-                    timestamp = driver->timestamp;
-                }
-                break;
-            case Type_AUTO:
-                if (driver->handle.data_list.Get("auto_mode", value))
-                {
-                    code = OK;
-                    timestamp = driver->timestamp;
-                }
-                break;
-            case Type_BrakeValue:
-                if (driver->handle.data_list.Get("break", value))
-                {
-                    code = OK;
-                    timestamp = driver->timestamp;
-                }
-                break;
-            case Type_LED_Green:
-                 if (driver->handle.data_list.Get("ledgreen", value))
-                {
-                    code = OK;
-                    timestamp = driver->timestamp;
-                }
-                break;
-            caseType_LED_Red:
-                 if (driver->handle.data_list.Get("ledred", value))
-                {
-                    code = OK;
-                    timestamp = driver->timestamp;
-                }
-                break;
-            case Type_LiftValue:
-                 if (driver->handle.data_list.Get("lift", value))
-                {
-                    code = OK;
-                    timestamp = driver->timestamp;
-                }
-                break;
-            case Type_MoveForwardValue:
-                 if (driver->handle.data_list.Get("forward", value))
-                {
-                    code = OK;
-                    timestamp = driver->timestamp;
-                }
-                break;
-            case Type_Paking:
-                 if (driver->handle.data_list.Get("paking", value))
-                {
-                    code = OK;
-                    timestamp = driver->timestamp;
-                }
-                break;
-            case Type_SideValue:
-                 if (driver->handle.data_list.Get("side", value))
-                {
-                    code = OK;
-                    timestamp = driver->timestamp;
-                }
-                break;
-            case Type_TiltValue:
-                 if (driver->handle.data_list.Get("tilt", value))
-                {
-                    code = OK;
-                    timestamp = driver->timestamp;
-                }
-                break;
-            case Type_TurnAngleValue:
-            printf("turn");
-                 if (driver->handle.data_list.Get("turn", value))
-                {
-                    code = OK;
-                    printf("ok %f\n",value);
-                    timestamp = driver->timestamp;
-                }
-                break;
-            default:
-                code = ERR;
+                printf("driver is not find!\n");
+                code = DriverIsNull;
                 break;
             }
+            if (driver->handle.data_list.Get("acc", value))
+            {
+                code = OK;
+                timestamp = driver->timestamp;
+            }
         }
+        break;
+        case Type_AUTO:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
+            {
+                printf("driver is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+            if (driver->handle.data_list.Get("auto_mode", value))
+            {
+                code = OK;
+                timestamp = driver->timestamp;
+            }
+        }
+        break;
+        case Type_BrakeValue:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
+            {
+                printf("driver is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+            if (driver->handle.data_list.Get("break", value))
+            {
+                code = OK;
+                timestamp = driver->timestamp;
+            }
+        }
+        break;
+        case Type_LED_Green:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
+            {
+                printf("driver is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+            if (driver->handle.data_list.Get("ledgreen", value))
+            {
+                code = OK;
+                timestamp = driver->timestamp;
+            }
+        }
+        break;
+        case Type_LED_Red:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
+            {
+                printf("driver is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+            if (driver->handle.data_list.Get("ledred", value))
+            {
+                code = OK;
+                timestamp = driver->timestamp;
+            }
+        }
+        break;
+        case Type_LiftValue:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
+            {
+                printf("driver is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+            if (driver->handle.data_list.Get("lift", value))
+            {
+                code = OK;
+                timestamp = driver->timestamp;
+            }
+        }
+        break;
+        case Type_MoveForwardValue:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
+            {
+                printf("driver is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+            if (driver->handle.data_list.Get("forward", value))
+            {
+                code = OK;
+                timestamp = driver->timestamp;
+            }
+        }
+        break;
+        case Type_Paking:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
+            {
+                printf("driver is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+            if (driver->handle.data_list.Get("paking", value))
+            {
+                code = OK;
+                timestamp = driver->timestamp;
+            }
+        }
+        break;
+        case Type_SideValue:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
+            {
+                printf("driver is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+            if (driver->handle.data_list.Get("side", value))
+            {
+                code = OK;
+                timestamp = driver->timestamp;
+            }
+        }
+        break;
+        case Type_TiltValue:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
+            {
+                printf("driver is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+            if (driver->handle.data_list.Get("tilt", value))
+            {
+                code = OK;
+                timestamp = driver->timestamp;
+            }
+        }
+        break;
+        case Type_TurnAngleValue:
+        {
+            Node_INFO *driver = GetNode_INFO("Car_control");
+            if (driver == NULL)
+            {
+                printf("driver is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+            if (driver->handle.data_list.Get("turn", value))
+            {
+                code = OK;
+                //printf("ok %f\n", value);
+                timestamp = driver->timestamp;
+            }
+        }
+        break;
+
+        case Type_forward_lasser:
+        {
+             Node_INFO *laser = GetNode_INFO("laser_sensor");
+            if (laser == NULL)
+            {
+                printf("laser is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+             if (laser->handle.data_list.Get("forward_laser", value))
+            {
+                code = OK;
+                //printf("ok %f\n", value);
+                timestamp = laser->timestamp;
+            }
+        }
+        break;
+       case Type_high_lasser:
+        {
+             Node_INFO *laser = GetNode_INFO("laser_sensor");
+            if (laser == NULL)
+            {
+                printf("laser is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+             if (laser->handle.data_list.Get("high_laser", value))
+            {
+                code = OK;
+               // printf("ok %f\n", value);
+                timestamp = laser->timestamp;
+            }
+        }
+        break;
+        case Type_side_lasser:
+        {
+             Node_INFO *laser = GetNode_INFO("laser_sensor");
+            if (laser == NULL)
+            {
+                printf("laser is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+             if (laser->handle.data_list.Get("side_laser", value))
+            {
+                code = OK;
+                //printf("ok %f\n", value);
+                timestamp = laser->timestamp;
+            }
+        }
+        break;
+        case Type_TrayL_lasser:
+        {
+             Node_INFO *laser = GetNode_INFO("laser_sensor");
+            if (laser == NULL)
+            {
+                printf("laser is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+             if (laser->handle.data_list.Get("TrayL_laser", value))
+            {
+                code = OK;
+                //printf("ok %f\n", value);
+                timestamp = laser->timestamp;
+            }
+        }
+        break;
+        case Type_TrayH_lasser:
+        {
+             Node_INFO *laser = GetNode_INFO("laser_sensor");
+            if (laser == NULL)
+            {
+                printf("laser is not find!\n");
+                code = DriverIsNull;
+                break;
+            }
+             if (laser->handle.data_list.Get("TrayH_laser", value))
+            {
+                code = OK;
+                //rintf("ok %f\n", value);
+                timestamp = laser->timestamp;
+            }
+        }
+        break;
+        
+        default:
+            code = ERR;
+            break;
+        }
+
         //返回数据
 
         TYPE_ACK_ONE_DATA aa;
@@ -161,7 +338,7 @@ void APP::ACK_One_data(const char *ip, int port, uint16_t type, uint32_t seq)
         aa.data = value;
         aa.seq = seq;
         aa.timestamp = timestamp;
-        printf("%d\n", seq);
+        //printf("%d\n", seq);
         _msg->sendData(ip,
                        port,
                        ID_StateMachine,
@@ -172,7 +349,7 @@ void APP::ACK_One_data(const char *ip, int port, uint16_t type, uint32_t seq)
 }
 int APP::set_ControlValue(uint16_t type, double value)
 {
-    printf("====================================%d\n",type);
+    //printf("====================================%d\n", type);
     switch (type)
     {
     case DATA_SET_GET_TYPE_LIST::Type_AcceleratorValue:

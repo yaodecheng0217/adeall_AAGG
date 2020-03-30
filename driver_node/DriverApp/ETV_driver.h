@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 13:48:45
- * @LastEditTime: 2020-03-29 23:00:57
+ * @LastEditTime: 2020-03-30 14:29:28
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -27,9 +27,12 @@ private:
     }_data;
 
     void initdata();
+    void sendData(uint32_t seq, time_t timestamp);
+    void sendHandle(uint32_t seq);
     int setDoubleValue(std::string type, double value);
-    static void *controlOnline(void *etv);
-    int Control_count=0;
+    uint16_t Control_count=10;
+    static void *controlOnline(void *);
+    void datalist_up();
 public:
     APP_name(ProtocolAnalysis *msg);
     ~APP_name();

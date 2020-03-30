@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 12:17:45
- * @LastEditTime: 2020-03-25 15:39:05
+ * @LastEditTime: 2020-03-30 10:09:12
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -9,57 +9,51 @@
 
 #include "lasser_node.h"
 
-lasser_node::lasser_node(ProtocolAnalysis *msg,std::string name,uint8_t id) : Driver_node(msg)
+lasser_node::lasser_node(ProtocolAnalysis *msg, std::string name, uint8_t id) : Driver_node(msg)
 {
-   _handle.driver_id=id;
-   _handle.driver_name=name;
+   _handle.driver_id = id;
+   _handle.driver_name = name;
 }
 lasser_node::~lasser_node()
 {
 }
 void lasser_node::initdata()
 {
-    
-    //_handle.driver_id= 1;
-    _handle.driver_type= DIRVER_TYPE::DOUBLE_DATA;
 
-    server_ip="192.168.2.16";
-    server_port=StateMachine_port;
-    source_id=ID_Sensor_uwb;
+   server_ip = "192.168.2.16";
+   server_port = StateMachine_port;
+   source_id = ID_Simulation;
+
+   _handle.driver_name = "laser_sensor";
+   _handle.driver_id = 1;
+   //添加维护数据
+   _handle.data_list.Add("TrayL_laser", _data.TrayL_laser);
+   _handle.data_list.Add("TrayH_laser", _data.TrayH_laser);
+   _handle.data_list.Add("high_laser", _data.high_laser);
+   _handle.data_list.Add("forward_laser", _data.forward_laser);
+   _handle.data_list.Add("side_laser", _data.side_laser);
 }
-void lasser_node::sendData(uint32_t seq, time_t timestamp)
+void lasser_node::datalist_up()
 {
-   TYPE_DOUBLE_UPDATE_DATA hearbeat;
-    hearbeat.id = _handle.driver_id;
-    hearbeat.data = _data;
-    hearbeat.seq = seq;
-    hearbeat.timestamp = timestamp;
-    hearbeat.state_ok = OK;
-
-    _msg->sendData(server_ip.c_str(),
-                     server_port,
-                     source_id,
-                     INS_LIST::INS_HARBEAT,
-                     CMD_TYPE_LIST::CMD_HEARBEAT_DOUBLE_DATA,//设置
-                     hearbeat);
+   _handle.data_list.Replace("TrayL_laser", _data.TrayL_laser);
+   _handle.data_list.Replace("TrayH_laser", _data.TrayH_laser);
+   _handle.data_list.Replace("high_laser", _data.high_laser);
+   _handle.data_list.Replace("forward_laser", _data.forward_laser);
+   _handle.data_list.Replace("side_laser", _data.side_laser);
 }
-void lasser_node::sendHandle(uint32_t seq)
+void lasser_node::updata(double TrayL_lasser,
+                         double TrayH_lasser,
+                         double high_lasser,
+                         double forward_lasser,
+                         double side_lasser)
 {
-   neb::CJsonObject oJson;
-   TYPE_handle_string s;
-   oJson.Add(s.driver_name,_handle.driver_name);
-   oJson.Add(s.driver_id,_handle.driver_id);
-   oJson.Add(s.driver_type,_handle.driver_type);
-   oJson.Add(s.seq,seq);
-
-   _msg->sendStringData(server_ip.c_str(),
-                   server_port,
-                   source_id,
-                   INS_LIST::INS_HARBEAT,
-                   CMD_TYPE_LIST::CMD_HEARBEAT_HANDLE,//设置
-                   oJson.ToString());
+   _data.forward_laser = forward_lasser;
+   _data.TrayH_laser = TrayH_lasser;
+   _data.TrayL_laser = TrayL_lasser;
+   _data.side_laser = side_lasser;
+   _data.high_laser = high_lasser;
 }
-int lasser_node::setDoubleValue(uint16_t type, double value)
+int lasser_node::setDoubleValue(std::string type, double value)
 {
    return 0;
 }

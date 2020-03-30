@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 12:17:45
- * @LastEditTime: 2020-03-25 15:19:31
+ * @LastEditTime: 2020-03-30 10:08:53
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -17,47 +17,30 @@ uwb_node::~uwb_node()
 }
 void uwb_node::initdata()
 {
-    _handle.driver_name="uwb_sensor";
-    _handle.driver_id= 1;
-    _handle.driver_type= DIRVER_TYPE::LOCATION;
+    server_ip = "192.168.2.16";
+   server_port = StateMachine_port;
+   source_id = ID_Sensor_uwb;
 
-    server_ip="192.168.2.16";
-    server_port=StateMachine_port;
-    source_id=ID_Sensor_uwb;
+   _handle.driver_name = "location";
+   _handle.driver_id = 1;
+   //??????
+   _handle.data_list.Add("x", _data.x);
+   _handle.data_list.Add("y", _data.y);
+   _handle.data_list.Add("yaw", _data.yaw);
 }
-void uwb_node::sendData(uint32_t seq, time_t timestamp)
+void uwb_node::datalist_up()
 {
-   TYPE_UWB_UPDATE_DATA hearbeat;
-    hearbeat.id = _handle.driver_id;
-    hearbeat.data = _data;
-    hearbeat.seq = seq;
-    hearbeat.timestamp = timestamp;
-    hearbeat.state_ok = OK;
-
-    _msg->sendData(server_ip.c_str(),
-                     server_port,
-                     source_id,
-                     INS_LIST::INS_HARBEAT,
-                     CMD_TYPE_LIST::CMD_HEARBEAT_UWB_DATA,//设置
-                     hearbeat);
+   _handle.data_list.Replace("x", _data.x);
+   _handle.data_list.Replace("y", _data.y);
+   _handle.data_list.Replace("yaw", _data.yaw);
 }
-void uwb_node::sendHandle(uint32_t seq)
+void uwb_node::updata(double x,double y,double yaw)
 {
-   neb::CJsonObject oJson;
-   TYPE_handle_string s;
-   oJson.Add(s.driver_name,_handle.driver_name);
-   oJson.Add(s.driver_id,_handle.driver_id);
-   oJson.Add(s.driver_type,_handle.driver_type);
-   oJson.Add(s.seq,seq);
-
-   _msg->sendStringData(server_ip.c_str(),
-                   server_port,
-                   source_id,
-                   INS_LIST::INS_HARBEAT,
-                   CMD_TYPE_LIST::CMD_HEARBEAT_HANDLE,//设置
-                   oJson.ToString());
+   _data.x=x;
+   _data.y=y;
+   _data.yaw=yaw;
 }
-int uwb_node::setDoubleValue(uint16_t type, double value)
+int uwb_node::setDoubleValue(std::string type, double value)
 {
    return 0;
 }

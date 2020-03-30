@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 12:17:45
- * @LastEditTime: 2020-03-28 11:57:26
+ * @LastEditTime: 2020-03-30 10:42:10
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -21,26 +21,26 @@ void APP_name::initdata()
    server_port = StateMachine_port;
    source_id = ID_Sensor_uwb;
 
-   _handle.driver_name = "LaserLocation";
+   _handle.driver_name = "location";
    _handle.driver_id = 1;
    //添加维护数据
    _handle.data_list.Add("x", _data.x);
    _handle.data_list.Add("y", _data.y);
-   _handle.data_list.Add("yaw", _data.z);
+   _handle.data_list.Add("yaw", _data.yaw);
 }
-void APP_name::updateX(double x)
+void APP_name::datalist_up()
 {
-   _handle.data_list.Replace("x", x);
+   _handle.data_list.Replace("x", _data.x);
+   _handle.data_list.Replace("y", _data.y);
+   _handle.data_list.Replace("yaw", _data.yaw);
 }
-void APP_name::updatey(double y)
+void APP_name::updata(double x,double y,double yaw)
 {
-   _handle.data_list.Replace("y", y);
+   _data.x=x;
+   _data.y=y;
+   _data.yaw=yaw;
 }
-void APP_name::updateyaw(double z)
-{
-   _handle.data_list.Replace("yaw", z);
-}
-int APP_name::setDoubleValue(uint16_t type, double value)
+int APP_name::setDoubleValue(std::string type, double value)
 {
    return 0;
 }
