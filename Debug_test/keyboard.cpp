@@ -94,7 +94,7 @@ DWORD WINAPI Keyboard_control(void* prt)
 			switch (scanKeyboard())
 			{
 			case 72:
-				app.Set_Lift_motor(app.MODE::mode_abs, 0.5);
+				app.Set_Lift_motor(app.MODE::mode_abs, 0.7);
 				printf("up\n");
 				break;
 			case 75:

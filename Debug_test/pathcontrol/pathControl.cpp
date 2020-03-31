@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-03-30 17:19:38
+ * @LastEditTime: 2020-03-31 16:50:38
  * @LastEditors: Yaodecheng
  * @Description: 路径控制层
  *   ^
@@ -47,73 +47,128 @@ void pathControler::control_loop()
 {
 	PostionData sdata;
 	int speed = 50;
-while (1)
-{
-	sdata.x = -550;
-	sdata.y = 100;
-	//sdata.x = 0;
-	//sdata.y = 1000;
-	sdata.yaw = 180 / 57.3;
-	while (true)
+	while (1)
 	{
-		time_50ms_Lock.lock();
-		if (angle_control_cycle(sdata, 50))
-			break;
-	}
-
-	printf("path is ok!!\n");
-	Sleep(5000);
-	// sdata.x = 0;
-	// sdata.y = -200;
-	// sdata.yaw = 270 / 57.3;
-	sdata.x = 200;
-	sdata.y = 100;
-	sdata.yaw = 0 / 57.3;
-	while (true)
-	{
-		time_50ms_Lock.lock();
-		if (angle_control_cycle(sdata, -50))
-			break;
-	}
-	printf("path is ok22!!\n");
-	Sleep(5000);
-}
-
-	
-	//get_fork();
-	/*while (1)
+		sdata.x = -460;
+		sdata.y = 50;
+		//sdata.x = 0;
+		//sdata.y = 1000;
+		sdata.yaw = 180 / 57.3;
+		while (true)
 		{
-			Sleep(1);
-		}*/
-	// sdata.x = 500;
-	// sdata.y = -1000;
-	// sdata.yaw = 270 / 57.3;
-	// while (true)
-	// {
-	// 	time_50ms_Lock.lock();
-	// 	if (angle_control_cycle(sdata,-50))
-	// 		break;
-	// }
-	// sdata.x = 0;
-	// sdata.y = 0;
-	// sdata.yaw = 90 / 57.3;
-	// while (true)
-	// {
-	// 	time_50ms_Lock.lock();
-	// 	if (angle_control_cycle(sdata,50))
-	// 		break;
-	// }
-	// sdata.x = 500;
-	// sdata.y = -1000;
-	// sdata.yaw = 270 / 57.3;
-	// while (true)
-	// {
-	// 	time_50ms_Lock.lock();
-	// 	if (angle_control_cycle(sdata,50))
-	// 		break;
-	// }
-}
+			time_50ms_Lock.lock();
+			if (angle_control_cycle(sdata, 50))
+				break;
+		}
 
+		printf("path is ok!!\n");
+		putdown();
+		//Sleep(5000);
+		sdata.x = 300;
+		sdata.y = 50;
+		sdata.yaw = 0 / 57.3;
+		while (true)
+		{
+			time_50ms_Lock.lock();
+			if (angle_control_cycle(sdata, -50))
+				break;
+		}
+		printf("path is ok22!!\n");
+		Sleep(5000);
+	}
+}
+void pathControler::control_loop2()
+{
+	PostionData sdata;
+	int speed = 50;
+	while (1)
+	{
+		sdata.x = -460;
+		sdata.y = 50;
+		sdata.yaw = 180 / 57.3;
+		while (true)
+		{
+			time_50ms_Lock.lock();
+			if (angle_control_cycle(sdata, 50))
+				break;
+		}
+		printf("path is ok!!\n");
+		getup();
+		sdata.x = 300;
+		sdata.y = 50;
+		sdata.yaw = 0 / 57.3;
+		while (true)
+		{
+			time_50ms_Lock.lock();
+			if (angle_control_cycle(sdata, -50))
+				break;
+		}
+		printf("path is ok!!\n");
+		//===================>
+		//Sleep(5000);
+		sdata.x = 0;
+		sdata.y = -250;
+		sdata.yaw = 270 / 57.3;
+		while (true)
+		{
+			time_50ms_Lock.lock();
+			if (angle_control_cycle(sdata, 50))
+				break;
+		}
+		putdown();
+		//============
+		sdata.x = 300;
+		sdata.y = 50;
+		sdata.yaw = 0 / 57.3;
+		while (true)
+		{
+			time_50ms_Lock.lock();
+			if (angle_control_cycle(sdata, -50))
+				break;
+		}
+		Sleep(5000);
+		sdata.x = 0;
+		sdata.y = -250;
+		sdata.yaw = 270 / 57.3;
+		while (true)
+		{
+			time_50ms_Lock.lock();
+			if (angle_control_cycle(sdata, 50))
+				break;
+		}
+		getup();
+		sdata.x = 300;
+		sdata.y = 50;
+		sdata.yaw = 0 / 57.3;
+		while (true)
+		{
+			time_50ms_Lock.lock();
+			if (angle_control_cycle(sdata, -50))
+				break;
+		}
+		//Sleep(1000);
+		sdata.x = -460;
+		sdata.y = 50;
+		sdata.yaw = 180 / 57.3;
+		while (true)
+		{
+			time_50ms_Lock.lock();
+			if (angle_control_cycle(sdata, 50))
+				break;
+		}
+		putdown();
+		sdata.x = 300;
+		sdata.y = 50;
+		sdata.yaw = 0 / 57.3;
+		while (true)
+		{
+			time_50ms_Lock.lock();
+			if (angle_control_cycle(sdata, -50))
+				break;
+		}
+		Sleep(10000);
+	}
+}
 //路径控制==============算法================================================================
 int pathControler::angle_control_cycle(PostionData p, int speed)
 {
@@ -153,32 +208,35 @@ int pathControler::angle_control_cycle(PostionData p, int speed)
 		double Angle_Error = CalculationAngleError(p.yaw, s.yaw);
 		double Position_Error = CalculationPositionError(p.x, p.y, p.yaw, s.x, s.y);
 		double target_dis = Calculation_target_distance(p.x, p.y, p.yaw, s.x, s.y, speed);
-        
+
 		double getF;
-		driver->GetData(Type_TurnAngleValue,&getF);
-        //printf("get wheel %f\n",getF*57.3);
-		double f = CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed,getF);
-		printf("---->%f    %f    %f    %f\n", f * 57.3, Angle_Error * 57.3, Position_Error, target_dis);
+		driver->GetData(Type_TurnAngleValue, &getF);
+		//printf("get wheel %f\n",getF*57.3);
+		double f = CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed, getF);
+		//printf("---->%f    %f    %f    %f\n", f * 57.3, Angle_Error * 57.3, Position_Error, target_dis);
 		//============================================================================
 		//==================================输出和目标距离判断============================
 		driver->Set_Turn_motor(driver->mode_abs, f, 15);
 		if (speed > 0)
 		{
-			if (target_dis < 230)
+			if (target_dis < 170)
 			{
 				driver->Set_Acc_motor(driver->mode_abs, 0, 15);
 				return 1;
 			}
 			else
 			{
-				driver->Set_Acc_motor(driver->mode_abs, 0.7, 15);
+				driver->Set_Acc_motor(driver->mode_abs, 0.6, 15);
 			}
 		}
 		else
 		{
-			if (target_dis < 0)
+			if (target_dis < 80)
 			{
-				driver->Set_Acc_motor(driver->mode_abs, 0, 15);
+				while(driver->Set_Acc_motor(driver->mode_abs, 0, 15)!=OK)
+				{
+                    Sleep(1);
+				}
 				return 1;
 			}
 			else
@@ -269,4 +327,24 @@ int pathControler::get_fork()
 	driver->Set_Forward_motor(driver->mode_abs, 0, 15);
 	exit(0);
 	return 0;
+}
+
+void pathControler::getup()
+{
+	for (size_t i = 0; i < 70; i++)
+	{
+		driver->Set_Lift_motor(driver->mode_abs, 0.65);
+		Sleep(50);
+	}
+	driver->Set_Lift_motor(driver->mode_abs, 0);
+}
+
+void pathControler::putdown()
+{
+	for (size_t i = 0; i < 200; i++)
+	{
+		driver->Set_Lift_motor(driver->mode_abs, -0.4);
+		Sleep(50);
+	}
+	driver->Set_Lift_motor(driver->mode_abs, 0);
 }

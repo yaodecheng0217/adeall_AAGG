@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-24 15:09:30
- * @LastEditTime: 2020-03-30 16:51:31
+ * @LastEditTime: 2020-03-31 17:46:36
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -47,7 +47,10 @@ int main()
   {
     Sleep(1);
   }*/
-  ctrl.control_loop();
+  ctrl.control_loop2();
+  ctrl.getup();
+  Sleep(1000);
+  ctrl.putdown();
  
   while (true)
   {

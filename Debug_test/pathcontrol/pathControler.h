@@ -25,6 +25,9 @@ public:
     pathControler(APP *dr);
     ~pathControler();
 void control_loop();
+void control_loop2();
+void getup();
+void putdown();
 private:
     MutexLock time_50ms_Lock;
     static void *timer_50ms(void *);

@@ -59,12 +59,17 @@ bool APP::UpdateDataDetail(neb::CJsonObject newdata)
     {
         if (_NodeList[i].handle.driver_name == driver_name)
         {
-            _NodeList[i].handle.data_list = newdata[driver_name];
+            std::string strTraversing;
+            while (_NodeList[i].handle.data_list.GetKey(strTraversing))
+            {
+                double data;
+                newdata[driver_name].Get(strTraversing, data);
+                _NodeList[i].handle.data_list.Replace(strTraversing, data);
+            }
             _NodeList[i].onlinecnt = 0;
-            //printf("update ok\n");
             return 1;
         }
     }
-     //printf("update error\n");
+    //printf("update error\n");
     return 0;
 }

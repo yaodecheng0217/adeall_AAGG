@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-15 17:54:06
- * @LastEditTime: 2020-03-30 00:02:26
+ * @LastEditTime: 2020-03-31 10:38:05
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -78,6 +78,7 @@ int APP::sendToDriver(const char *ip, int port, std::string type, double value)
 int APP::SetAcceleratorValue(double value)
 {
     Node_INFO *info = GetNode_INFO(Contrl_driver_name);
+    const char * type ="acc";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -86,9 +87,10 @@ int APP::SetAcceleratorValue(double value)
     else
     {
         double x;
-        if (info->handle.data_list.Get("acc", x))
+    
+        if (info->handle.data_list.Get(type, x))
         {
-            return sendToDriver(info->ip.c_str(), info->port, "acc", value);
+            return sendToDriver(info->ip.c_str(), info->port, type, value);
         }
         return ERR;
     }
@@ -97,7 +99,7 @@ int APP::SetAcceleratorValue(double value)
 int APP::SetBrake(double value)
 {
     Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    std::string type = "brake";
+    const char * type = "brake";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -105,7 +107,7 @@ int APP::SetBrake(double value)
     }
     else
     {
-        double x;
+        double x; 
         if (info->handle.data_list.Get(type, x))
         {
             return sendToDriver(info->ip.c_str(), info->port, type, value);
@@ -117,7 +119,7 @@ int APP::SetBrake(double value)
 int APP::SetTurnAngle(double value)
 {
    Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    std::string type = "turn";
+    const char * type = "turn";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -126,6 +128,7 @@ int APP::SetTurnAngle(double value)
     else
     {
         double x;
+        
         if (info->handle.data_list.Get(type, x))
         {
             return sendToDriver(info->ip.c_str(), info->port, type, value);
@@ -137,7 +140,7 @@ int APP::SetTurnAngle(double value)
 int APP::SetLift(double value)
 {
     Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    std::string type = "lift";
+    const char * type = "lift";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -147,6 +150,7 @@ int APP::SetLift(double value)
     {
         double x;
         printf("list>>>>\n");
+         
         if (info->handle.data_list.Get(type, x))
         {
             return sendToDriver(info->ip.c_str(), info->port, type, value);
@@ -157,7 +161,7 @@ int APP::SetLift(double value)
 int APP::SetSide(double value)
 {
    Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    std::string type = "side";
+    const char * type = "side";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -166,6 +170,7 @@ int APP::SetSide(double value)
     else
     {
         double x;
+         
         if (info->handle.data_list.Get(type, x))
         {
             return sendToDriver(info->ip.c_str(), info->port, type, value);
@@ -176,7 +181,7 @@ int APP::SetSide(double value)
 int APP::SetMoveForward(double value)
 {
    Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    std::string type = "forward";
+    const char * type = "forward";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -185,6 +190,7 @@ int APP::SetMoveForward(double value)
     else
     {
         double x;
+         
         if (info->handle.data_list.Get(type, x))
         {
             return sendToDriver(info->ip.c_str(), info->port, type, value);
@@ -195,7 +201,7 @@ int APP::SetMoveForward(double value)
 int APP::SetTilt(double value)
 {
     Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    std::string type = "tilt";
+    const char * type = "tilt";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -204,6 +210,7 @@ int APP::SetTilt(double value)
     else
     {
         double x;
+        
         if (info->handle.data_list.Get(type, x))
         {
             return sendToDriver(info->ip.c_str(), info->port, type, value);
@@ -214,7 +221,7 @@ int APP::SetTilt(double value)
 int APP::SetLedGreen(bool value)
 {
    Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    std::string type = "ledgreen";
+    const char * type = "ledgreen";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -223,6 +230,7 @@ int APP::SetLedGreen(bool value)
     else
     {
         double x;
+        
         if (info->handle.data_list.Get(type, x))
         {
             return sendToDriver(info->ip.c_str(), info->port, type, value);
@@ -233,7 +241,7 @@ int APP::SetLedGreen(bool value)
 int APP::SetLedRed(bool value)
 {
     Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    std::string type = "lesred";
+    const char * type = "lesred";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -242,6 +250,7 @@ int APP::SetLedRed(bool value)
     else
     {
         double x;
+        
         if (info->handle.data_list.Get(type, x))
         {
             return sendToDriver(info->ip.c_str(), info->port, type, value);
@@ -252,7 +261,7 @@ int APP::SetLedRed(bool value)
 int APP::SetPacking(bool value)
 {
     Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    std::string type = "packing";
+    const char * type = "packing";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -261,6 +270,7 @@ int APP::SetPacking(bool value)
     else
     {
         double x;
+        
         if (info->handle.data_list.Get(type, x))
         {
             return sendToDriver(info->ip.c_str(), info->port, type, value);
@@ -271,7 +281,7 @@ int APP::SetPacking(bool value)
 int APP::SetAuto(bool value)
 {
     Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    std::string type = "auto_mode";
+    const char * type = "auto_mode";
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -280,6 +290,7 @@ int APP::SetAuto(bool value)
     else
     {
         double x;
+        
         if (info->handle.data_list.Get(type, x))
         {
             return sendToDriver(info->ip.c_str(), info->port, type, value);

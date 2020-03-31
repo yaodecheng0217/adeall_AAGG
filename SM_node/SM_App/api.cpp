@@ -231,7 +231,7 @@ void APP::ACK_One_data(const char *ip, int port, uint16_t type, uint32_t seq)
                 code = DriverIsNull;
                 break;
             }
-            if (driver->handle.data_list.Get("turn", value))
+            else if (driver->handle.data_list.Get("turn", value))
             {
                 code = OK;
                 //printf("ok %f\n", value);
