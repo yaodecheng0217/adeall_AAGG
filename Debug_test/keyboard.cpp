@@ -98,11 +98,11 @@ DWORD WINAPI Keyboard_control(void* prt)
 				printf("up\n");
 				break;
 			case 75:
-				app.Set_Forward_motor(app.MODE::mode_inc, -0.1);
+				app.Set_Forward_motor(app.MODE::mode_abs, -0.1);
 				printf("left\n");
 				break;
 			case 77:
-				app.Set_Forward_motor(app.MODE::mode_inc, 0.1);
+				app.Set_Forward_motor(app.MODE::mode_abs, 0.1);
 				printf("right\n");
 				break;
 			case 80:

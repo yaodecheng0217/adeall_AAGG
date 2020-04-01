@@ -168,14 +168,14 @@ int APP::setControl(uint8_t mode, double value, uint16_t timeout,
     {
 
         int code = SendContrl(type, value, timeout);
-        //printf("code=%d\n", code);
+        //printf("==code=%d\n", code);
         return code;
     }
     else
     {
         double v;
         int code = GetData(type, &v, 20);
-        printf("coude=%d\n",code);
+        //printf("coude=%d\n",code);
         if (code == OK)
         {
             code = SendContrl(type, v + value, timeout);

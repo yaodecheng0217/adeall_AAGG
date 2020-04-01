@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-15 17:54:06
- * @LastEditTime: 2020-03-31 10:38:05
+ * @LastEditTime: 2020-04-01 14:08:45
  * @LastEditors: Yaodecheng
  */
 #include "app.h"
@@ -149,7 +149,7 @@ int APP::SetLift(double value)
     else
     {
         double x;
-        printf("list>>>>\n");
+       // printf("list>>>>\n");
          
         if (info->handle.data_list.Get(type, x))
         {
@@ -181,7 +181,8 @@ int APP::SetSide(double value)
 int APP::SetMoveForward(double value)
 {
    Node_INFO *info = GetNode_INFO(Contrl_driver_name);
-    const char * type = "forward";
+    const char * type = "forwarld";
+    printf("forwarld!\n");
     if (info == NULL)
     {
         printf("driver is not find!\n");
@@ -193,6 +194,7 @@ int APP::SetMoveForward(double value)
          
         if (info->handle.data_list.Get(type, x))
         {
+            printf("send\n");
             return sendToDriver(info->ip.c_str(), info->port, type, value);
         }
         return ERR;

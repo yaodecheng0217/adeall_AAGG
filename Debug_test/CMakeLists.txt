@@ -22,6 +22,7 @@ aux_source_directory(./pathcontrol SRC_FILES)
 aux_source_directory(./APP SRC_FILES)
 aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)
+aux_source_directory(../common/ SRC_Cjson_FILES)
 #添加头文件目录
 include_directories(
      ../common/

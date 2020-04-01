@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-18 11:00:29
- * @LastEditTime: 2020-03-24 16:06:11
+ * @LastEditTime: 2020-04-01 18:46:08
  * @LastEditors: Yaodecheng
  * @Description: 角度补偿控制算法，稳定，但接近慢
  * @Adeall licence@2020
@@ -11,7 +11,7 @@
 #include <math.h>
 
 
-#define pi 3.1415926
+//#define pi 3.1415926
 #define Radian_conversion 57.3
 struct state
 {

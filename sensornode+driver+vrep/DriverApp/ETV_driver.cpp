@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 13:48:45
- * @LastEditTime: 2020-03-30 15:32:49
+ * @LastEditTime: 2020-04-01 14:01:14
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -34,7 +34,7 @@ void *ETV_driver::controlOnline(void *etv)
         p->vr->Set_Forward_motor(p->_data.forwarld);
         p->vr->Set_Lift_motor(p->_data.lift);
         p->vr->Set_Side_motor(p->_data.side);
-        p->vr->Set_Turn_motor(p->_data.turn+5/57.3);
+        p->vr->Set_Turn_motor(p->_data.turn);
         Sleep(50);
     }
 }

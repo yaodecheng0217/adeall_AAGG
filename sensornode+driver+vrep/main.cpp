@@ -2,7 +2,7 @@
  * @Description: 传感器节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-30 09:41:43
+ * @LastEditTime: 2020-04-01 18:29:20
  * @LastEditors: Yaodecheng
  **/
 
@@ -10,6 +10,7 @@
 #include "DriverApp/ETV_driver.h"
 #include "vrep/vrep_interface.h"
 #include "SensorApp/lasser_node.h"
+#include <math.h>
 void Callback_outdata(ReturnFrameData in);
 msgpa::ProtocolAnalysis msgtest(Callback_outdata);
 uwb_node app(&msgtest);
@@ -23,15 +24,14 @@ int main()
     app.run();
     driver.run();
     laser.run();
-
-    vr.Set_Turn_motor(90 / 57.3);
-    vr.Set_Acc_motor(0.1);
     while (1)
     {
         vrep_data d = vr.GetAllData();
 
         //printf("%f  %f  %f  %f  %f\n", d.Uwb_x, d.Uwb_y, d.Uwb_yaw * 57.3,d.side_lasser,d.TrayH_lasser);
-        app.updata(d.Uwb_x, d.Uwb_y, d.Uwb_yaw);
+        double x = d.Uwb_x + 30 * cos(d.Uwb_yaw) + rand() % 20 - 10;
+        double y = d.Uwb_y + 30 * sin(d.Uwb_yaw) + rand() % 20 - 10;
+        app.updata(x, y, d.Uwb_yaw);
 
         laser.updata(d.TrayL_lasser, d.TrayH_lasser, d.high_lasser, d.forward_lasser, d.side_lasser);
 
