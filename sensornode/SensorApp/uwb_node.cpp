@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 12:17:45
- * @LastEditTime: 2020-03-28 11:41:35
+ * @LastEditTime: 2020-04-02 18:00:16
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -28,6 +28,12 @@ void uwb_node::initdata()
    _handle.data_list.Add("y", _data.y);
    _handle.data_list.Add("z", _data.z);
 }
+void uwb_node::datalist_up()
+{
+   _handle.data_list.Replace("x", _data.x);
+   _handle.data_list.Replace("y", _data.y);
+   _handle.data_list.Replace("z", _data.z);
+}
 void uwb_node::updateX(double x)
 {
    _handle.data_list.Replace("x", x);
@@ -40,7 +46,7 @@ void uwb_node::updatez(double z)
 {
    _handle.data_list.Replace("z", z);
 }
-int uwb_node::setDoubleValue(uint16_t type, double value)
+int uwb_node::setDoubleValue(std::string type, double value)
 {
    return 0;
 }

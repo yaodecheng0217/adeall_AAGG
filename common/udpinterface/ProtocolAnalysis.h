@@ -4,7 +4,7 @@
  * @Author: Yaodecheng
  * @Date: 2019-10-19 10:18:47
  * @LastEditors: Yaodecheng
- * @LastEditTime: 2020-04-02 15:05:36
+ * @LastEditTime: 2020-04-02 17:55:35
  */
 
 #ifndef _PREOTOCOLANALYSIS_H_
@@ -59,12 +59,6 @@ void Add_StructSerialize_sendData(T in, FrameDataStruct *out)
     {
         out->_databuff[i] = data[i];
     }
-}
-
-template <typename T>
-void Decode_Struct_No_Serialize(T *out, const std::vector<uint8_t> _databuff)
-{
-    *out = *(T *)&_databuff[0];
 }
 template <typename T>
 void Decode_Struct_No_Serialize(T *out, const std::vector<uint8_t> _databuff)

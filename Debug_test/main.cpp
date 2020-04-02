@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-24 15:09:30
- * @LastEditTime: 2020-04-02 13:33:28
+ * @LastEditTime: 2020-04-02 17:44:55
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -17,6 +17,7 @@
 #include "sleep.h"
 #include "pathcontrol/pathControler.h"
 #include "keyboard.h"
+#include "time_util.h"
 void Callback_outdata(ReturnFrameData in);
 msgpa::ProtocolAnalysis msgtest(Callback_outdata);
 APP app(&msgtest);
@@ -47,7 +48,7 @@ int main()
   {
     Sleep(1);
   }*/
-  ctrl.control_loop2();
+  ctrl.control_loop();
   //ctrl.Tracking_arc(300,0,0);
   ctrl.getup();
   Sleep(1000);
