@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-04-01 18:16:50
+ * @LastEditTime: 2020-04-02 14:13:04
  * @LastEditors: Yaodecheng
  * @Description: 路径控制层
  *   ^
@@ -51,9 +51,11 @@ void pathControler::control_loop()
 	while (1)
 	{
 		point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
+		Catstop();
 		printf("path is ok!!\n");
 		putdown();
 		point_2_point(300, 50, 0 / 57.3, -speed, contrl, true);
+		Catstop();
 		printf("path is ok22!!\n");
 		Sleep(5000);
 	}
@@ -61,7 +63,7 @@ void pathControler::control_loop()
 void pathControler::control_loop2()
 {
 	PostionData sdata;
-	int speed = 70;
+	int speed = 78;
 	bool contrl = true;
 	while (1)
 	{

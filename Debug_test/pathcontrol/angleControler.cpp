@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-18 11:01:49
- * @LastEditTime: 2020-04-02 10:17:58
+ * @LastEditTime: 2020-04-02 14:07:37
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -52,7 +52,7 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
     tfinfo.Kp = 0.00004;
     tfinfo.Ki = 0.00002;
 
-    yawinfo.Kp = 0.0002;
+    yawinfo.Kp = 0.0000;//0.0002
 
     //接近轨道阈值，超过此阈值将直接将车垂直九十度先接近轨道
     double front_FL = 138;
@@ -63,13 +63,13 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
     
     //
     double f = 0;
-    Angle_Error = Angle_Error + yawErr;
+    //Angle_Error = Angle_Error + yawErr;
     if (speed > 0)
     {
         //换算前叉误差
         double Ferr = (Position_Error / sin(Angle_Error) - front_CL) * sin(Angle_Error);
 
-        //printf(" tarA=%f   tarP=%f ", Angle_Error * 57.3, Ferr);
+        printf(" tarA=%f   tarP=%f ", Angle_Error * 57.3, Ferr);
         if (abs(Position_Error) > front_FL)
         {
             if (Position_Error > 0)
@@ -93,7 +93,7 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
     {
         double Berr = (Position_Error / sin(Angle_Error) - rear_CL) * sin(Angle_Error);
         double Berr2 = (Position_Error / sin(Angle_Error) - 140) * sin(Angle_Error);
-       // printf(" tarA=%f   tarP=%f ", Angle_Error * 57.3, Position_Error);
+        printf(" tarA=%f   tarP=%f ", Angle_Error * 57.3, Position_Error);
         if (abs(Berr2) > rear_FL)
         {
             if (Berr2 < 0)

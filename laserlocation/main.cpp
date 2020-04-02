@@ -2,7 +2,7 @@
  * @Description: 传感器节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-30 15:54:15
+ * @LastEditTime: 2020-04-02 11:22:02
  * @LastEditors: Yaodecheng
  **/
 
@@ -16,7 +16,7 @@ LaserSensor app(&msgtest);
 void update(INT32 x, INT32 y, INT32 yaw)
 {
     double yawT=yaw/1000.0;
-    yawT=yawT+180-15;
+    yawT=yawT+180-16.0;
     if(yawT>360)
     yawT=yawT-360;
 
