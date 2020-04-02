@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-18 11:01:49
- * @LastEditTime: 2020-04-01 18:57:56
+ * @LastEditTime: 2020-04-02 10:17:58
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -59,7 +59,7 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
     double rear_FL = 70; //70
     //前视距离
     double front_CL = 190;
-    double rear_CL = -140; //140
+    double rear_CL = 0; //140
     
     //
     double f = 0;
