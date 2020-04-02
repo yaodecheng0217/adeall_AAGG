@@ -22,6 +22,7 @@ aux_source_directory(./pathcontrol SRC_FILES)
 aux_source_directory(./APP SRC_FILES)
 aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)
+aux_source_directory(../common/ SRC_Cjson_FILES)
 #添加头文件目录
 include_directories(
      ../common/
@@ -45,6 +46,7 @@ ENDIF ()
 #为工程添加源文件,,第一个为工程名
 add_executable( ${PROJECT_NAME}
     "main.cpp"
+    "keyboard.cpp"
     ${SRC_FILES}
     ${SRC_BASIC_FILES}
     ${SRC_Cjson_FILES}

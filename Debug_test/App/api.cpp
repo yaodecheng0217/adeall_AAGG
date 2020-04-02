@@ -6,11 +6,10 @@
 #include "app.h"
 int APP::Send_CMD_toStateMachine(uint32_t seq, int type)
 {
-    _Send::TYPE_GET_DATA aa;
-    aa.handle = control_handle;
+    TYPE_GET_DATA aa;
     aa.type = type;
     aa.seq = seq;
-    return _msg->sendData("127.0.0.1", StateMachine_port, ID_Controller, INS_GET,
+    return _msg->sendData(sip, StateMachine_port, ID_Controller, INS_GET,
                           CMD_GET_DATA, aa);
 }
 void APP::AddToRecv(int seq, int *ok_flag, RecallFun DualFunction,
@@ -25,37 +24,37 @@ void APP::AddToRecv(int seq, int *ok_flag, RecallFun DualFunction,
 }
 int APP::GetDoubleDataFunction(void *indata, void *returnvalue)
 {
-    _Send::TYPE_ACK_ONE_DATA d = *(_Send::TYPE_ACK_ONE_DATA *)indata;
+    TYPE_ACK_ONE_DATA d = *(TYPE_ACK_ONE_DATA *)indata;
     double *u = (double *)returnvalue;
     *u = d.data;
     return d.code;
 }
 int APP::GetLocationDataFunction(void *indata, void *returnvalue)
 {
-    _Send::TYPE_ACK_LOCATION_DATA d = *(_Send::TYPE_ACK_LOCATION_DATA *)indata;
-    _data::LOCATION_DATA *u = (_data::LOCATION_DATA *)returnvalue;
+    TYPE_ACK_LOCATION_DATA d = *(TYPE_ACK_LOCATION_DATA *)indata;
+    LOCATION_DATA *u = (LOCATION_DATA *)returnvalue;
     *u = d.data;
     return d.code;
 }
-int APP::GetData(_data::LOCATION_DATA *returnvalue, UINT timeout)
+int APP::GetData(LOCATION_DATA *returnvalue, UINT timeout)
 {
     uint32_t seq = _seq++;
     int code = -1;
     AddToRecv(seq, &code, GetLocationDataFunction, returnvalue);
-    if (Send_CMD_toStateMachine(seq, _data::Type_location) == -1)
+    if (Send_CMD_toStateMachine(seq, Type_location) == -1)
     {
         clearReCallSeq(seq);
         printf(")");
-        return ERR;      
+        return ERR;
     }
     //超时等待
     while (timeout--)
     {
-         Sleep(1);
         if (code != -1)
         {
             return code;
-        } 
+        }
+        Sleep(1);
     }
     clearReCallSeq(seq);
     //printf("get data timeout\n");
@@ -74,12 +73,12 @@ int APP::GetData(int type, double *returnvalue, UINT timeout)
     AddToRecv(seq, &code, GetDoubleDataFunction, returnvalue);
     //超时等待
     while (timeout--)
-    {Sleep(1);
+    {
+        Sleep(1);
         if (code != -1)
         {
             return code;
         }
-        
     }
     clearReCallSeq(seq);
     return TIMEOUT;
@@ -100,7 +99,7 @@ void APP::clearReCallSeq(uint32_t seq)
 
 void APP::reaction_ACK(void *r, uint32_t seq)
 {
-   ScopeLocker K(&RecallLock);
+    ScopeLocker K(&RecallLock);
     size_t l = _Recall.size();
     for (size_t i = 0; i < l; i++)
     {
@@ -112,39 +111,32 @@ void APP::reaction_ACK(void *r, uint32_t seq)
             return;
         }
     }
-
 }
 void APP::printf__RecallList()
 {
     ScopeLocker K(&RecallLock);
     size_t l = _Recall.size();
-     printf("=========>>>\n");
+    printf("=========>>>\n");
     for (size_t i = 0; i < l; i++)
     {
-         printf("     =%d==%d===\n",i,_Recall[i].seq);
+        printf("     =%d==%d===\n", i, _Recall[i].seq);
     }
     for (size_t i = 0; i < _respondlist.size(); i++)
     {
-         printf("     -%d--%d--\n",i,_Recall[i].seq);
+        printf("     -%d--%d--\n", i, _Recall[i].seq);
     }
 }
 int APP::SendContrl(uint16_t type, double value, int timeout)
 {
     timeval tv;
     gettimeofday(&tv, NULL);
-    _Send::TYPE_SET_DOUBLE_DATA setdata;
-    setdata.handle = control_handle;
-    setdata.data.type = type;
-    setdata.data.value = value;
+    TYPE_SET_DOUBLE_DATA setdata;
+    setdata.type = type;
+    setdata.value = value;
     setdata.seq = _seq++;
     setdata.timestamp = (time_t)tv.tv_sec * (time_t)1000000 + (time_t)tv.tv_usec;
-     
-    _msg->sendData("127.0.0.1", PORT_LIST::StateMachine_port,
-                       SOURCE_ID_LIST::ID_Controller, INS_LIST::INS_SET,
-                       CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA, setdata);
 
-                       return OK;//==========================todo
-
+    //return OK; //==========================todo
 
     // wait for ack
     int code = -1;
@@ -152,21 +144,18 @@ int APP::SendContrl(uint16_t type, double value, int timeout)
     w.code = &code;
     w.seq = setdata.seq;
     _respondlist.push_back(w);
-    for (size_t j = 0; j < 3; j++)
+    _msg->sendData(sip, PORT_LIST::StateMachine_port,
+                   SOURCE_ID_LIST::ID_Controller, INS_LIST::INS_SET,
+                   CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA, setdata);
+                   
+    for (size_t i = 0; i < timeout; i++)
     {
-        _msg->sendData("127.0.0.1", PORT_LIST::StateMachine_port,
-                       SOURCE_ID_LIST::ID_Controller, INS_LIST::INS_SET,
-                       CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA, setdata);
-        for (size_t i = 0; i < 50; i++)
+        if (code != -1)
         {
-            if (code != -1)
-            {
-                clear_sqe(w.seq);
-                return code;
-            }
-            Sleep(1);
+            clear_sqe(w.seq);
+            return code;
         }
-        // printf("%d retry %d times,\n", w.seq, j + 1);
+        Sleep(1);
     }
     printf("time out ------------------------%d\n", w.seq);
     clear_sqe(w.seq);
@@ -177,13 +166,16 @@ int APP::setControl(uint8_t mode, double value, uint16_t timeout,
 {
     if (mode == MODE::mode_abs)
     {
+
         int code = SendContrl(type, value, timeout);
+        //printf("==code=%d\n", code);
         return code;
     }
     else
     {
         double v;
-        int code = GetData(type, &v, 15);
+        int code = GetData(type, &v, 20);
+        //printf("coude=%d\n",code);
         if (code == OK)
         {
             code = SendContrl(type, v + value, timeout);
@@ -194,32 +186,32 @@ int APP::setControl(uint8_t mode, double value, uint16_t timeout,
 
     return ERR;
 }
-int APP::Set_Forward_motor(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Forward_motor(UINT8 mode, double value, uint16_t timeout)
 {
-    return setControl(mode, value, timeout, _data::Type_MoveForwardValue);
+    return setControl(mode, value, timeout, Type_MoveForwardValue);
 }
 
-int APP::Set_Acc_motor(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Acc_motor(UINT8 mode, double value, uint16_t timeout)
 {
-    return setControl(mode, value, timeout, _data::Type_AcceleratorValue);
+    return setControl(mode, value, timeout, Type_AcceleratorValue);
 }
-int APP::Set_Lift_motor(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Lift_motor(UINT8 mode, double value, uint16_t timeout)
 {
-    return setControl(mode, value, timeout, _data::Type_LiftValue);
+    return setControl(mode, value, timeout, Type_LiftValue);
 }
-int APP::Set_Side_motor(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Side_motor(UINT8 mode, double value, uint16_t timeout)
 {
-    return setControl(mode, value, timeout, _data::Type_SideValue);
+    return setControl(mode, value, timeout, Type_SideValue);
 }
-int APP::Set_Turn_motor(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Turn_motor(UINT8 mode, double value, uint16_t timeout)
 {
-    return setControl(mode, value, timeout, _data::Type_TurnAngleValue);
+    return setControl(mode, value, timeout, Type_TurnAngleValue);
 }
-int APP::Set_Brake(UINT8 mode, double value, uint16_t timeout = 10)
+int APP::Set_Brake(UINT8 mode, double value, uint16_t timeout)
 {
-    return setControl(mode, value, timeout, _data::Type_BrakeValue);
+    return setControl(mode, value, timeout, Type_BrakeValue);
 }
 int APP::Set_AUTO(bool value)
 {
-    return setControl(MODE::mode_abs, value, 100, _data::Type_AUTO);
+    return setControl(MODE::mode_abs, value, 100, Type_AUTO);
 }

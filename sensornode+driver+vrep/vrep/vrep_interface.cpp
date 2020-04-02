@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 13:45:32
- * @LastEditTime: 2020-03-20 10:20:31
+ * @LastEditTime: 2020-04-02 15:08:35
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -31,7 +31,7 @@ void vrep_interface::gethandle()
 }
 void vrep_interface::connect()
 {
-    clientID = simxStart("127.0.0.1", 19999, true, true, 1300, 5);
+    clientID = simxStart("192.168.2.16", 19999, true, true, 1300, 5);
     if (clientID != -1)
     {
         printf("V-rep is connected.");
@@ -97,13 +97,18 @@ vrep_data vrep_interface::GetAllData()
     simxReadProximitySensor(clientID, _handle.LaserHandle2, NULL, temp, NULL, NULL, simx_opmode_buffer); //激光测距数据4
     d.TrayL_lasser = temp[2];
     simxGetObjectPosition(clientID, _handle.Turnangle, _handle.grap_handle, temp, simx_opmode_buffer); //uwb定位数据
-    d.Uwb_x = temp[0]*100;
-    d.Uwb_y = temp[1]*100;
+    d.Uwb_x = temp[0] * 100;
+    d.Uwb_y = temp[1] * 100;
     simxGetJointPosition(clientID, _handle.Turnangle, &d.TurnWheel_angle, simx_opmode_buffer); //转角反馈
 
     simxGetObjectOrientation(clientID, _handle.Turnangle, _handle.grap_handle, temp, simx_opmode_buffer); //四元数
-    if (temp[2]<0)
-    temp[2]=360/57.3+temp[2];
+
+    if (temp[2] < 0)
+        temp[2] = 360 / 57.3 + temp[2];
+    temp[2] = temp[2] + 180 / 57.3;
+    if (temp[2] > 360 / 57.3)
+        temp[2] = temp[2] - 360 / 57.3;
+
     d.Uwb_yaw = temp[2];
     //simxGetJointForce(clientID, _handle.Accelerator, NULL, simx_opmode_buffer);                           //驱动轮力矩
     simxGetObjectVelocity(clientID, _handle.Accelerator, NULL, &d.Accelerator_speed, simx_opmode_buffer); //驱动轮速度
@@ -121,7 +126,7 @@ void vrep_interface::Set_Acc_motor(double value)
     simxSetJointTargetVelocity(clientID, _handle.Accelerator, value, simx_opmode_oneshot);
     simxSynchronousTrigger(clientID);
 }
-void vrep_interface::Set_Lift_motor(double value)
+void vrep_interface::Set_Lift_motor(double value) 
 {
     simxSetJointTargetVelocity(clientID, _handle.Lift, value, simx_opmode_oneshot);
     simxSynchronousTrigger(clientID);

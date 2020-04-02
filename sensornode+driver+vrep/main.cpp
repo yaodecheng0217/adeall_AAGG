@@ -2,36 +2,39 @@
  * @Description: 传感器节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-20 11:48:23
+ * @LastEditTime: 2020-04-02 15:06:41
  * @LastEditors: Yaodecheng
  **/
 
-#include "SensorApp/app.h"
-#include "DriverApp/driver.h"
+#include "SensorApp/uwb_node.h"
+#include "DriverApp/ETV_driver.h"
 #include "vrep/vrep_interface.h"
+#include "SensorApp/lasser_node.h"
+#include <math.h>
 void Callback_outdata(ReturnFrameData in);
-void Callback_outdata2(ReturnFrameData in);
 msgpa::ProtocolAnalysis msgtest(Callback_outdata);
-msgpa::ProtocolAnalysis msgtest2(Callback_outdata2);
-APP app(&msgtest, 1);
+uwb_node app(&msgtest);
+lasser_node laser(&msgtest, "laser", Type_TrayL_lasser);
 vrep_interface vr;
-DRIVER driver(&msgtest2,1,&vr);
+ETV_driver driver(&msgtest, 1, &vr);
 int main()
-{  
+{
     vr.init();
     msgtest.init(Sensor_port);
-    //app.run();
-    msgtest2.init(Driver_port);
+    app.run();
     driver.run();
-    vr.Set_Turn_motor(90/57.3);
-    vr.Set_Acc_motor(0.1);
+    laser.run();
     while (1)
     {
         vrep_data d = vr.GetAllData();
+
         //printf("%f  %f  %f  %f  %f\n", d.Uwb_x, d.Uwb_y, d.Uwb_yaw * 57.3,d.side_lasser,d.TrayH_lasser);
-        app._data.x=d.Uwb_x;
-        app._data.y=d.Uwb_y;
-        app._data.yaw=d.Uwb_yaw;
+        double x = d.Uwb_x + 30 * cos(d.Uwb_yaw) + rand() % 20 - 10;
+        double y = d.Uwb_y + 30 * sin(d.Uwb_yaw) + rand() % 20 - 10;
+        app.updata(x, y, d.Uwb_yaw);
+
+        laser.updata(d.TrayL_lasser, d.TrayH_lasser, d.high_lasser, d.forward_lasser, d.side_lasser);
+
         Sleep(50);
     }
     return 0;
@@ -40,9 +43,6 @@ int main()
 void Callback_outdata(ReturnFrameData in)
 {
     app._Callback(in);
-}
-//正确收到数据后会调用此函数进行数据解包
-void Callback_outdata2(ReturnFrameData in)
-{
     driver._Callback(in);
+    laser._Callback(in);
 }

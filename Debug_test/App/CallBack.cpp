@@ -58,24 +58,31 @@ void APP::_Callback_ACK(ReturnFrameData in)
     case CMD_ACK_LOCATION_DATA:
     {
        // printf("ack loc ");
-        _Send::TYPE_ACK_LOCATION_DATA r;
-        Decode_StructSerialize(&r, in._databuff);
+        TYPE_ACK_LOCATION_DATA r;
+        Decode_Struct_No_Serialize(&r, in._databuff);
         reaction_ACK(&r,r.seq);
     }
     break;
     case CMD_ACK_ONE_DATA:
     {
         //printf("ack double ");
-         _Send::TYPE_ACK_ONE_DATA r;
-        Decode_StructSerialize(&r, in._databuff);
+         TYPE_ACK_ONE_DATA r;
+        Decode_Struct_No_Serialize(&r, in._databuff);
         reaction_ACK(&r,r.seq);
     }
     break;
     case CMD_ACK_SET:
     {
+       TYPE_ACK_CODE r;
+        Decode_Struct_No_Serialize(&r, in._databuff);
+        setCode(r.code,r.seq);
+    }
+    break;
+    case CMD_ACK_CODE:
+    {
         //printf("ack set ");
-       _Send::TYPE_SET_ACK r;
-        Decode_StructSerialize(&r, in._databuff);
+       TYPE_ACK_CODE r;
+        Decode_Struct_No_Serialize(&r, in._databuff);
         setCode(r.code,r.seq);
     }
     break;

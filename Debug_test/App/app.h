@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-11 11:43:15
- * @LastEditTime: 2020-03-19 18:17:52
+ * @LastEditTime: 2020-03-29 23:14:18
  * @LastEditors: Yaodecheng
  */
 /*
@@ -35,12 +35,12 @@ struct Node_INFO
 struct UWB_D
 {
     uint8_t id;
-    _data::LOCATION_DATA data;
+    LOCATION_DATA data;
 };
 struct DRIVER_D
 {
     uint8_t id;
-    _data::ETV_DRIVER_STATE_DATA data;
+    ETV_DRIVER_STATE_DATA data;
 };
 typedef int (*RecallFun)(void *in, void *out);
 struct ReCall
@@ -53,6 +53,7 @@ struct ReCall
 class APP
 {
 private:
+   const char * sip="127.0.0.1";
     ProtocolAnalysis *_msg;
     DRIVER_HANDLE control_handle = {"control", 1};
     uint32_t _seq = 0;
@@ -96,14 +97,14 @@ public:
  void printf__RecallList();
     //==========================GetData==API================================
     //读取数据
-    int GetData(_data::LOCATION_DATA *returnvalue, UINT timeout);
-    int GetData(int type, double *returnvalue, UINT timeout);
-    int Set_Forward_motor(UINT8 mode, double volue, uint16_t timeout);
-    int Set_Acc_motor(UINT8 mode, double volue, uint16_t timeout);
-    int Set_Lift_motor(UINT8 mode, double volue, uint16_t timeout);
-    int Set_Side_motor(UINT8 mode, double volue, uint16_t timeout);
-    int Set_Turn_motor(UINT8 mode, double volue, uint16_t timeout);
-    int Set_Brake(UINT8 mode, double volue, uint16_t timeout);
+    int GetData(LOCATION_DATA *returnvalue, UINT timeout=20);
+    int GetData(int type, double *returnvalue, UINT timeout=20);
+    int Set_Forward_motor(UINT8 mode, double volue, uint16_t timeout=20);
+    int Set_Acc_motor(UINT8 mode, double volue, uint16_t timeout=20);
+    int Set_Lift_motor(UINT8 mode, double volue, uint16_t timeout=20);
+    int Set_Side_motor(UINT8 mode, double volue, uint16_t timeout=20);
+    int Set_Turn_motor(UINT8 mode, double volue, uint16_t timeout=20);
+    int Set_Brake(UINT8 mode, double volue, uint16_t timeout=20);
     int Set_AUTO(bool volue);
     enum MODE
     {
