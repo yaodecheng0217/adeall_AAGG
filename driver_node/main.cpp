@@ -2,12 +2,12 @@
  * @Description: 传感器节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-03-30 10:25:43
+ * @LastEditTime: 2020-04-03 15:25:56
  * @LastEditors: Yaodecheng
  **/
 #include "DriverApp/ETV_driver.h"
 #include "udpinterface/thread_base.h"
-
+#include "ADS/ADS.h"
 
 void Callback_outdata(ReturnFrameData in);
 msgpa::ProtocolAnalysis msgtest(Callback_outdata);
@@ -15,6 +15,8 @@ Car_control app(&msgtest);
 
 int main()
 {
+    
+    
     msgtest.init(9999);
     app.run();
     while (true)

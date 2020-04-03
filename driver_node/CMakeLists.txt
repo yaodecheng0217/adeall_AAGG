@@ -17,15 +17,19 @@ aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)
 aux_source_directory(../common SRC_Cjson_FILES)
 aux_source_directory(../common/windows SRC_Cjson_FILES)
+aux_source_directory(./ADS SRC_Cjson_FILES)
 #添加头文件目录
 include_directories(
      ../common/
      ../common/udpinterface/
      ../common/windows
+     ./ADS
     )
+link_directories("D:/Project/model/adeall_AAGG/driver_node/ADS")
 #添加连接库路径
 list( APPEND PROJECK_LINKS_LIBS
     pthread
+    TcAdsDll
     ) 
 
 IF (WIN32)  

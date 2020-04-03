@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-04-03 12:04:24
+ * @LastEditTime: 2020-04-03 18:58:49
  * @LastEditors: Yaodecheng
  * @Description: 路径控制层
  *   ^
@@ -46,7 +46,7 @@ pathControler::~pathControler()
 void pathControler::control_loop()
 {
 	PostionData sdata;
-	int speed = 60;
+	int speed = 100;
 	bool contrl = 1;
 	while (1)
 	{
@@ -63,7 +63,7 @@ void pathControler::control_loop()
 void pathControler::control_loop2()
 {
 	PostionData sdata;
-	int speed = 78;
+	int speed = 100;
 	bool contrl = true;
 	while (1)
 	{
@@ -142,11 +142,11 @@ int pathControler::angle_control_cycle(PostionData p, int speed, bool is_end)
 		//==================================输出和目标距离判断============================
 		if (is_end)
 		{
-			double max = 100;
+			double max = 200;
 			if (speed > 0 && target_dis - 170 < 50)
-				max = (target_dis - 170) / 8 + 35;
+				max = (target_dis - 170) / 8 + 20;
 			if (speed < 0 && target_dis - 80 < 50)
-				max = (target_dis - 80) / 8 + 40;
+				max = (target_dis - 80) / 8 + 20;
 
 			speed = limit(speed, max);
 		}

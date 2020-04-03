@@ -62,13 +62,13 @@ DWORD WINAPI Keyboard_control(void* prt)
 		break;
 		case 97://
 		{
-			app.Set_Turn_motor(app.mode_inc, -5 / 57.3);
+			app.Set_Turn_motor(app.mode_abs, -90 / 57.3);
 			printf(".\n");
 		}
 		break;
 		case 100://
 		{
-			app.Set_Turn_motor(app.mode_inc,5/57.3);
+			app.Set_Turn_motor(app.mode_abs,90/57.3);
 			printf(".\n");
 		}
 		break;
