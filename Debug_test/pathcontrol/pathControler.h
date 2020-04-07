@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 10:55:58
- * @LastEditTime: 2020-04-01 16:23:04
+ * @LastEditTime: 2020-04-07 17:52:22
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence
@@ -36,7 +36,7 @@ private:
     MutexLock time_50ms_Lock;
     static void *timer_50ms(void *);
     static void *timer_1000ms(void *);
-    int angle_control_cycle(PostionData sdata, int speed,bool is_end);
+    int angle_control_cycle(PostionData sdata, double speed,bool is_end);
     int outputcontrol(double target_dis ,double turnAngle,double speed);
     double limit(double in,double max);
     int get_fork();

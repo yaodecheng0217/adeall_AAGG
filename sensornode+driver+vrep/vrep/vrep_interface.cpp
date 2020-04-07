@@ -1,13 +1,14 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 13:45:32
- * @LastEditTime: 2020-04-02 15:08:35
+ * @LastEditTime: 2020-04-07 19:06:49
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
  */
 #include "vrep_interface.h"
 #include <stdio.h>
+#include <math.h>
 vrep_interface::vrep_interface(/* args */)
 {
 }
@@ -111,19 +112,22 @@ vrep_data vrep_interface::GetAllData()
 
     d.Uwb_yaw = temp[2];
     //simxGetJointForce(clientID, _handle.Accelerator, NULL, simx_opmode_buffer);                           //驱动轮力矩
-    simxGetObjectVelocity(clientID, _handle.Accelerator, NULL, &d.Accelerator_speed, simx_opmode_buffer); //驱动轮速度
+    simxGetObjectVelocity(clientID, _handle.Accelerator,  &d.Accelerator_speed, NULL,simx_opmode_buffer); //驱动轮速度
+    //simGetJointTargetVelocity()
     //simxGetJointPosition(clientID, _handle.Forward, NULL, simx_opmode_buffer);            //前移位置
     return d;
 }
 
 void vrep_interface::Set_Forward_motor(double value)
 {
+    
     simxSetJointTargetVelocity(clientID, _handle.Forward, value, simx_opmode_oneshot);
     simxSynchronousTrigger(clientID);
 }
 void vrep_interface::Set_Acc_motor(double value)
 {
     simxSetJointTargetVelocity(clientID, _handle.Accelerator, value, simx_opmode_oneshot);
+    //simxSetJointForce(clientID, _handle.Side, value*1000, simx_opmode_oneshot);
     simxSynchronousTrigger(clientID);
 }
 void vrep_interface::Set_Lift_motor(double value) 
@@ -134,10 +138,11 @@ void vrep_interface::Set_Lift_motor(double value)
 void vrep_interface::Set_Side_motor(double value)
 {
     simxSetJointTargetVelocity(clientID, _handle.Side, value, simx_opmode_oneshot);
+    //simxSetJointForce(clientID, _handle.Side, value, simx_opmode_oneshot);
     simxSynchronousTrigger(clientID);
 }
 void vrep_interface::Set_Turn_motor(double value)
 {
-    simxSetJointTargetPosition(clientID, _handle.Turnangle, value, simx_opmode_oneshot);
+    simxSetJointTargetPosition(clientID, _handle.Turnangle, value*0.95, simx_opmode_oneshot);
     simxSynchronousTrigger(clientID);
 }

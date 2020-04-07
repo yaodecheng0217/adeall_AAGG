@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-04-03 18:58:49
+ * @LastEditTime: 2020-04-07 18:15:26
  * @LastEditors: Yaodecheng
  * @Description: 路径控制层
  *   ^
@@ -15,7 +15,7 @@
  * @Adeall licence@2020
  */
 #include "pathControler.h"
-
+#include "PID.h"
 void *pathControler::timer_50ms(void *t)
 {
 	pathControler *p = (pathControler *)t;
@@ -46,7 +46,7 @@ pathControler::~pathControler()
 void pathControler::control_loop()
 {
 	PostionData sdata;
-	int speed = 100;
+	int speed = 20;
 	bool contrl = 1;
 	while (1)
 	{
@@ -63,7 +63,7 @@ void pathControler::control_loop()
 void pathControler::control_loop2()
 {
 	PostionData sdata;
-	int speed = 100;
+	int speed = 25;
 	bool contrl = true;
 	while (1)
 	{
@@ -77,13 +77,13 @@ void pathControler::control_loop2()
 		putdown();
 		//============
 		//point_2_point(0, 200, 90 / 57.3, -50, contrl, false);
-		point_2_point(300, 50, 0 / 57.3, -50, contrl, false);
+		point_2_point(300, 50, 0 / 57.3, -10, contrl, false);
 		Catstop();
 		Sleep(5000);
 		point_2_point(0, -250, 270 / 57.3, speed, contrl, true);
 		Catstop();
 		getup();
-		point_2_point(0, 225, 90 / 57.3, -60, contrl, false);
+		point_2_point(-200, 200, 45 / 57.3, -10, contrl, false);
 		//point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
 		point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
 		Catstop();
@@ -94,8 +94,55 @@ void pathControler::control_loop2()
 	}
 }
 //路径控制==============算法================================================================
-int pathControler::angle_control_cycle(PostionData p, int speed, bool is_end)
+double SpeedPlaner(double L, double nowSpeed, double setspeed, double dt)
 {
+	double output = 0;
+	double max_a = 1;
+	//判断距离,大于则加到最大速度
+	printf("now=%f set=%f", nowSpeed, setspeed);
+	if (L > 100)
+	{
+		if (nowSpeed < setspeed) //加速
+		{
+			output = nowSpeed + max_a;
+		}
+		else
+		{
+			output = nowSpeed - max_a;
+		}
+	}
+	else
+	{
+		if (abs(nowSpeed) > 10)
+		{
+			if (setspeed > 0)
+			{
+				if (nowSpeed > 10)
+					output = nowSpeed - max_a;
+				if (nowSpeed < 10)
+					output = nowSpeed - max_a;
+			}
+			if (nowSpeed > 10)
+				output = nowSpeed - max_a;
+			else if (nowSpeed < -10)
+				output = nowSpeed + max_a;
+		}
+		else
+		{
+			if (setspeed > 0)
+				output = 10;
+			else
+			{
+				output = -10;
+			}
+		}
+	}
+	return output;
+}
+
+int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
+{
+	static double Ls_speed = 0;
 	static int cnt = 0;
 	LOCATION_DATA uwb;
 
@@ -104,6 +151,8 @@ int pathControler::angle_control_cycle(PostionData p, int speed, bool is_end)
 	int code = driver->GetData(&uwb, 20);
 	if (code == OK)
 	{
+		if (uwb.x > 10000000000)
+			return 0;
 		//======================获取数据=======
 		int noise = 0;
 		if (noise == 0)
@@ -140,17 +189,28 @@ int pathControler::angle_control_cycle(PostionData p, int speed, bool is_end)
 		//printf("---->%f    %f    %f    %f\n", f * 57.3, Angle_Error * 57.3, Position_Error, target_dis);
 		//============================================================================
 		//==================================输出和目标距离判断============================
+		double maxspeed = 2 + 98 * cos(abs(f));
+		speed = limit(speed, maxspeed);
 		if (is_end)
 		{
 			double max = 200;
-			if (speed > 0 && target_dis - 170 < 50)
-				max = (target_dis - 170) / 8 + 20;
-			if (speed < 0 && target_dis - 80 < 50)
-				max = (target_dis - 80) / 8 + 20;
-
+			double maxLaght = 100;
+			if (speed > 0 && target_dis - 170 < maxLaght)
+			{
+				max = ((target_dis - 170) / 8) + 2;
+				printf(" L=%f ", target_dis - 170);
+			}
+			if (speed < 0 && target_dis - 80 < maxLaght)
+			{
+				max = ((target_dis - 80) / 8) + 2;
+				printf(" L=%f ", target_dis - 80);
+			}
 			speed = limit(speed, max);
 		}
-		
+		else
+		{
+			;
+		}
 		return outputcontrol(target_dis, f, speed);
 		//============================================================
 	}
@@ -171,10 +231,14 @@ double pathControler::limit(double in, double max)
 }
 int pathControler::outputcontrol(double target_dis, double turnAngle, double speed)
 {
+	static PID_IncTypeDef pid;
+	pid.Kp = 0.1;
+	static double ospeed = 0;
+	ospeed = ospeed + PID_Inc(speed, ospeed, &pid);
+
 	driver->Set_Turn_motor(driver->mode_abs, turnAngle, 15);
-	double maxspeed = 50 + 50 * cos(abs(turnAngle));
-	speed = limit(speed, maxspeed);
-	printf("speed= %f  turn= %f\n", speed,turnAngle*57.3);
+
+	printf("speed= %f  turn= %f\n", ospeed, turnAngle * 57.3);
 	if (speed > 0)
 	{
 		if (target_dis < 170)
@@ -183,7 +247,7 @@ int pathControler::outputcontrol(double target_dis, double turnAngle, double spe
 		}
 		else
 		{
-			driver->Set_Acc_motor(driver->mode_abs, speed / 100, 15);
+			driver->Set_Acc_motor(driver->mode_abs, ospeed / 100, 15);
 		}
 	}
 	else
@@ -194,7 +258,7 @@ int pathControler::outputcontrol(double target_dis, double turnAngle, double spe
 		}
 		else
 		{
-			driver->Set_Acc_motor(driver->mode_abs, speed / 100, 15);
+			driver->Set_Acc_motor(driver->mode_abs, ospeed / 100, 15);
 		}
 	}
 	return 0;
@@ -330,7 +394,7 @@ void pathControler::Tracking_arc(double R, double x, double y)
 }
 void pathControler::Catstop()
 {
-	while (driver->Set_Acc_motor(driver->mode_abs,0)!=OK)
+	while (driver->Set_Acc_motor(driver->mode_abs, 0) != OK)
 	{
 		Sleep(1);
 	}

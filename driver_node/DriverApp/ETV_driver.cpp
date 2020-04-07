@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 13:48:45
- * @LastEditTime: 2020-04-03 18:33:40
+ * @LastEditTime: 2020-04-07 17:35:06
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -62,6 +62,7 @@ void APP_name::initdata()
 
     thread_base t(controlOnline, this);
     thread_base t2(pidControlthread, this);
+    thread_base t3(timer50msthread, this);
     ERC212_initoutput();
 }
 void APP_name::datalist_up()
@@ -113,13 +114,13 @@ void __stdcall APP_name::CallbackT(AmsAddr *pAddr, AdsNotificationHeader *pNotif
 void __stdcall APP_name::CallbackV(AmsAddr *pAddr, AdsNotificationHeader *pNotification, ULONG hUser)
 {
     double *data = (double *)hUser;
-    *data = *(int *)pNotification->data / 100.0;
+    *data = *(int *)pNotification->data / 500.0;
     // printf("updatadata=%d \n", -*(int *)pNotification->data);
 }
 
 void *APP_name::pidControlthread(void *appprt)
 {
-    static PID_LocTypeDef pid_info;
+    static PID_IncTypeDef pid_info;
     pid_info.Kp = 0.011;
     double out = 0.01;
     double outV = 0;
@@ -152,17 +153,17 @@ void *APP_name::pidControlthread(void *appprt)
             if (app->_data.acc == 0)
             {
                 outV = 0;
-                pid_info.LocSum = 0;
+                //pid_info.LocSum = 0;
             }
             {
                 if (app->_data.acc > 0)
                 {
-                    outV = 0.25 + PID_Loc(app->_data.acc, app->_data.speed, &pid_info);
+                    outV = outV + PID_Inc(app->_data.acc, app->_data.speed, &pid_info);
                 }
 
                 if (app->_data.acc < 0)
                 {
-                    outV = -0.25 + PID_Loc(app->_data.acc, app->_data.speed, &pid_info);
+                    outV = outV + PID_Inc(app->_data.acc, app->_data.speed, &pid_info);
                 }
             }
 
@@ -178,6 +179,15 @@ void *APP_name::pidControlthread(void *appprt)
         Set_Turn_motor(-out);
         Set_Acc_motor(outV);
         printf("%f  %f %f\n", app->_data.acc, app->_data.speed, outV);
-        Sleep(50);
+        app->timer50L.lock();
+    }
+}
+void *APP_name::timer50msthread(void *appprt)
+{
+    APP_name *app = (APP_name *)appprt;
+    while (1)
+    {
+       Sleep(50);
+       app->timer50L.unlock();
     }
 }

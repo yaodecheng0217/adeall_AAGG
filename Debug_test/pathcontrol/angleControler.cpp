@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-18 11:01:49
- * @LastEditTime: 2020-04-02 14:07:37
+ * @LastEditTime: 2020-04-07 11:03:23
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -43,6 +43,7 @@ double yawErr = 0;
 StateOptimize run;
 double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double speed, double lastf)
 {
+    printf("%f %f ",Position_Error,Angle_Error);
     run.run(Position_Error);
     Position_Error=run.Value;
     //避免过大的冲击

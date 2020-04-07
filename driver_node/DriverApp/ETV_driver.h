@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 13:48:45
- * @LastEditTime: 2020-04-03 17:22:32
+ * @LastEditTime: 2020-04-07 16:12:14
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -44,7 +44,8 @@ private:
                                     AdsNotificationHeader *pNotification,
                                     unsigned long hUser);
     static void *pidControlthread(void *appprt);
-
+     MutexLock timer50L;
+    static void *timer50msthread(void *appprt);
 public:
     APP_name(ProtocolAnalysis *msg);
     ~APP_name();
