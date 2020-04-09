@@ -1,0 +1,18 @@
+{
+    "incpidinfo": {
+        "kp": 0.8,
+        "kd": 0.1
+    },
+    "tfinfo": {
+        "kp": 0.00004,
+        "ki": 0.00002
+    },
+    "set": {
+        "front_FL": 230,
+        "rear_FL": 130,
+        "front_CL": 150,
+        "rear_CL": 0,
+        "xf": 50,
+        "xb": 40
+    }
+}

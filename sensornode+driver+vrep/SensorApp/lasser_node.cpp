@@ -19,9 +19,6 @@ lasser_node::~lasser_node()
 }
 void lasser_node::initdata()
 {
-
-   server_ip = "192.168.2.16";
-   server_port = StateMachine_port;
    source_id = ID_Simulation;
 
    _handle.driver_name = "laser_sensor";

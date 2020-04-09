@@ -193,7 +193,7 @@ int APP::Set_Forward_motor(UINT8 mode, double value, uint16_t timeout)
 
 int APP::Set_Acc_motor(UINT8 mode, double value, uint16_t timeout)
 {
-    return setControl(mode, value, timeout, Type_AcceleratorValue);
+    return setControl(mode, value/100, timeout, Type_AcceleratorValue);
 }
 int APP::Set_Lift_motor(UINT8 mode, double value, uint16_t timeout)
 {

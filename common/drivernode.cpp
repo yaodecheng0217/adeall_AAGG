@@ -5,6 +5,7 @@
  */
 #include "drivernode.h"
 #include "thread_base.h"
+#include "readconfig/readjson.h"
 void Driver_node::_Callback(ReturnFrameData in)
 {
     switch (in.ins)
@@ -245,6 +246,10 @@ int Driver_node::sendHandleAction()
 }
 void Driver_node::run()
 {
+    Readconfig config("initconfig.json");
+    config.setitem("commone");
+    config.GetValue("statemachine_ip", server_ip);
+    config.GetValue("statemachine_port", server_port);
     initdata();
     thread_base t0(timer, this);
     //创建一个线程向指定节点发送数据
@@ -255,7 +260,8 @@ void *Driver_node::timer(void *is)
     Driver_node *p = (Driver_node *)is;
     while (true)
     {
-        p->_time_lock.unlock();
+        if (p->run_flag)
+            p->_time_lock.unlock();
         Sleep(p->_SendingInterval);
     }
     return 0;
@@ -309,4 +315,13 @@ void Driver_node::printfNodeInfo()
            _SendingInterval,
            _handle.driver_name.c_str(),
            _handle.data_list.ToFormattedString().c_str());
+}
+
+void Driver_node::StopIs()
+{
+    run_flag = 0;
+}
+void Driver_node::Continue()
+{
+    run_flag = 1;
 }

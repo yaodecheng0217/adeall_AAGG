@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-18 11:01:49
- * @LastEditTime: 2020-04-07 11:03:23
+ * @LastEditTime: 2020-04-09 18:47:46
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -11,6 +11,7 @@
 #include "StateOptimize.h"
 #include "stdio.h"
 #include "PID.h"
+#include "readconfig/readjson.h"
 #define pi 3.1415926
 //@计算纯角度导航输出量
 //@输入角度误差
@@ -26,13 +27,21 @@ double Calculation_Angle(double Angie_Error)
     if (Angie_Error < -180 / Radian_conversion)
         Angie_Error = 360 / Radian_conversion + Angie_Error;
 
-    double Qt = -Angie_Error * 1.5; //-Qfat - Angie_Error;
+    double Qt = -Angie_Error * 1; //-Qfat - Angie_Error;
 
     if (Qt > pi / 2)
         Qt = pi / 2;
     if (Qt < -pi / 2)
         Qt = -pi / 2;
     return Qt;
+}
+double limit(double in, double max)
+{
+    if (in > max)
+        return max;
+    if (in < -max)
+        return -max;
+    return in;
 }
 PID_IncTypeDef incpidinfo;
 PID_IncTypeDef tfinfo;
@@ -41,11 +50,14 @@ double buchang = 0;
 double fout = 0;
 double yawErr = 0;
 StateOptimize run;
-double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double speed, double lastf)
+ReadSeting set("contrlseting.json");
+double maxspeed=100;
+void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double &speed, double &turnangle)
 {
-    printf("%f %f ",Position_Error,Angle_Error);
+    system("cls");
+    printf("%f %f ", Position_Error, Angle_Error);
     run.run(Position_Error);
-    Position_Error=run.Value;
+    Position_Error = run.Value;
     //避免过大的冲击
     incpidinfo.Kp = 0.08;
     incpidinfo.Kd = 0.1;
@@ -53,15 +65,36 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
     tfinfo.Kp = 0.00004;
     tfinfo.Ki = 0.00002;
 
-    yawinfo.Kp = 0.0000;//0.0002
+    yawinfo.Kp = 0.0000; //0.0002
 
     //接近轨道阈值，超过此阈值将直接将车垂直九十度先接近轨道
-    double front_FL = 138;
-    double rear_FL = 70; //70
+    double front_FL = 138; // double front_FL = 138;
+    double rear_FL = 70;   //70
     //前视距离
-    double front_CL = 190;
-    double rear_CL = 0; //140
-    
+    double front_CL = 190; //190
+    double rear_CL = 0;    //140
+    double Xf = 30;
+    double Xb = 30;
+
+    double rangek = 100;
+
+    set.reload();
+    bool print = false;
+    set.GetValue("print", print);
+    set.setprint(print);
+    set.GetValue("turn_kp", incpidinfo.Kp);
+    set.GetValue("turn_ki", incpidinfo.Ki);
+    set.GetValue("turn_kd", incpidinfo.Kd);
+    set.GetValue("turnerror_kp", incpidinfo.Kp);
+    set.GetValue("turnerror_ki", incpidinfo.Ki);
+    set.GetValue("turnerror_kd", incpidinfo.Kd);
+    set.GetValue("front_FL", front_FL);
+    set.GetValue("rear_FL", rear_FL);
+    set.GetValue("front_CL", front_CL);
+    set.GetValue("rear_CL", rear_CL);
+    set.GetValue("xf", Xf);
+    set.GetValue("xb", Xb);
+    set.GetValue("rangeK", rangek);
     //
     double f = 0;
     //Angle_Error = Angle_Error + yawErr;
@@ -81,7 +114,7 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
         else
         {
             //printf("???");
-            f = Calculation_Angle(Angle_Error - atan(Ferr / 40));
+            f = Calculation_Angle(Angle_Error - atan(Ferr / Xf));
             if (abs(Angle_Error) < 10 / 57.3 && abs(Ferr) < 10)
             {
                 buchang = buchang + PID_Inc(0, -Ferr, &tfinfo);
@@ -104,7 +137,7 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
         }
         else
         {
-            f = Calculation_Angle(Angle_Error + atan(Berr / 40));
+            f = Calculation_Angle(Angle_Error + atan(Berr / Xb));
         }
 
         if (abs(Angle_Error) < 5 / 57.3 && abs(Berr) < 20)
@@ -121,9 +154,25 @@ double CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error,
     if (buchang < -10 / 57.3)
         buchang = -10 / 57.3;
     //printf("## out=%f  tarf=%f  yawerr=%f  ", lastf * 57.3, f * 57.3, yawErr * 57.3);
-    fout = lastf + PID_Inc(f, lastf, &incpidinfo);
-    //run.run(fout+buchang);
-    return fout+buchang;
+
+    double out = buchang + turnangle + PID_Inc(f, turnangle, &incpidinfo);
+    double turnrange = abs((out - turnangle) * rangek);
+
+    double maxerr=abs(limit(Position_Error, 90));
+    f=limit(f,1);
+    double max = 90-abs(50*asin(f))+ 10;
+    if(maxspeed<max)
+    {
+        maxspeed=maxspeed+0.3;
+    }
+    else
+    {
+        maxspeed=max;
+    }
+    
+    printf("turnrange= %f##", maxspeed);
+    speed = limit(speed, maxspeed);
+    turnangle = out;
 }
 //计算终点线到当前车直线距离
 double Calculation_target_distance(double tx, double ty, double tyaw, double sx, double sy, double sv)

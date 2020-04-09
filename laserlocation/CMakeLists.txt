@@ -7,8 +7,21 @@ project(${PROJECT_NAME})
 
 set(CMAKE_BUILD_TYPE "Debug") #Release
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -std=gnu++11")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -std=gnu++11")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g"
+#指定输出可执行文件目录
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../bin) 
+#指定库文件输出目录
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/../lib)    
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR}/../lib)
+#分别设置了Debug版本和Release版本下库文件的后缀名.
+set(CMAKE_DEBUG_POSTFIX "_d")    
+set(CMAKE_RELEASE_POSTFIX "_r") 
+#分别设置了Debug版本和Release版本下可执行文件的后缀名.
+set_target_properties(${TARGET_NAME} PROPERTIES DEBUG_POSTFIX "_d")    
+set_target_properties(${TARGET_NAME} PROPERTIES RELEASE_POSTFIX "_r")
+
 # Set Compiler，指定编译为32位程序
 SET(CMAKE_C_FLAGS "-m32")
 SET(CMAKE_CXX_FLAGS "-m32")

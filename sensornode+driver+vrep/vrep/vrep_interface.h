@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 13:45:32
- * @LastEditTime: 2020-03-17 15:31:50
+ * @LastEditTime: 2020-04-08 11:24:43
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -46,19 +46,19 @@ private:
         simxInt LaserHandle1;
         simxInt LaserHandle2;
     } _handle;
-    static void *threadfunction(void *prt);
     
     void gethandle();
     void connect();
 
 public:
     void init();
+    void clear();
     vrep_interface();
     ~vrep_interface();
     void PauseStep();
     void ContinueStep();
 
-    vrep_data GetAllData();
+    int GetAllData(vrep_data&d);
 
     void Set_Forward_motor(double value);
     void Set_Acc_motor(double value);

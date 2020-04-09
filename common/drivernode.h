@@ -35,7 +35,9 @@ private:
     uint16_t _SendingInterval = 20;
     MutexLock _time_lock;
     int _cnt = 10;
-
+    bool run_flag=1;
+    std::string server_ip="127.0.0.1";
+    int server_port=9001;
 public:
     Driver_node(ProtocolAnalysis *msg) : _msg(msg){};
     ~Driver_node(){};
@@ -44,10 +46,11 @@ public:
     void SetTimeout(uint16_t timeout);
     void SetSendingInterval(uint16_t Hz);
     void printfNodeInfo();
+    void StopIs();
+    void Continue();
 
 protected:
-    std::string server_ip;
-    int server_port;
+   
     uint16_t source_id;
     DRIVER_HANDLE _handle;
     ProtocolAnalysis *_msg;

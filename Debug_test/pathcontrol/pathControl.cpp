@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-04-07 18:15:26
+ * @LastEditTime: 2020-04-09 18:23:01
  * @LastEditors: Yaodecheng
  * @Description: 路径控制层
  *   ^
@@ -83,7 +83,8 @@ void pathControler::control_loop2()
 		point_2_point(0, -250, 270 / 57.3, speed, contrl, true);
 		Catstop();
 		getup();
-		point_2_point(-200, 200, 45 / 57.3, -10, contrl, false);
+		point_2_point(0, 200, 90 / 57.3, -10, contrl, false);
+		//point_2_point(-200, 200, 45 / 57.3, -10, contrl, false);
 		//point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
 		point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
 		Catstop();
@@ -91,6 +92,54 @@ void pathControler::control_loop2()
 		point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
 		Catstop();
 		Sleep(10000);
+	}
+}
+void pathControler::control_loop3()
+{
+	PostionData sdata;
+	int speed = 80;
+	bool contrl = true;
+	while (1)
+	{
+		point_2_point(-460, 50, 180 / 57.3, speed, contrl, 1);
+		Catstop();
+		getup();
+		point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
+		//===================>
+		point_2_point(0, -650, 270 / 57.3, speed, contrl, true);
+		Catstop();
+		putdown();
+		//============
+		//point_2_point(0, 200, 90 / 57.3, -50, contrl, false);
+		point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
+		Catstop();
+		Sleep(5000);
+		point_2_point(0, -650, 270 / 57.3, speed, contrl, true);
+		Catstop();
+		getup();
+		//point_2_point(0, 200, 90 / 57.3, -speed, contrl, false);
+		//point_2_point(-200, 200, 45 / 57.3, -10, contrl, false);
+		point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
+		//point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
+		point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
+		Catstop();
+		putdown();
+		point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
+		Catstop();
+		Sleep(10000);
+	}
+}
+void pathControler::control_loop4()
+{
+	PostionData sdata;
+	int speed = 80;
+	bool contrl = true;
+	while (1)
+	{
+		point_2_point(200, -1000, 270 / 57.3, -speed, contrl, 1);
+		Catstop();
+		point_2_point(-200, 1000, 90 / 57.3, -speed, contrl, true);
+		Catstop();
 	}
 }
 //路径控制==============算法================================================================
@@ -145,7 +194,6 @@ int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 	static double Ls_speed = 0;
 	static int cnt = 0;
 	LOCATION_DATA uwb;
-
 	PostionData s;
 
 	int code = driver->GetData(&uwb, 20);
@@ -185,12 +233,10 @@ int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 		double getF;
 		driver->GetData(Type_TurnAngleValue, &getF);
 		//printf("get wheel %f\n",getF*57.3);
-		double f = CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed, getF);
+		CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed, getF);
 		//printf("---->%f    %f    %f    %f\n", f * 57.3, Angle_Error * 57.3, Position_Error, target_dis);
 		//============================================================================
 		//==================================输出和目标距离判断============================
-		double maxspeed = 2 + 98 * cos(abs(f));
-		speed = limit(speed, maxspeed);
 		if (is_end)
 		{
 			double max = 200;
@@ -211,7 +257,7 @@ int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 		{
 			;
 		}
-		return outputcontrol(target_dis, f, speed);
+		return outputcontrol(target_dis, getF, speed);
 		//============================================================
 	}
 	else
@@ -231,23 +277,19 @@ double pathControler::limit(double in, double max)
 }
 int pathControler::outputcontrol(double target_dis, double turnAngle, double speed)
 {
-	static PID_IncTypeDef pid;
-	pid.Kp = 0.1;
-	static double ospeed = 0;
-	ospeed = ospeed + PID_Inc(speed, ospeed, &pid);
+	// static PID_IncTypeDef pid;
+	// pid.Kp = 0.1;
+	// static double ospeed = 0;
+	// ospeed = ospeed + PID_Inc(speed, ospeed, &pid);
 
 	driver->Set_Turn_motor(driver->mode_abs, turnAngle, 15);
 
-	printf("speed= %f  turn= %f\n", ospeed, turnAngle * 57.3);
+	printf("speed= %f  turn= %f\n", speed, turnAngle * 57.3);
 	if (speed > 0)
 	{
 		if (target_dis < 170)
 		{
 			return 1;
-		}
-		else
-		{
-			driver->Set_Acc_motor(driver->mode_abs, ospeed / 100, 15);
 		}
 	}
 	else
@@ -256,11 +298,8 @@ int pathControler::outputcontrol(double target_dis, double turnAngle, double spe
 		{
 			return 1;
 		}
-		else
-		{
-			driver->Set_Acc_motor(driver->mode_abs, ospeed / 100, 15);
-		}
 	}
+	driver->Set_Acc_motor(driver->mode_abs, speed, 15);
 	return 0;
 }
 int pathControler::point_2_point(double x, double y, double yaw, double speed, bool &shoutdown, bool isend)

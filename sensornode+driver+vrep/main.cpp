@@ -1,8 +1,8 @@
 /*
- * @Description: 传感器节点
+ * @Description: 仿真环境节点
  * @Author: Yaodecheng
  * @Date: 2019-10-09 09:08:07
- * @LastEditTime: 2020-04-07 19:09:04
+ * @LastEditTime: 2020-04-09 15:50:42
  * @LastEditors: Yaodecheng
  **/
 
@@ -21,17 +21,34 @@ int main()
 {
     vr.init();
     msgtest.init(Sensor_port);
+    
     app.run();
     driver.run();
     laser.run();
+
     while (1)
     {
-        vrep_data d = vr.GetAllData();
-
+        vrep_data d;
+        int code = vr.GetAllData(d);
+        if (code == 1)
+        {
+            app.StopIs();
+            driver.StopIs();
+            laser.StopIs();
+            vr.clear();
+            Sleep(1000);
+            vr.init();
+        }
+        else if(code==0)
+        {
+            app.Continue();
+            driver.Continue();
+            laser.Continue();
+        }
         //printf("%f  %f  %f  %f  %f\n", d.Uwb_x, d.Uwb_y, d.Uwb_yaw * 57.3,d.side_lasser,d.TrayH_lasser);
-        double x = d.Uwb_x + 30 * cos(d.Uwb_yaw) ;//+ rand() % 20 - 10;
-        double y = d.Uwb_y + 30 * sin(d.Uwb_yaw);// + rand() % 20 - 10;
-        double speed=d.Accelerator_speed;
+        double x = d.Uwb_x + 30 * cos(d.Uwb_yaw); //+ rand() % 20 - 10;
+        double y = d.Uwb_y + 30 * sin(d.Uwb_yaw); // + rand() % 20 - 10;
+        double speed = d.Accelerator_speed;
         app.updata(x, y, d.Uwb_yaw);
         driver.updateSpeed(speed);
         laser.updata(d.TrayL_lasser, d.TrayH_lasser, d.high_lasser, d.forward_lasser, d.side_lasser);

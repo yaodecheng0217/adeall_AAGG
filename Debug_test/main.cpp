@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-24 15:09:30
- * @LastEditTime: 2020-04-07 18:37:21
+ * @LastEditTime: 2020-04-09 18:23:50
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -44,34 +44,14 @@ int main()
   msgtest.init(Debug_port);
   pathControler ctrl(&app);
   StarKeyboard();
-  /*while(1)
-  {
-    Sleep(1);
-  }*/
-  ctrl.control_loop2();
-  //ctrl.Tracking_arc(300,0,0);
-  
- 
+  ctrl.control_loop4();
   while (true)
   {
 
     LOCATION_DATA loc;
     int code = app.GetData(&loc,50);
     printf("code=%s  %f  %f   %f\n", printf_status(code).c_str(),loc.x,loc.y,loc.yaw*57.3);
-
-    /*double data;
-    code = app.GetData(DATA_SET_GET_TYPE_LIST::Type_forward_lasser,&data,50);;
-    printf("code=%s  %f\n", printf_status(code).c_str(),data);
-    code = app.GetData(DATA_SET_GET_TYPE_LIST::Type_high_lasser,&data,50);;
-    printf("code=%s  %f\n", printf_status(code).c_str(),data);
-    code = app.GetData(DATA_SET_GET_TYPE_LIST::Type_TrayH_lasser,&data,50);;
-    printf("code=%s  %f\n", printf_status(code).c_str(),data);
-    code = app.GetData(DATA_SET_GET_TYPE_LIST::Type_TrayL_lasser,&data,50);;
-    printf("code=%s  %f\n", printf_status(code).c_str(),data);
-    code = app.GetData(DATA_SET_GET_TYPE_LIST::Type_side_lasser,&data,50);;
-    printf("code=%s  %f\n", printf_status(code).c_str(),data);*/
     Sleep(500);
-    //thread_base t2(test2,NULL);
     ff++;
     printf("=======\n");
   }
