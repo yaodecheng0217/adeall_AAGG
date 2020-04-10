@@ -31,6 +31,7 @@ aux_source_directory(../common/CJson SRC_Cjson_FILES)
 aux_source_directory(../common SRC_Cjson_FILES)
 aux_source_directory(../common/windows SRC_Cjson_FILES)
 aux_source_directory(./ADS SRC_Cjson_FILES)
+aux_source_directory(../common/readconfig SRC_Cjson_FILES)
 #添加头文件目录
 include_directories(
      ../common/

@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-18 11:01:49
- * @LastEditTime: 2020-04-09 18:47:46
+ * @LastEditTime: 2020-04-10 09:44:33
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -54,8 +54,8 @@ ReadSeting set("contrlseting.json");
 double maxspeed=100;
 void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double &speed, double &turnangle)
 {
-    system("cls");
-    printf("%f %f ", Position_Error, Angle_Error);
+    //system("cls");
+    //printf("%f %f ", Position_Error, Angle_Error);
     run.run(Position_Error);
     Position_Error = run.Value;
     //避免过大的冲击
@@ -75,9 +75,8 @@ void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, d
     double rear_CL = 0;    //140
     double Xf = 30;
     double Xb = 30;
-
     double rangek = 100;
-
+    double max_aa=0.3;
     set.reload();
     bool print = false;
     set.GetValue("print", print);
@@ -95,6 +94,7 @@ void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, d
     set.GetValue("xf", Xf);
     set.GetValue("xb", Xb);
     set.GetValue("rangeK", rangek);
+    set.GetValue("max_aa",max_aa);
     //
     double f = 0;
     //Angle_Error = Angle_Error + yawErr;
@@ -103,7 +103,7 @@ void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, d
         //换算前叉误差
         double Ferr = (Position_Error / sin(Angle_Error) - front_CL) * sin(Angle_Error);
 
-        printf(" tarA=%f   tarP=%f ", Angle_Error * 57.3, Ferr);
+        //printf(" tarA=%f   tarP=%f ", Angle_Error * 57.3, Ferr);
         if (abs(Position_Error) > front_FL)
         {
             if (Position_Error > 0)
@@ -127,7 +127,7 @@ void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, d
     {
         double Berr = (Position_Error / sin(Angle_Error) - rear_CL) * sin(Angle_Error);
         double Berr2 = (Position_Error / sin(Angle_Error) - 140) * sin(Angle_Error);
-        printf(" tarA=%f   tarP=%f ", Angle_Error * 57.3, Position_Error);
+        //printf(" tarA=%f   tarP=%f ", Angle_Error * 57.3, Position_Error);
         if (abs(Berr2) > rear_FL)
         {
             if (Berr2 < 0)
@@ -156,21 +156,20 @@ void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, d
     //printf("## out=%f  tarf=%f  yawerr=%f  ", lastf * 57.3, f * 57.3, yawErr * 57.3);
 
     double out = buchang + turnangle + PID_Inc(f, turnangle, &incpidinfo);
-    double turnrange = abs((out - turnangle) * rangek);
 
+    //printf(" Fout=%f ",f);
+    //转向最大速度控制
     double maxerr=abs(limit(Position_Error, 90));
     f=limit(f,1);
     double max = 90-abs(50*asin(f))+ 10;
     if(maxspeed<max)
     {
-        maxspeed=maxspeed+0.3;
+        maxspeed=maxspeed+max_aa;
     }
     else
     {
         maxspeed=max;
     }
-    
-    printf("turnrange= %f##", maxspeed);
     speed = limit(speed, maxspeed);
     turnangle = out;
 }

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-set( PROJECT_NAME sensor_node )
+set( PROJECT_NAME laser_location_node )
 project(${PROJECT_NAME})
 
 
@@ -29,7 +29,7 @@ aux_source_directory(./SensorApp SRC_FILES)
 aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)
 aux_source_directory(../common SRC_Cjson_FILES)
-
+aux_source_directory(../common/readconfig SRC_Cjson_FILES)
 
 add_definitions(-D WIN32)
 add_definitions(-D NDEBUG)

@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 12:17:45
- * @LastEditTime: 2020-03-30 10:42:10
+ * @LastEditTime: 2020-04-10 10:46:31
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -17,8 +17,6 @@ APP_name::~APP_name()
 }
 void APP_name::initdata()
 {
-   server_ip = "192.168.2.16";
-   server_port = StateMachine_port;
    source_id = ID_Sensor_uwb;
 
    _handle.driver_name = "location";

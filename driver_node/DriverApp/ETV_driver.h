@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 13:48:45
- * @LastEditTime: 2020-04-07 16:12:14
+ * @LastEditTime: 2020-04-10 14:06:15
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -29,6 +29,7 @@ private:
     } _data;
     double turnfeedback;
     ADS ads;
+    double low_acc=-0.26,high_acc=0.23;
     void initdata();
     void sendData(uint32_t seq, time_t timestamp);
     void sendHandle(uint32_t seq);

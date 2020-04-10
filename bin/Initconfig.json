@@ -2,8 +2,8 @@
     "common": {
         "statemachine_ip": "192.168.2.42",
         "statemachine_port": 9001,
-        "simulation_ip":"192.168.2.16",
-        "simulation_port":19999
+        "simulation_ip": "192.168.2.16",
+        "simulation_port": 19999
     },
     "driver": {
         "kp": 0.01,
@@ -16,8 +16,11 @@
         "ki": 0.0,
         "kd": 0.0
     },
-    "statemachine":
-    {
-        "printf_node_list":false
+    "statemachine": {
+        "printf_node_list": false
+    },
+    "debug": {
+        "speed": 20,
+        "loop": 2
     }
 }

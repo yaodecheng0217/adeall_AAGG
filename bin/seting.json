@@ -1,4 +1,6 @@
 {
     "simx_print":false,
-    "simx_Vk":5
+    "simx_Vk":5,
+    "speed":30,
+    "loop":2
 }

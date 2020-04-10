@@ -9,7 +9,7 @@ int APP::Send_CMD_toStateMachine(uint32_t seq, int type)
     TYPE_GET_DATA aa;
     aa.type = type;
     aa.seq = seq;
-    return _msg->sendData(sip, StateMachine_port, ID_Controller, INS_GET,
+    return _msg->sendData(sip.c_str(), StateMachine_port, ID_Controller, INS_GET,
                           CMD_GET_DATA, aa);
 }
 void APP::AddToRecv(int seq, int *ok_flag, RecallFun DualFunction,
@@ -58,7 +58,7 @@ int APP::GetData(LOCATION_DATA *returnvalue, UINT timeout)
     }
     clearReCallSeq(seq);
     //printf("get data timeout\n");
-    printf(".");
+    //printf("%d.",seq);
     return TIMEOUT;
 }
 int APP::GetData(int type, double *returnvalue, UINT timeout)
@@ -128,6 +128,7 @@ void APP::printf__RecallList()
 }
 int APP::SendContrl(uint16_t type, double value, int timeout)
 {
+    timeout=10;
     timeval tv;
     gettimeofday(&tv, NULL);
     TYPE_SET_DOUBLE_DATA setdata;
@@ -143,11 +144,11 @@ int APP::SendContrl(uint16_t type, double value, int timeout)
     RES w;
     w.code = &code;
     w.seq = setdata.seq;
-    _respondlist.push_back(w);
-    _msg->sendData(sip, PORT_LIST::StateMachine_port,
+    //_respondlist.push_back(w);
+    _msg->sendData(sip.c_str(), PORT_LIST::StateMachine_port,
                    SOURCE_ID_LIST::ID_Controller, INS_LIST::INS_SET,
                    CMD_TYPE_LIST::CMD_SET_DOUBLE_DATA, setdata);
-                   
+     return OK;//***********************************************************************************************************去除应答测试
     for (size_t i = 0; i < timeout; i++)
     {
         if (code != -1)
@@ -157,7 +158,7 @@ int APP::SendContrl(uint16_t type, double value, int timeout)
         }
         Sleep(1);
     }
-    printf("time out ------------------------%d\n", w.seq);
+    //printf("set contrl time out %d\n",type);
     clear_sqe(w.seq);
     return TIMEOUT;
 }

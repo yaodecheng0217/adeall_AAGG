@@ -20,10 +20,10 @@ public:
     APP *driver;
     pathControler(APP *dr);
     ~pathControler();
-    void control_loop();
-    void control_loop2();
-    void control_loop3();
-    void control_loop4();
+    void control_loop(double speed);
+    void control_loop2(double speed);
+    void control_loop3(double speed);
+    void control_loop4(double speed);
 
     void Tracking_arc(double R, double x, double y);
 

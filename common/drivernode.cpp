@@ -247,7 +247,7 @@ int Driver_node::sendHandleAction()
 void Driver_node::run()
 {
     Readconfig config("initconfig.json");
-    config.setitem("commone");
+    config.setitem("common");
     config.GetValue("statemachine_ip", server_ip);
     config.GetValue("statemachine_port", server_port);
     initdata();

@@ -1,16 +1,19 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-21 13:48:45
- * @LastEditTime: 2020-04-07 17:35:06
+ * @LastEditTime: 2020-04-10 18:35:36
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
  */
+#include "readconfig/readjson.h"
+#include "time_util.h"
 #include "ETV_driver.h"
 #include "udpinterface/thread_base.h"
 #include "output.h"
 #include "PID.h"
 #include <fstream>
+
 APP_name::APP_name(ProtocolAnalysis *msg) : Driver_node(msg)
 {
 }
@@ -22,7 +25,7 @@ void *APP_name::controlOnline(void *etv)
     APP_name *p = (APP_name *)etv;
     while (true)
     {
-        if (p->Control_count > 5)
+        if (p->Control_count > 10)
         {
             p->_data.acc = 0;
             p->_data.lift = 0;
@@ -33,11 +36,6 @@ void *APP_name::controlOnline(void *etv)
             p->_data.turn = 0;
         }
         p->Control_count++;
-        //Set_Acc_motor(p->_data.acc);
-        Set_Lift_motor(p->_data.lift);
-        //Set_Turn_motor(-p->_data.turn);
-        Set_AUTO(p->_data.auto_mode);
-        sendonedata();
         Sleep(50);
     }
 }
@@ -46,8 +44,12 @@ void APP_name::initdata()
     ads.ADS_init();
     ads.NotificationReq_MD(0, CallbackT, &turnfeedback);
     ads.NotificationReq_MD(1, CallbackV, &_data.speed);
-    server_ip = "192.168.2.16";
-    server_port = StateMachine_port;
+
+    Readconfig config("Initconfig.json");
+    config.setitem("driver");
+    config.GetValue("low_acc", low_acc);
+    config.GetValue("high_acc", high_acc);
+
     source_id = ID_Sensor_uwb;
 
     _handle.driver_name = "Car_control";
@@ -79,6 +81,7 @@ int APP_name::setDoubleValue(std::string type, double value)
     if (type == "acc")
     {
         _data.acc = value;
+        printf("set acc %f\n",_data.acc);
         return OK;
     }
     else if (type == "lift")
@@ -120,65 +123,90 @@ void __stdcall APP_name::CallbackV(AmsAddr *pAddr, AdsNotificationHeader *pNotif
 
 void *APP_name::pidControlthread(void *appprt)
 {
-    static PID_IncTypeDef pid_info;
-    pid_info.Kp = 0.011;
-    double out = 0.01;
+    static PID_IncTypeDef aac_pid;
+    static PID_IncTypeDef turn_pid;
+    aac_pid.Kp = 0.011;
+    turn_pid.Kp = 0.5;
+    //double out = 0.01;
     double outV = 0;
+    double outT = 0;
+    double down_k = 5;
+    double test = 0.1;
     APP_name *app = (APP_name *)appprt;
-    Set_Turn_motor(-out);
-
+    ReadSeting set("driver.json");
+    std::ofstream logout("log.csv");
     while (1)
     {
 
-        ifstream infile;
-        infile.open("./conf.txt"); //将文件流对象与文件连接起来
-        //assert(infile.is_open()); //若失败,则输出错误消息,并终止程序运行
-        char c;
-        infile >> noskipws;
-        std::stringstream ss;
-        while (!infile.eof())
-        {
-            infile >> c;
-            ss << c;
-        }
-
-        infile.close(); //关闭文件输入流
-        neb::CJsonObject ojson(ss.str());
-        ojson.Get("Kp",pid_info.Kp);
-         ojson.Get("Ki",pid_info.Ki);
-          ojson.Get("Kd",pid_info.Kd);
-        printf("%f %f %f ",pid_info.Kp,pid_info.Ki,pid_info.Kd);
+        set.reload();
+        set.GetValue("kp", aac_pid.Kp);
+        set.GetValue("ki", aac_pid.Ki);
+        set.GetValue("kd", aac_pid.Kd);
+        set.GetValue("Tkp", turn_pid.Kp);
+        set.GetValue("Tki", turn_pid.Ki);
+        set.GetValue("Tkd", turn_pid.Kd);
+        set.GetValue("down_k", down_k);
+        set.GetValue("test", test);
+        //printf("%f %f %f ", aac_pid.Kp, aac_pid.Ki, aac_pid.Kd);
         if (app->_data.auto_mode)
         {
             if (app->_data.acc == 0)
             {
                 outV = 0;
+                outT = app->turnfeedback;
                 //pid_info.LocSum = 0;
             }
             {
+
+                double dta = PID_Inc(app->_data.acc, app->_data.speed, &aac_pid);
+
+                if (dta * app->_data.acc > 0)
+                    outV = outV + dta;
+                else
+                {
+                    outV = outV + dta * ((dta * dta) + 1) * down_k;
+                }
                 if (app->_data.acc > 0)
                 {
-                    outV = outV + PID_Inc(app->_data.acc, app->_data.speed, &pid_info);
+                    if (outV < 0)
+                        outV = 0;
                 }
-
-                if (app->_data.acc < 0)
+                else if (app->_data.acc < 0)
                 {
-                    outV = outV + PID_Inc(app->_data.acc, app->_data.speed, &pid_info);
+                    if (outV > 0)
+                        outV = 0;
                 }
             }
-
-            out = app->_data.turn;
         }
         else
         {
             app->_data.turn = app->turnfeedback;
-            out = app->_data.turn;
             outV = 0;
             app->_data.acc = 0;
         }
-        Set_Turn_motor(-out);
-        Set_Acc_motor(outV);
-        printf("%f  %f %f\n", app->_data.acc, app->_data.speed, outV);
+
+        outT = outT + PID_Inc(app->_data.turn, outT, &turn_pid);
+
+        Set_Turn_motor(outT);
+        if (app->_data.acc > 0)
+            Set_Acc_motor(outV + app->high_acc);
+        else if (app->_data.acc < 0)
+            Set_Acc_motor(outV + app->low_acc);
+        else
+            Set_Acc_motor(0);
+
+        Set_Lift_motor(app->_data.lift);
+        Set_AUTO(app->_data.auto_mode);
+        sendonedata();
+        double time = GetCurrentTime();
+        logout << time << ","
+               << app->_data.acc << ","
+               << outV << ","
+               << app->_data.speed << ","
+               << app->_data.turn << ","
+               << outT << ","
+               << app->_data.auto_mode << std::endl;
+        printf("%f  %f %f %d\n", app->_data.acc, app->_data.speed, outV, app->_data.auto_mode);
         app->timer50L.lock();
     }
 }
@@ -187,7 +215,7 @@ void *APP_name::timer50msthread(void *appprt)
     APP_name *app = (APP_name *)appprt;
     while (1)
     {
-       Sleep(50);
-       app->timer50L.unlock();
+        Sleep(50);
+        app->timer50L.unlock();
     }
 }

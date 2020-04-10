@@ -77,7 +77,7 @@ void Set_Acc_motor(double value)
 }
 void Set_Turn_motor(double value)
 {
-    value=value*57.3/100;
+    value=-value*57.3/100;
     dc.turn = LimitingAmplitude(value, 1);
 }
 void Set_AUTO(bool value)

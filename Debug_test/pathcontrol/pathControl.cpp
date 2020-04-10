@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-04-09 18:23:01
+ * @LastEditTime: 2020-04-10 15:35:53
  * @LastEditors: Yaodecheng
  * @Description: 路径控制层
  *   ^
@@ -16,6 +16,7 @@
  */
 #include "pathControler.h"
 #include "PID.h"
+#include "time_util.h"
 void *pathControler::timer_50ms(void *t)
 {
 	pathControler *p = (pathControler *)t;
@@ -43,104 +44,93 @@ pathControler::pathControler(APP *dr) : driver(dr)
 pathControler::~pathControler()
 {
 }
-void pathControler::control_loop()
+void pathControler::control_loop(double speed)
 {
 	PostionData sdata;
-	int speed = 20;
+	//int speed = 20;
 	bool contrl = 1;
-	while (1)
-	{
-		point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
-		Catstop();
-		printf("path is ok!!\n");
-		putdown();
-		point_2_point(300, 50, 0 / 57.3, -speed, contrl, true);
-		Catstop();
-		printf("path is ok22!!\n");
-		Sleep(5000);
-	}
+
+	point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
+	Catstop();
+	printf("path is ok!!\n");
+	putdown();
+	point_2_point(300, 50, 0 / 57.3, -speed, contrl, true);
+	Catstop();
+	printf("path is ok22!!\n");
+	Sleep(5000);
 }
-void pathControler::control_loop2()
+void pathControler::control_loop2(double speed)
 {
 	PostionData sdata;
-	int speed = 25;
+	//int speed = 25;
 	bool contrl = true;
-	while (1)
-	{
-		point_2_point(-460, 50, 180 / 57.3, speed, contrl, 1);
-		Catstop();
-		getup();
-		point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
-		//===================>
-		point_2_point(0, -250, 270 / 57.3, speed, contrl, true);
-		Catstop();
-		putdown();
-		//============
-		//point_2_point(0, 200, 90 / 57.3, -50, contrl, false);
-		point_2_point(300, 50, 0 / 57.3, -10, contrl, false);
-		Catstop();
-		Sleep(5000);
-		point_2_point(0, -250, 270 / 57.3, speed, contrl, true);
-		Catstop();
-		getup();
-		point_2_point(0, 200, 90 / 57.3, -10, contrl, false);
-		//point_2_point(-200, 200, 45 / 57.3, -10, contrl, false);
-		//point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
-		point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
-		Catstop();
-		putdown();
-		point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
-		Catstop();
-		Sleep(10000);
-	}
+
+	point_2_point(-460, 50, 180 / 57.3, speed, contrl, 1);
+	Catstop();
+	getup();
+	point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
+	//===================>
+	point_2_point(0, -250, 270 / 57.3, speed, contrl, true);
+	Catstop();
+	putdown();
+	//============
+	point_2_point(300, 50, 0 / 57.3, -10, contrl, false);
+	Catstop();
+	Sleep(5000);
+	point_2_point(0, -250, 270 / 57.3, speed, contrl, true);
+	Catstop();
+	getup();
+	point_2_point(0, 200, 90 / 57.3, -10, contrl, false);
+	point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
+	Catstop();
+	putdown();
+	point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
+	Catstop();
+	Sleep(10000);
 }
-void pathControler::control_loop3()
+void pathControler::control_loop3(double speed)
 {
 	PostionData sdata;
-	int speed = 80;
+	//int speed = 80;
 	bool contrl = true;
-	while (1)
-	{
-		point_2_point(-460, 50, 180 / 57.3, speed, contrl, 1);
-		Catstop();
-		getup();
-		point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
-		//===================>
-		point_2_point(0, -650, 270 / 57.3, speed, contrl, true);
-		Catstop();
-		putdown();
-		//============
-		//point_2_point(0, 200, 90 / 57.3, -50, contrl, false);
-		point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
-		Catstop();
-		Sleep(5000);
-		point_2_point(0, -650, 270 / 57.3, speed, contrl, true);
-		Catstop();
-		getup();
-		//point_2_point(0, 200, 90 / 57.3, -speed, contrl, false);
-		//point_2_point(-200, 200, 45 / 57.3, -10, contrl, false);
-		point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
-		//point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
-		point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
-		Catstop();
-		putdown();
-		point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
-		Catstop();
-		Sleep(10000);
-	}
+
+	point_2_point(-460, 50, 180 / 57.3, speed, contrl, 1);
+	Catstop();
+	getup();
+	point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
+	//===================>
+	point_2_point(0, -650, 270 / 57.3, speed, contrl, true);
+	Catstop();
+	putdown();
+	//============
+	//point_2_point(0, 200, 90 / 57.3, -50, contrl, false);
+	point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
+	Catstop();
+	Sleep(5000);
+	point_2_point(0, -650, 270 / 57.3, speed, contrl, true);
+	Catstop();
+	getup();
+	//point_2_point(0, 200, 90 / 57.3, -speed, contrl, false);
+	//point_2_point(-200, 200, 45 / 57.3, -10, contrl, false);
+	point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
+	//point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
+	point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
+	Catstop();
+	putdown();
+	point_2_point(400, 50, 0 / 57.3, -speed, contrl, false);
+	Catstop();
+	Sleep(10000);
 }
-void pathControler::control_loop4()
+void pathControler::control_loop4(double speed)
 {
 	PostionData sdata;
-	int speed = 80;
+	//int speed = 80;
 	bool contrl = true;
-	while (1)
-	{
-		point_2_point(200, -1000, 270 / 57.3, -speed, contrl, 1);
-		Catstop();
-		point_2_point(-200, 1000, 90 / 57.3, -speed, contrl, true);
-		Catstop();
-	}
+
+	point_2_point(200, -1000, 270 / 57.3, -speed, contrl, 1);
+	Catstop();
+	point_2_point(-200, 1000, 90 / 57.3, -speed, contrl, true);
+	Catstop();
 }
 //路径控制==============算法================================================================
 double SpeedPlaner(double L, double nowSpeed, double setspeed, double dt)
@@ -191,14 +181,21 @@ double SpeedPlaner(double L, double nowSpeed, double setspeed, double dt)
 
 int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 {
+	static double t1=0;
+	
 	static double Ls_speed = 0;
 	static int cnt = 0;
 	LOCATION_DATA uwb;
 	PostionData s;
-
+     
+	
+	t1=GetCurrentTime();
 	int code = driver->GetData(&uwb, 20);
+	double t2=GetCurrentTime();
 	if (code == OK)
 	{
+		printf("get data ok %f\n",t2-t1);
+		t1=t2;
 		if (uwb.x > 10000000000)
 			return 0;
 		//======================获取数据=======
@@ -240,31 +237,30 @@ int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 		if (is_end)
 		{
 			double max = 200;
-			double maxLaght = 100;
+			double maxLaght = 200;
 			if (speed > 0 && target_dis - 170 < maxLaght)
 			{
 				max = ((target_dis - 170) / 8) + 2;
-				printf(" L=%f ", target_dis - 170);
+				//printf(" L=%f ", target_dis - 170);
 			}
 			if (speed < 0 && target_dis - 80 < maxLaght)
 			{
 				max = ((target_dis - 80) / 8) + 2;
-				printf(" L=%f ", target_dis - 80);
+				//printf(" L=%f ", target_dis - 80);
 			}
 			speed = limit(speed, max);
 		}
 		else
 		{
-			;
+			printf("get data error %f code=%d\n",t2-t1,code);
 		}
 		return outputcontrol(target_dis, getF, speed);
 		//============================================================
 	}
 	else
 	{
-		printf("code=%s\n", printf_status(code).c_str());
+		//printf("code=%s\n", printf_status(code).c_str());
 	}
-	printf("\n");
 	return 0;
 }
 double pathControler::limit(double in, double max)
@@ -282,9 +278,9 @@ int pathControler::outputcontrol(double target_dis, double turnAngle, double spe
 	// static double ospeed = 0;
 	// ospeed = ospeed + PID_Inc(speed, ospeed, &pid);
 
-	driver->Set_Turn_motor(driver->mode_abs, turnAngle, 15);
+	driver->Set_Turn_motor(driver->mode_abs, turnAngle, 20);
 
-	printf("speed= %f  turn= %f\n", speed, turnAngle * 57.3);
+	//printf("speed= %f  turn= %f\n", speed, turnAngle * 57.3);
 	if (speed > 0)
 	{
 		if (target_dis < 170)
@@ -299,7 +295,7 @@ int pathControler::outputcontrol(double target_dis, double turnAngle, double spe
 			return 1;
 		}
 	}
-	driver->Set_Acc_motor(driver->mode_abs, speed, 15);
+	driver->Set_Acc_motor(driver->mode_abs, speed, 20);
 	return 0;
 }
 int pathControler::point_2_point(double x, double y, double yaw, double speed, bool &shoutdown, bool isend)
