@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-04-10 15:35:53
+ * @LastEditTime: 2020-04-13 18:54:08
  * @LastEditors: Yaodecheng
  * @Description: 路径控制层
  *   ^
@@ -17,6 +17,7 @@
 #include "pathControler.h"
 #include "PID.h"
 #include "time_util.h"
+#include "../MPC/mpc_angle.h"
 void *pathControler::timer_50ms(void *t)
 {
 	pathControler *p = (pathControler *)t;
@@ -50,7 +51,7 @@ void pathControler::control_loop(double speed)
 	//int speed = 20;
 	bool contrl = 1;
 
-	point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
+	point_2_point(-460, 50, 180 / 57.3, -speed, contrl, true);
 	Catstop();
 	printf("path is ok!!\n");
 	putdown();
@@ -127,9 +128,20 @@ void pathControler::control_loop4(double speed)
 	//int speed = 80;
 	bool contrl = true;
 
+	point_2_point(0, -1000, 270 / 57.3, -speed, contrl, 1);
+	Catstop();
+	point_2_point(0, 1000, 90 / 57.3, -speed, contrl, true);
+	Catstop();
+}
+void pathControler::control_loop5(double speed)
+{
+	PostionData sdata;
+	//int speed = 80;
+	bool contrl = true;
+
 	point_2_point(200, -1000, 270 / 57.3, -speed, contrl, 1);
 	Catstop();
-	point_2_point(-200, 1000, 90 / 57.3, -speed, contrl, true);
+	point_2_point(-200, 1500, 90 / 57.3, -speed, contrl, true);
 	Catstop();
 }
 //路径控制==============算法================================================================
@@ -178,7 +190,7 @@ double SpeedPlaner(double L, double nowSpeed, double setspeed, double dt)
 	}
 	return output;
 }
-
+MPC_Controller mpc;
 int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 {
 	static double t1=0;
@@ -194,7 +206,7 @@ int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 	double t2=GetCurrentTime();
 	if (code == OK)
 	{
-		printf("get data ok %f\n",t2-t1);
+		//printf("get data ok %f\n",t2-t1);
 		t1=t2;
 		if (uwb.x > 10000000000)
 			return 0;
@@ -230,8 +242,16 @@ int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 		double getF;
 		driver->GetData(Type_TurnAngleValue, &getF);
 		//printf("get wheel %f\n",getF*57.3);
-		CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed, getF);
-		//printf("---->%f    %f    %f    %f\n", f * 57.3, Angle_Error * 57.3, Position_Error, target_dis);
+		//CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed, getF);//原方法
+		//MPC_angle_control(Position_Error, Angle_Error, speed, getF);//改造
+		// if(abs(Position_Error)>10)
+		// CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed, getF);//原方法
+		// else
+		mpc.ComputeControlCommand(Position_Error, Angle_Error, speed, getF);
+		                                             
+        
+
+		//printf("---->%f    %f    %f    %f\n", getF * 57.3, Angle_Error * 57.3, Position_Error, target_dis);
 		//============================================================================
 		//==================================输出和目标距离判断============================
 		if (is_end)

@@ -20,7 +20,7 @@
         "printf_node_list": false
     },
     "debug": {
-        "speed": 20,
-        "loop": 2
+        "speed": 50,
+        "loop": 5
     }
 }

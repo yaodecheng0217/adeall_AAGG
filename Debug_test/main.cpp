@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-24 15:09:30
- * @LastEditTime: 2020-04-10 18:51:02
+ * @LastEditTime: 2020-04-13 18:55:10
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -40,38 +40,36 @@ void *test2(void *)
 {
   return 0;
 }
-// 参数1和参数2分别是前景的颜色和背景的颜色。 
-// 
-// 参数1可选择一下值： 
-//// FOREGROUND_BLUE                Text color contains blue. 
-//// FOREGROUND_GREEN                Text color contains green. 
-//// FOREGROUND_RED                    Text color contains red. 
-//// FOREGROUND_INTENSITY            Text color is intensified. 
-// 
-// 参数2可选择一下值： 
-//// BACKGROUND_BLUE                Background color contains blue. 
-//// BACKGROUND_GREEN                Background color contains green. 
-//// BACKGROUND_RED                    Background color contains red. 
-//// BACKGROUND_INTENSITY            Background color is intensified. 
-bool SetConsoleColor( WORD forceGroundColor, WORD backGroundColor )
-{ 
-    // 获得缓冲区句柄。参数可以选择一下三种值： 
-    //// STD_INPUT_HANDLE            标准输入的句柄 
-    //// STD_OUTPUT_HANDLE            标准输出的句柄 
-    //// STD_ERROR_HANDLE`            标准错误的句柄 
-    HANDLE handle = GetStdHandle( STD_OUTPUT_HANDLE ); 
-    if( handle == 0 ) 
-        return false; 
+// 参数1和参数2分别是前景的颜色和背景的颜色。
+//
+// 参数1可选择一下值：
+//// FOREGROUND_BLUE                Text color contains blue.
+//// FOREGROUND_GREEN                Text color contains green.
+//// FOREGROUND_RED                    Text color contains red.
+//// FOREGROUND_INTENSITY            Text color is intensified.
+//
+// 参数2可选择一下值：
+//// BACKGROUND_BLUE                Background color contains blue.
+//// BACKGROUND_GREEN                Background color contains green.
+//// BACKGROUND_RED                    Background color contains red.
+//// BACKGROUND_INTENSITY            Background color is intensified.
+bool SetConsoleColor(WORD forceGroundColor, WORD backGroundColor)
+{
+  // 获得缓冲区句柄。参数可以选择一下三种值：
+  //// STD_INPUT_HANDLE            标准输入的句柄
+  //// STD_OUTPUT_HANDLE            标准输出的句柄
+  //// STD_ERROR_HANDLE`            标准错误的句柄
+  HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+  if (handle == 0)
+    return false;
 
-    //设置文本及背景颜色。 
-    BOOL ret = SetConsoleTextAttribute( handle, forceGroundColor ); 
-    return( ret == TRUE ); 
+  //设置文本及背景颜色。
+  BOOL ret = SetConsoleTextAttribute(handle, forceGroundColor);
+  return (ret == TRUE);
 }
 
 int main()
 {
-   SetConsoleColor( FOREGROUND_GREEN, BACKGROUND_INTENSITY );
-   std::cout<<"hello"<<std::endl;
   app.run();
   msgtest.init(Debug_port);
   pathControler ctrl(&app);
@@ -99,6 +97,9 @@ int main()
       break;
     case 4:
       ctrl.control_loop4(speed);
+      break;
+    case 5:
+      ctrl.control_loop5(speed);
       break;
     default:
       Sleep(1000);

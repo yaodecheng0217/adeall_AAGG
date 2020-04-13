@@ -24,6 +24,7 @@ public:
     void control_loop2(double speed);
     void control_loop3(double speed);
     void control_loop4(double speed);
+     void control_loop5(double speed);
 
     void Tracking_arc(double R, double x, double y);
 

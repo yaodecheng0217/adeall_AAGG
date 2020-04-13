@@ -32,6 +32,7 @@ SET(CMAKE_CXX_FLAGS "-m64")
 ENDIF () 
 
 aux_source_directory(./pathcontrol SRC_FILES)
+aux_source_directory(./MPC SRC_FILES)
 aux_source_directory(./APP SRC_FILES)
 aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)
@@ -44,9 +45,12 @@ include_directories(
      ../common/
      ../common/udpinterface/
     )
+#link_directories("F:\Work\AAGG\Debug_test\MPC")
+link_directories("D:/Project/model/adeall_AAGG/Debug_test/MPC")
 #添加连接库路径
 list( APPEND PROJECK_LINKS_LIBS
     pthread
+    libmpc_solver
     ) 
 
 IF (WIN32)  
