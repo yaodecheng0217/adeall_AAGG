@@ -1,0 +1,3 @@
+D:/Project/model/adeall_AAGG/test/msgtest/build/CMakeFiles/TESTMSG.dir
+D:/Project/model/adeall_AAGG/test/msgtest/build/CMakeFiles/edit_cache.dir
+D:/Project/model/adeall_AAGG/test/msgtest/build/CMakeFiles/rebuild_cache.dir

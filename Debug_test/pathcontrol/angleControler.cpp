@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-18 11:01:49
- * @LastEditTime: 2020-04-13 17:06:56
+ * @LastEditTime: 2020-04-14 17:21:43
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -27,7 +27,7 @@ double Calculation_Angle(double Angie_Error)
     if (Angie_Error < -180 / Radian_conversion)
         Angie_Error = 360 / Radian_conversion + Angie_Error;
 
-    double Qt = -Angie_Error * 1; //-Qfat - Angie_Error;
+    double Qt = -Angie_Error * 1.2; //-Qfat - Angie_Error;
 
     if (Qt > pi / 2)
         Qt = pi / 2;
@@ -51,7 +51,7 @@ double fout = 0;
 double yawErr = 0;
 StateOptimize run;
 ReadSeting set("contrlseting.json");
-double maxspeed=100;
+double maxspeed = 100;
 void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, double &speed, double &turnangle)
 {
     //system("cls");
@@ -64,7 +64,6 @@ void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, d
     //轮子控制死区，静态误差控制
     tfinfo.Kp = 0.00004;
     tfinfo.Ki = 0.00002;
-
     yawinfo.Kp = 0.0000; //0.0002
 
     //接近轨道阈值，超过此阈值将直接将车垂直九十度先接近轨道
@@ -75,8 +74,8 @@ void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, d
     double rear_CL = 0;    //140
     double Xf = 30;
     double Xb = 30;
-    double rangek = 100;
-    double max_aa=0.3;
+    //double rangek = 100;
+    double max_aa = 0.3;
     set.reload();
     bool print = false;
     set.GetValue("print", print);
@@ -93,8 +92,8 @@ void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, d
     set.GetValue("rear_CL", rear_CL);
     set.GetValue("xf", Xf);
     set.GetValue("xb", Xb);
-    set.GetValue("rangeK", rangek);
-    set.GetValue("max_aa",max_aa);
+    // set.GetValue("rangeK", rangek);
+    set.GetValue("max_aa", max_aa);
     //
     double f = 0;
     //Angle_Error = Angle_Error + yawErr;
@@ -102,6 +101,20 @@ void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, d
     {
         //换算前叉误差
         double Ferr = (Position_Error / sin(Angle_Error) - front_CL) * sin(Angle_Error);
+
+        //横向误差变化率控制
+        static double last_lat_error = 0;
+        double lat_errror_range = (Ferr - last_lat_error) * 100;
+        last_lat_error = Ferr;
+        lat_errror_range = limit(lat_errror_range, 30);
+        double max_lat_speed = 100;
+        if (abs(Ferr) < 40)
+        {
+            max_lat_speed = (30 - abs(lat_errror_range)) + 2;
+           // printf("limit=%f", max_lat_speed);
+        }
+
+        speed = limit(speed, max_lat_speed);
 
         //printf(" tarA=%f   tarP=%f ", Angle_Error * 57.3, Ferr);
         if (abs(Position_Error) > front_FL)
@@ -157,20 +170,23 @@ void CalculationOutputWheelsAngle_F(double Position_Error, double Angle_Error, d
 
     double out = buchang + turnangle + PID_Inc(f, turnangle, &incpidinfo);
 
-    //printf(" Fout=%f ",f);
+    //printf(" Fout=%f \n", f * 57.3);
     //转向最大速度控制
-    double maxerr=abs(limit(Position_Error, 90));
-    f=limit(f,1);
-    double max = 90-abs(50*asin(f))+ 10;
-    if(maxspeed<max)
+    double maxerr = abs(limit(Position_Error, 90));
+    f = limit(f, 1);
+    double max = 100;
+    if (abs(f) > 0.5)
+        max = 90 - abs(50 * asin(f)) + 5;
+    if (maxspeed < max)
     {
-        maxspeed=maxspeed+max_aa;
+        maxspeed = maxspeed + max_aa;
     }
     else
     {
-        maxspeed=max;
+        maxspeed = max;
     }
     speed = limit(speed, maxspeed);
+
     turnangle = out;
 }
 //计算终点线到当前车直线距离

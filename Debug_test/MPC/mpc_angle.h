@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-04-12 16:33:16
- * @LastEditTime: 2020-04-13 16:25:22
+ * @LastEditTime: 2020-04-14 11:26:51
  * @LastEditors: Yaodecheng
  * @Description: 
  * @Adeall licence@2020
@@ -62,7 +62,7 @@ private:
     // number of states, includes
     // lateral error, lateral error rate, heading error, heading error rate,
     // station error, velocity error,
-    const int basic_state_size_ = 4;
+    const int basic_state_size_ = 6;
 
     const int controls_ = 2;
 
@@ -123,9 +123,79 @@ public:
     MPC_Controller(/* args */);
     void UpdateMatrix(double heading_error_rate, double linear_velocity);
     void UpdateStateAnalyticalMatching(double lateral_error, double lateral_error_rate, double heading_error, double heading_error_rate, double station_error, double speed_error);
-    void ComputeControlCommand(double Position_Error, double Angle_Error, double &speed, double &turnangle);
+    void ComputeControlCommand(double Position_Error, double Angle_Error, double target_dis, double &speed, double &turnangle);
     void Init();
     ~MPC_Controller();
 };
 
 void MPC_angle_control(double Position_Error, double Angle_Error, double &speed, double &turnangle);
+
+class MY_MPC_Controller
+{
+private:
+    // the following parameters are vehicle physics related.
+    // control time interval
+    double ts_ = 0.05;
+    double L_ = 135; //车轮轴距
+    double Rr = 1;
+    double w = 1;
+    double vd1 = Rr * w; //% For circular trajectory，参考系统的纵向速度
+    double vd2 = 0;      //%参考系统的前轮偏角
+
+    // number of states, includes
+    // lateral error, lateral error rate, heading error, heading error rate,
+    // station error, velocity error,
+    const int basic_state_size_ = 3;
+
+    const int controls_ = 2;
+
+    const int horizon_ = 10;
+    // vehicle state matrix
+    Eigen::MatrixXd matrix_a_;
+    // vehicle state matrix (discrete-time)
+    Eigen::MatrixXd matrix_ad_;
+
+    // control matrix
+    Eigen::MatrixXd matrix_b_;
+    // control matrix (discrete-time)
+    Eigen::MatrixXd matrix_bd_;
+
+    // offset matrix
+    Eigen::MatrixXd matrix_c_;
+    // offset matrix (discrete-time)
+    Eigen::MatrixXd matrix_cd_;
+
+    // gain matrix
+    Eigen::MatrixXd matrix_k_;
+    // control authority weighting matrix
+    Eigen::MatrixXd matrix_r_;
+    // updated control authority weighting matrix
+    Eigen::MatrixXd matrix_r_updated_;
+    // state weighting matrix
+    Eigen::MatrixXd matrix_q_;
+    // updated state weighting matrix
+    Eigen::MatrixXd matrix_q_updated_;
+    // vehicle state matrix coefficients
+    Eigen::MatrixXd matrix_a_coeff_;
+    // 4 by 1 matrix; state matrix
+    Eigen::MatrixXd matrix_state_;
+
+    // heading error of last control cycle
+    double previous_heading_error_ = 0.0;
+    // lateral distance to reference trajectory of last control cycle
+    double previous_lateral_error_ = 0.0;
+
+    // parameters for mpc solver; number of iterations
+    int mpc_max_iteration_ = 10;
+    // parameters for mpc solver; threshold for computation
+    double mpc_eps_ = 0.01;
+
+    const std::string name_;
+    public:
+    MY_MPC_Controller(/* args */);
+    void UpdateMatrix(double heading_error_rate, double linear_velocity);
+    void UpdateStateAnalyticalMatching(double lateral_error, double lateral_error_rate, double heading_error, double heading_error_rate, double station_error, double speed_error);
+    void ComputeControlCommand(double Position_Error, double Angle_Error, double target_dis, double &speed, double &turnangle);
+    void Init();
+    ~MY_MPC_Controller();
+};

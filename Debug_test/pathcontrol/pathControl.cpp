@@ -1,7 +1,7 @@
 /*
  * @Author: Yaodecheng
  * @Date: 2020-03-17 11:09:44
- * @LastEditTime: 2020-04-13 18:54:08
+ * @LastEditTime: 2020-04-21 16:14:50
  * @LastEditors: Yaodecheng
  * @Description: 路径控制层
  *   ^
@@ -51,7 +51,7 @@ void pathControler::control_loop(double speed)
 	//int speed = 20;
 	bool contrl = 1;
 
-	point_2_point(-460, 50, 180 / 57.3, -speed, contrl, true);
+	point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
 	Catstop();
 	printf("path is ok!!\n");
 	putdown();
@@ -68,23 +68,23 @@ void pathControler::control_loop2(double speed)
 
 	point_2_point(-460, 50, 180 / 57.3, speed, contrl, 1);
 	Catstop();
-	getup();
+	//getup();
 	point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
 	//===================>
 	point_2_point(0, -250, 270 / 57.3, speed, contrl, true);
 	Catstop();
-	putdown();
+	//putdown();
 	//============
-	point_2_point(300, 50, 0 / 57.3, -10, contrl, false);
+	point_2_point(300, -0, 0 / 57.3, -10, contrl, false);
 	Catstop();
 	Sleep(5000);
 	point_2_point(0, -250, 270 / 57.3, speed, contrl, true);
 	Catstop();
-	getup();
-	point_2_point(0, 200, 90 / 57.3, -10, contrl, false);
+	//getup();
+	point_2_point(0, 100, 90 / 57.3, -10, contrl, false);
 	point_2_point(-460, 50, 180 / 57.3, speed, contrl, true);
 	Catstop();
-	putdown();
+	//putdown();
 	point_2_point(300, 50, 0 / 57.3, -speed, contrl, false);
 	Catstop();
 	Sleep(10000);
@@ -130,7 +130,7 @@ void pathControler::control_loop4(double speed)
 
 	point_2_point(0, -1000, 270 / 57.3, -speed, contrl, 1);
 	Catstop();
-	point_2_point(0, 1000, 90 / 57.3, -speed, contrl, true);
+	point_2_point(0, 1500, 90 / 57.3, -speed, contrl, true);
 	Catstop();
 }
 void pathControler::control_loop5(double speed)
@@ -193,21 +193,20 @@ double SpeedPlaner(double L, double nowSpeed, double setspeed, double dt)
 MPC_Controller mpc;
 int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 {
-	static double t1=0;
-	
+	static double lx=0,ly=0;
+	static double t1 = 0;
 	static double Ls_speed = 0;
 	static int cnt = 0;
 	LOCATION_DATA uwb;
 	PostionData s;
-     
-	
-	t1=GetCurrentTime();
+
+	t1 = GetCurrentTime();
 	int code = driver->GetData(&uwb, 20);
-	double t2=GetCurrentTime();
+	double t2 = GetCurrentTime();
 	if (code == OK)
 	{
 		//printf("get data ok %f\n",t2-t1);
-		t1=t2;
+		t1 = t2;
 		if (uwb.x > 10000000000)
 			return 0;
 		//======================获取数据=======
@@ -225,7 +224,9 @@ int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 		s.yaw = uwb.yaw;
 		//============================================================================
 		//============================算法计算========================================
-		//double speed = 50;
+		double line_speed = (s.x-lx)*(s.x-lx)+(s.y-ly)*(s.y-ly);
+		lx=s.x;
+		ly=s.y;
 		if (speed < 0)
 		{
 			p.yaw = p.yaw + 180 / 57.3;
@@ -244,14 +245,12 @@ int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 		//printf("get wheel %f\n",getF*57.3);
 		//CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed, getF);//原方法
 		//MPC_angle_control(Position_Error, Angle_Error, speed, getF);//改造
-		// if(abs(Position_Error)>10)
-		// CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed, getF);//原方法
-		// else
-		mpc.ComputeControlCommand(Position_Error, Angle_Error, speed, getF);
-		                                             
-        
 
-		//printf("---->%f    %f    %f    %f\n", getF * 57.3, Angle_Error * 57.3, Position_Error, target_dis);
+		CalculationOutputWheelsAngle_F(Position_Error, Angle_Error, speed, getF); //原方法
+
+		//mpc.ComputeControlCommand(Position_Error, Angle_Error, target_dis - 80, line_speed, getF);
+
+		printf("---->%f    %f    %f    %f  %f\n", getF * 57.3, Angle_Error * 57.3, Position_Error, target_dis,line_speed);
 		//============================================================================
 		//==================================输出和目标距离判断============================
 		if (is_end)
@@ -272,7 +271,7 @@ int pathControler::angle_control_cycle(PostionData p, double speed, bool is_end)
 		}
 		else
 		{
-			printf("get data error %f code=%d\n",t2-t1,code);
+			printf("get data error %f code=%d\n", t2 - t1, code);
 		}
 		return outputcontrol(target_dis, getF, speed);
 		//============================================================

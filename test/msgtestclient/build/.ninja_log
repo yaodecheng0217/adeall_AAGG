@@ -1,0 +1,17 @@
+# ninja log v5
+11	310	609254984	CMakeFiles/TESTMSG_cline.dir/D_/Project/model/adeall_AAGG/common/PIDcode.cc.obj	a436fd146375961e
+120	537	609254984	CMakeFiles/TESTMSG_cline.dir/D_/Project/model/adeall_AAGG/common/CJson/cJSON.c.obj	b907f50457a3c420
+106	1086	609254984	CMakeFiles/TESTMSG_cline.dir/D_/Project/model/adeall_AAGG/common/readconfig/Readjson.cpp.obj	25f7dd1a116837c4
+80	1494	609254985	CMakeFiles/TESTMSG_cline.dir/D_/Project/model/adeall_AAGG/common/CJson/CJsonObject.cpp.obj	5d406670f36851b
+93	1507	609254985	CMakeFiles/TESTMSG_cline.dir/D_/Project/model/adeall_AAGG/common/udpinterface/thread_base.cpp.obj	8620ff553f8f62ae
+68	2061	609254985	CMakeFiles/TESTMSG_cline.dir/D_/Project/model/adeall_AAGG/common/udpinterface/UdpMessage.cpp.obj	c7e304ebdae8b4a5
+1	2391	609254986	CMakeFiles/TESTMSG_cline.dir/main.cpp.obj	730f591ecb2970d7
+20	2432	609254986	CMakeFiles/TESTMSG_cline.dir/D_/Project/model/adeall_AAGG/common/udpinterface/ProtocolAnalysis.cpp.obj	6f1e69912d00dd2c
+30	2681	609254986	CMakeFiles/TESTMSG_cline.dir/D_/Project/model/adeall_AAGG/common/drivernode.cpp.obj	c5d87afc39d84bde
+43	2744	609254986	CMakeFiles/TESTMSG_cline.dir/D_/Project/model/adeall_AAGG/common/response.cc.obj	d873c7d38facc5f2
+55	5795	609254989	CMakeFiles/TESTMSG_cline.dir/D_/Project/model/adeall_AAGG/common/StateOptimize.cpp.obj	a60ae1a9358f63f4
+5797	7107	609254990	D:/Project/model/adeall_AAGG/test/bin/TESTMSG_cline.exe	94725a6b4d58a241
+7	1506	609255176	CMakeFiles/TESTMSG_cline.dir/main.cpp.obj	730f591ecb2970d7
+1507	2913	609255178	D:/Project/model/adeall_AAGG/test/bin/TESTMSG_cline.exe	94725a6b4d58a241
+7	1453	609255283	CMakeFiles/TESTMSG_cline.dir/main.cpp.obj	730f591ecb2970d7
+1453	2770	609255284	D:/Project/model/adeall_AAGG/test/bin/TESTMSG_cline.exe	94725a6b4d58a241

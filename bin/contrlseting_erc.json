@@ -1,0 +1,16 @@
+{
+    "name":"ERC",
+    "print":0,
+    "turn_kp": 0.1,
+    "turn_kd": 0.0001,
+    "turnerror_kp": 0.45,
+    "turnerror_ki": 0.0000,
+    "front_FL": 127,
+    "rear_FL": 70,
+    "front_CL": 250,
+    "rear_CL": -10,
+    "xf": 30,
+    "xb": 50,
+    "rangeK":20,
+    "max_aa":0.2
+}

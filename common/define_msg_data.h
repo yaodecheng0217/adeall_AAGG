@@ -72,6 +72,7 @@ enum INS_LIST
     INS_SET,
     INS_ACK,
     INS_HARBEAT,
+    INS_REACTION_API,
 };
 //消息结构体列表
 enum CMD_TYPE_LIST

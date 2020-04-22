@@ -1,0 +1,3 @@
+D:/Project/model/adeall_AAGG/test/msgtestclient/build/CMakeFiles/TESTMSG_cline.dir
+D:/Project/model/adeall_AAGG/test/msgtestclient/build/CMakeFiles/edit_cache.dir
+D:/Project/model/adeall_AAGG/test/msgtestclient/build/CMakeFiles/rebuild_cache.dir

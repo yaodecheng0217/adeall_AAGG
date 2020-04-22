@@ -36,7 +36,7 @@ aux_source_directory(./MPC SRC_FILES)
 aux_source_directory(./APP SRC_FILES)
 aux_source_directory(../common/udpinterface SRC_FILES)
 aux_source_directory(../common/CJson SRC_Cjson_FILES)
-aux_source_directory(../common/ SRC_Cjson_FILES)
+aux_source_directory(../common SRC_FILES)
 aux_source_directory(../common/readconfig SRC_Cjson_FILES)
 
 

@@ -1,8 +1,23 @@
 {
-    "LC":-10,
-    "q1":0.00125,
+    "LC":0,
+    "q1":0.0005,
     "q2":0.0001,
-    "q3":2005,
-    "q4":0.0000001,
-    "linear_velocity":4
+    "q3":1000,
+    "q4":0.0,
+    "q5":0,
+    "q6":0.0,
+    "r1":8,
+    "r2":0.1,
+    "linear_velocity":4,
+    "lf_":0,
+    "lr_":900,
+    "iz_":1000,
+    "cf_":-155494,
+    "cr_":-155494,
+    "ts_":0.05,
+    "wheelbase_":100,
+    "mass_":1500,
+    "steer_transmission_ratio_":0,
+    "steer_single_direction_max_degree_":1.4,
+    "max_lat_acc_":0.5
 }

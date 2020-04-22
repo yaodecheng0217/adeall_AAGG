@@ -23,25 +23,6 @@ sudo  apt-get  install   gcc-7-multilib g++-7-multilib
 using namespace msgpa;
 using namespace adeall;
 std::string printf_status(int code);
-struct Node_INFO
-{
-    DRIVER_HANDLE handle;
-    char *ip;
-    int port;
-    void *data;
-    time_t timestamp;
-    int onlinecnt;
-};
-struct UWB_D
-{
-    uint8_t id;
-    LOCATION_DATA data;
-};
-struct DRIVER_D
-{
-    uint8_t id;
-    ETV_DRIVER_STATE_DATA data;
-};
 typedef int (*RecallFun)(void *in, void *out);
 struct ReCall
 {
@@ -59,9 +40,6 @@ private:
     uint32_t _seq = 0;
     uint8_t timeout = 100;
 
-    std::vector<Node_INFO> _NodeList;
-    std::list<UWB_D> _uwbdata;
-    std::list<DRIVER_D> _driverdata;
     struct RES
     {
         uint32_t seq;

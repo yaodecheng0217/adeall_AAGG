@@ -63,7 +63,11 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "future": "cpp",
+        "hash_map": "cpp",
+        "numeric": "cpp",
+        "random": "cpp"
     },
     "files.exclude": {
         "**/.git": true,
